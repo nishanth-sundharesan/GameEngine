@@ -19,6 +19,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Pch.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)SList.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)SList.inl" />
   </ItemGroup>
 </Project>

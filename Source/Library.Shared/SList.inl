@@ -1,4 +1,8 @@
 #include "Pch.h"
+#ifndef SListInitialized
+#include "SList.h"
+#endif
+
 
 using namespace std;
 
@@ -20,17 +24,22 @@ namespace GameEngineLibrary
 			Node* tempFrontNode = other.mFront;
 			while (tempFrontNode != nullptr)
 			{
-				PushBack(*tempFrontNode->data);				
+				PushBack(tempFrontNode->data);
 				tempFrontNode = tempFrontNode->next;
 			}
 		}
 	}
 
 	template <class T>
-	inline SList<T>& SList<T>::operator=(const SList<T>& other)
+	inline SList<T>& SList<T>::operator=(const SList<T>& rhs)
 	{
-		Clear();
-		this(other);		
+		if (this != &rhs)
+		{
+			Clear();
+			this(other);
+		}
+
+		return *this;
 	}
 
 	template <class T>
@@ -42,9 +51,8 @@ namespace GameEngineLibrary
 	template <class T>
 	inline void SList<T>::PushFront(const T& pData)
 	{
-		Node* newNode = new Node();
-		newNode->data = new T;
-		*newNode->data = pData;
+		Node* newNode = new Node();		
+		newNode->data = pData;
 		newNode->next = nullptr;
 
 		if (IsEmpty())
@@ -62,24 +70,19 @@ namespace GameEngineLibrary
 	}
 
 	template <class T>
-	inline T SList<T>::PopFront()
+	inline void SList<T>::PopFront()
 	{
 		if (IsEmpty())
 		{
-			throw exception("SList is empty!");
+			throw exception("void PopFront(): SList is empty!");
 		}
 
 		Node* tempNode = mFront;
 		mFront = mFront->next;
-
-		T tempData = &tempNode->data;
-
-		delete tempNode->data;
+				
 		delete tempNode;
 
-		--mSize;
-
-		return tempData;
+		--mSize;		
 	}
 
 	template <class T>
@@ -87,15 +90,14 @@ namespace GameEngineLibrary
 	{
 		if (IsEmpty())
 		{
-			throw exception("SList is empty!");
+			throw exception("void PopFront(T& ): SList is empty!");
 		}
 
 		Node* tempNode = mFront;
 		mFront = mFront->next;
 
-		pData = &tempNode->data;
-
-		delete tempNode->data;
+		pData = tempNode->data;
+		
 		delete tempNode;
 
 		--mSize;
@@ -105,8 +107,7 @@ namespace GameEngineLibrary
 	inline void SList<T>::PushBack(const T& pData)
 	{
 		Node* newNode = new Node();
-		newNode->data = new T;
-		*newNode->data = pData;
+		newNode->data = pData;
 		newNode->next = mFront;
 
 		if (IsEmpty())
@@ -123,7 +124,13 @@ namespace GameEngineLibrary
 	}
 
 	template <class T>
-	inline bool SList<T>::IsEmpty() const
+	inline bool SList<T>::IsEmpty()
+	{
+		return mSize == 0;
+	}
+
+	template <class T>
+	inline const bool SList<T>::IsEmpty() const
 	{
 		return mSize == 0;
 	}
@@ -133,7 +140,18 @@ namespace GameEngineLibrary
 	{
 		if (IsEmpty())
 		{
-			throw exception("SList is empty!");
+			throw exception("T& Front(): SList is empty!");
+		}
+
+		return mFront->data;
+	}
+
+	template <class T>
+	inline const T& SList<T>::Front() const
+	{
+		if (IsEmpty())
+		{
+			throw exception("const T& Front(): SList is empty!");
 		}
 
 		return mFront->data;
@@ -144,21 +162,10 @@ namespace GameEngineLibrary
 	{
 		if (IsEmpty())
 		{
-			throw exception("SList is empty!");
+			throw exception("T& Back(): SList is empty!");
 		}
 
 		return mBack->data;
-	}
-
-	template <class T>
-	inline const T& SList<T>::Front() const
-	{
-		if (IsEmpty())
-		{
-			throw exception("SList is empty!");
-		}
-
-		return mFront->data;
 	}
 
 	template <class T>
@@ -166,7 +173,7 @@ namespace GameEngineLibrary
 	{
 		if (IsEmpty())
 		{
-			throw exception("SList is empty!");
+			throw exception("const T& Back(): SList is empty!");
 		}
 
 		return mBack->data;
@@ -192,8 +199,7 @@ namespace GameEngineLibrary
 		while (mFront != nullptr)
 		{
 			tempNode = mFront;
-			mFront = mFront->next;
-			delete tempNode->data;
+			mFront = mFront->next;			
 			delete tempNode;
 		}
 

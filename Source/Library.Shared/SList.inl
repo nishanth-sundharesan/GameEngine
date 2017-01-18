@@ -3,7 +3,6 @@
 #include "SList.h"
 #endif
 
-
 using namespace std;
 
 namespace GameEngineLibrary
@@ -16,17 +15,14 @@ namespace GameEngineLibrary
 	}
 
 	template <class T>
-	SList<T>::SList(const SList<T>& other) :
+	SList<T>::SList(const SList<T>& rhs) :
 		mBack(nullptr), mFront(nullptr), mSize(0)
 	{
-		if (!IsEmpty())
+		Node* tempFrontNode = rhs.mFront;
+		while (tempFrontNode != nullptr)
 		{
-			Node* tempFrontNode = other.mFront;
-			while (tempFrontNode != nullptr)
-			{
-				PushBack(tempFrontNode->data);
-				tempFrontNode = tempFrontNode->next;
-			}
+			PushBack(tempFrontNode->data);
+			tempFrontNode = tempFrontNode->next;
 		}
 	}
 
@@ -36,7 +32,12 @@ namespace GameEngineLibrary
 		if (this != &rhs)
 		{
 			Clear();
-			this(other);
+			Node* tempFrontNode = rhs.mFront;
+			while (tempFrontNode != nullptr)
+			{
+				PushBack(tempFrontNode->data);
+				tempFrontNode = tempFrontNode->next;
+			}
 		}
 
 		return *this;
@@ -51,7 +52,27 @@ namespace GameEngineLibrary
 	template <class T>
 	inline void SList<T>::PushFront(const T& pData)
 	{
-		Node* newNode = new Node();		
+		Node* newNode = new Node();
+		newNode->data = pData;
+		newNode->next = mFront;
+
+		if (IsEmpty())
+		{
+			mFront = newNode;
+			mBack = newNode;
+		}
+		else
+		{
+			mFront = newNode;
+		}
+
+		++mSize;
+	}
+
+	template <class T>
+	inline void SList<T>::PushBack(const T& pData)
+	{
+		Node* newNode = new Node();
 		newNode->data = pData;
 		newNode->next = nullptr;
 
@@ -79,10 +100,10 @@ namespace GameEngineLibrary
 
 		Node* tempNode = mFront;
 		mFront = mFront->next;
-				
+
 		delete tempNode;
 
-		--mSize;		
+		--mSize;
 	}
 
 	template <class T>
@@ -97,30 +118,10 @@ namespace GameEngineLibrary
 		mFront = mFront->next;
 
 		pData = tempNode->data;
-		
+
 		delete tempNode;
 
 		--mSize;
-	}
-
-	template <class T>
-	inline void SList<T>::PushBack(const T& pData)
-	{
-		Node* newNode = new Node();
-		newNode->data = pData;
-		newNode->next = mFront;
-
-		if (IsEmpty())
-		{
-			mFront = newNode;
-			mBack = newNode;
-		}
-		else
-		{
-			mFront = newNode;
-		}
-
-		++mSize;
 	}
 
 	template <class T>
@@ -199,10 +200,11 @@ namespace GameEngineLibrary
 		while (mFront != nullptr)
 		{
 			tempNode = mFront;
-			mFront = mFront->next;			
+			mFront = mFront->next;
 			delete tempNode;
 		}
 
 		mBack = nullptr;
+		mSize = 0;
 	}
 }

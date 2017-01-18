@@ -35,6 +35,11 @@ namespace GameEngineLibrary
 		*/
 		void PushFront(const T& pData);
 
+		/** Pushes/Adds the data at the back of the list.
+		*	@param pData The data to be pushed at the back of the list.
+		*/
+		void PushBack(const T& pData);
+
 		/** Pops/Deletes the data at the front of the list.		
 		*	@throws Throws an exception if SList is empty.
 		*	@see PopFront(T& pData);
@@ -47,12 +52,7 @@ namespace GameEngineLibrary
 		*	@see PopFront();
 		*/
 		void PopFront(T& pData);
-
-		/** Pushes/Adds the data at the back of the list.
-		*	@param pData The data to be pushed at the back of the list.
-		*/
-		void PushBack(const T& pData);
-
+		
 		/** Checks if SList is empty or not.
 		*	@return Returns true if SList is empty, false otherwise.
 		*/

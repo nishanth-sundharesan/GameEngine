@@ -30,8 +30,8 @@ namespace GameEngineLibrary
 	inline SList<T>& SList<T>::operator=(const SList<T>& rhs)
 	{
 		if (this != &rhs)
-		{
-			Clear();
+		{			
+			Clear();													//Clear the entire list before assigning new data
 			Node* tempFrontNode = rhs.mFront;
 			while (tempFrontNode != nullptr)
 			{
@@ -54,7 +54,7 @@ namespace GameEngineLibrary
 	{
 		Node* newNode = new Node();
 		newNode->data = pData;
-		newNode->next = mFront;
+		newNode->next = mFront;											//Always make the next pointer to point to the front of the list
 
 		if (IsEmpty())
 		{
@@ -95,7 +95,7 @@ namespace GameEngineLibrary
 	{
 		if (IsEmpty())
 		{
-			throw exception("void PopFront(): SList is empty!");
+			throw exception("void PopFront(): SList is empty!");			
 		}
 
 		Node* tempNode = mFront;
@@ -197,7 +197,7 @@ namespace GameEngineLibrary
 	{
 		Node *tempNode = nullptr;
 
-		while (mFront != nullptr)
+		while (mFront != nullptr)								//Traverse through the entire list and delete all the allocated memory.
 		{
 			tempNode = mFront;
 			mFront = mFront->next;

@@ -3,28 +3,30 @@
 #define SListInitialized
 
 namespace GameEngineLibrary
-{	
+{
+	/** Templated Singly Linked List Class.
+	*/
 	template <class T>
 	class SList
 	{
 	public:
-		/** Zero parameter constructor. 
+		/** Zero parameter constructor.
 		*	Initializes the private members of the class.
 		*/
 		SList();
 
-		/** Copy constructor. 
+		/** Copy constructor.
 		*	Performs a deep copy of an SList object.
 		*	@param rhs The object of which the deep copy will be made.
 		*/
 		SList(const SList<T>& rhs);
-		
-		/** Overloaded assignment operator. 
+
+		/** Overloaded assignment operator.
 		*	Performs a deep copy of the right hand side object.
 		*	@param rhs It is the right hand side object which will be deep copied to the left hand side object.
-		*	@return Returns the deep copied 
+		*	@return Returns the deep copied SList
 		*/
-		SList<T>& operator=(const SList<T>& rhs);		
+		SList<T>& operator=(const SList<T>& rhs);
 
 		/** Clears the entire SList.
 		*/
@@ -40,7 +42,7 @@ namespace GameEngineLibrary
 		*/
 		void PushBack(const T& pData);
 
-		/** Pops/Deletes the data at the front of the list.		
+		/** Pops/Deletes the data at the front of the list.
 		*	@throws Throws an exception if SList is empty.
 		*	@see PopFront(T& pData);
 		*/
@@ -52,7 +54,7 @@ namespace GameEngineLibrary
 		*	@see PopFront();
 		*/
 		void PopFront(T& pData);
-		
+
 		/** Checks if SList is empty or not.
 		*	@return Returns true if SList is empty, false otherwise.
 		*/
@@ -80,7 +82,7 @@ namespace GameEngineLibrary
 		*	@throws Throws an exception if SList is empty.
 		*/
 		T& Back();
-		
+
 		/** Returns the data at the back of SList.
 		*	@return Returns the data at the back of SList.
 		*	@throws Throws an exception if SList is empty.
@@ -108,9 +110,16 @@ namespace GameEngineLibrary
 			Node* next;
 		};
 
+		/** Node pointer to the back of the list.
+		*/
 		Node* mBack;
+
+		/** Node pointer to the back of the list.
+		*/
 		Node* mFront;
 
+		/** An integer variable to hold the size of the list.
+		*/
 		std::int32_t mSize;
 	};
 }

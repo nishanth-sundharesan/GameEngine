@@ -33,8 +33,8 @@ int32_t* Foo::getIntegerPointer() const
 
 void Foo::setIntegerDataAndPointer(const int32_t pData)
 {
-	mIntData = pData;
-	delete mIntPointer;
+	Clear();
+	mIntData = pData;	
 	mIntPointer = new int32_t(mIntData);
 }
 

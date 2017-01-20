@@ -3,11 +3,6 @@
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, INT nCmdShow)
 {
-	//Testing the referencing of the library "Library.Desktop". This code will be removed later
-	GameEngineLibrary::SList list(10);
-	int32_t a = 0;
-	a = list.GetData();
-
 	UNREFERENCED_PARAMETER(hInstance);
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);

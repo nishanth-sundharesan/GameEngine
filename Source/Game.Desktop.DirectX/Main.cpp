@@ -23,12 +23,7 @@ ID3D11RenderTargetView *mBackBuffer;
 DirectX::XMVECTORF32 BackgroundColor = { 0.392f, 0.584f, 0.929f, 1.0f };
 
 int WINAPI WinMain(HINSTANCE instance, HINSTANCE previousInstance, LPSTR commandLine, int showCommand)
-{
-	//Testing the referencing of the library "Library.Desktop". This code will be removed later
-	GameEngineLibrary::SList list(10);
-	int32_t a = 0;
-	a = list.GetData();
-
+{	
 	UNREFERENCED_PARAMETER(previousInstance);
 	UNREFERENCED_PARAMETER(commandLine);
 

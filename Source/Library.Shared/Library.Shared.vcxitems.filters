@@ -7,9 +7,6 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{87fe0fef-2610-435f-acb6-0e42b49a5957}</UniqueIdentifier>
     </Filter>
-    <Filter Include="SupportClasses">
-      <UniqueIdentifier>{7120cd44-a11d-4bb5-bbd6-86db86a427e2}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)SList.h">
@@ -18,13 +15,11 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Foo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Foo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)SList.inl">

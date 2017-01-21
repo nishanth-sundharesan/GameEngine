@@ -17,18 +17,21 @@
     <ClCompile Include="SListTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Foo.cpp">
+      <Filter>SupportClasses</Filter>
+    </ClCompile>
     <ClCompile Include="Pch.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Library.Shared\Foo.cpp">
-      <Filter>SupportClasses</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Library.Shared\Foo.h">
+    <ClInclude Include="Foo.h">
+      <Filter>SupportClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="ToStringTemplates.h">
       <Filter>SupportClasses</Filter>
     </ClInclude>
   </ItemGroup>

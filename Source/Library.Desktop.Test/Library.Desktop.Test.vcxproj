@@ -174,7 +174,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Library.Shared\Foo.cpp" />
+    <ClCompile Include="Foo.cpp" />
     <ClCompile Include="Pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -184,8 +184,9 @@
     <ClCompile Include="SListTest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Library.Shared\Foo.h" />
+    <ClInclude Include="Foo.h" />
     <ClInclude Include="Pch.h" />
+    <ClInclude Include="ToStringTemplates.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Library.Desktop\Library.Desktop.vcxproj">

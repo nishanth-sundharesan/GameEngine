@@ -1,23 +1,26 @@
 #pragma once
 #include <cstdint>
 
-class Foo
+namespace UnitTestSupportClasses
 {
-public:
-	Foo();
-	Foo(int32_t pData);
-	Foo(const Foo& foo);
-	~Foo();
+	class Foo
+	{
+	public:
+		Foo();
+		Foo(int32_t data);
+		Foo(const Foo& foo);
+		~Foo();
 
-	int32_t getIntegerData() const;
-	int32_t* getIntegerPointer() const;
+		int32_t GetIntegerData() const;
+		int32_t* GetIntegerPointer() const;
 
-	void setIntegerDataAndPointer(const int32_t pData);	
+		void SetIntegerDataAndPointer(const int32_t data);
 
-	Foo& operator=(const Foo& rhs);
-	bool operator==(const Foo& rhs) const;	
-private:
-	int32_t mIntData;
-	int32_t* mIntPointer;
-	void Clear();
-};
+		Foo& operator=(const Foo& rhs);
+		bool operator==(const Foo& rhs) const;
+	private:
+		int32_t mIntData;
+		int32_t* mIntPointer;
+		void Clear();
+	};
+}

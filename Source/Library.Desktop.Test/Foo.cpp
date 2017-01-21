@@ -1,61 +1,64 @@
 #include "Pch.h"
 #include "Foo.h"
 
-Foo::Foo() :mIntPointer(nullptr)
+namespace UnitTestSupportClasses
 {
-}
-
-Foo::Foo(int32_t pData) :
-	mIntData(pData), mIntPointer(new int32_t(mIntData))
-{
-}
-
-Foo::Foo(const Foo& rhs)
-{
-	mIntData = rhs.mIntData;
-	mIntPointer = new int32_t(*rhs.mIntPointer);
-}
-
-Foo::~Foo()
-{
-	Clear();
-}
-
-int32_t Foo::getIntegerData() const
-{
-	return mIntData;
-}
-
-int32_t* Foo::getIntegerPointer() const
-{
-	return mIntPointer;
-}
-
-void Foo::setIntegerDataAndPointer(const int32_t pData)
-{
-	Clear();
-	mIntData = pData;	
-	mIntPointer = new int32_t(mIntData);
-}
-
-Foo& Foo::operator=(const Foo& rhs)
-{
-	if (this != &rhs)
+	Foo::Foo() :mIntPointer(nullptr)
 	{
-		Clear();
+	}
+
+	Foo::Foo(int32_t data) :
+		mIntData(data), mIntPointer(new int32_t(mIntData))
+	{
+	}
+
+	Foo::Foo(const Foo& rhs)
+	{
 		mIntData = rhs.mIntData;
 		mIntPointer = new int32_t(*rhs.mIntPointer);
 	}
 
-	return *this;
-}
+	Foo::~Foo()
+	{
+		Clear();
+	}
 
-bool Foo::operator==(const Foo& rhs) const
-{
-	return (mIntData == rhs.mIntData && *mIntPointer == *rhs.mIntPointer);
-}
+	int32_t Foo::GetIntegerData() const
+	{
+		return mIntData;
+	}
 
-void Foo::Clear()
-{
-	delete mIntPointer;
+	int32_t* Foo::GetIntegerPointer() const
+	{
+		return mIntPointer;
+	}
+
+	void Foo::SetIntegerDataAndPointer(const int32_t data)
+	{
+		Clear();
+		mIntData = data;
+		mIntPointer = new int32_t(mIntData);
+	}
+
+	Foo& Foo::operator=(const Foo& rhs)
+	{
+		if (this != &rhs)
+		{
+			Clear();
+			mIntData = rhs.mIntData;
+			mIntPointer = new int32_t(*rhs.mIntPointer);
+		}
+
+		return *this;
+	}
+
+	bool Foo::operator==(const Foo& rhs) const
+	{
+		return (mIntData == rhs.mIntData && *mIntPointer == *rhs.mIntPointer);
+	}
+
+	void Foo::Clear()
+	{
+		delete mIntPointer;
+	}
 }

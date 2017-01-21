@@ -58,12 +58,7 @@ namespace GameEngineLibrary
 		/** Checks if SList is empty or not.
 		*	@return Returns true if SList is empty, false otherwise.
 		*/
-		bool IsEmpty();
-
-		/** Checks if SList is empty or not.
-		*	@return Returns true if SList is empty, false otherwise.
-		*/
-		const bool IsEmpty() const;
+		bool IsEmpty() const;
 
 		/** Returns the data at the front of SList.
 		*	@return Returns the data at the front of SList.
@@ -92,12 +87,7 @@ namespace GameEngineLibrary
 		/** Returns the size of SList.
 		*	@return Returns the size of SList.
 		*/
-		int Size();
-
-		/** Returns the size of SList.
-		*	@return Returns the size of SList.
-		*/
-		const int Size() const;
+		uint32_t Size() const;
 
 		/** Clears the entire SList.
 		*/
@@ -106,21 +96,23 @@ namespace GameEngineLibrary
 	private:
 		struct Node
 		{
-			T data;
-			Node* next;
+			Node(const T& data, Node* next = nullptr);
+
+			T mData;
+			Node* mNext;
 		};
 
-		/** Node pointer to the back of the list.
+		/** Node pointer pointing to the back of SList.
 		*/
 		Node* mBack;
 
-		/** Node pointer to the back of the list.
+		/** Node pointer pointing to the front of SList.
 		*/
 		Node* mFront;
 
-		/** An integer variable to hold the size of the list.
+		/** An integer variable to hold the size of SList.
 		*/
-		std::int32_t mSize;
+		std::uint32_t mSize;
 	};
 }
 

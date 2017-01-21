@@ -2,25 +2,12 @@
 #include "CppUnitTest.h"
 #include "SList.h"
 #include "Foo.h"
+#include "ToStringTemplates.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace GameEngineLibrary;
+using namespace UnitTestSupportClasses;
 using namespace std;
-
-namespace Microsoft
-{
-	namespace VisualStudio
-	{
-		namespace CppUnitTestFramework
-		{
-			template<> 
-			inline std::wstring ToString<Foo>(const Foo&)
-			{
-				return L"";
-			}
-		}
-	}
-}
 
 namespace LibraryDesktopTest
 {
@@ -211,7 +198,7 @@ namespace LibraryDesktopTest
 		TEST_METHOD(SListSize)
 		{
 			SList<int32_t> list;
-			int32_t currentSize = 0;
+			uint32_t currentSize = 0;
 
 			Assert::AreEqual(list.Size(), currentSize);
 
@@ -366,17 +353,18 @@ namespace LibraryDesktopTest
 		/************************************************************************/
 		TEST_METHOD(SListEmptyCopyConstructor)
 		{
-			SList<int> list;
-			SList<int> copiedList = list;
+			SList<int32_t> list;
+			SList<int32_t> copiedList = list;
 
-			Assert::AreEqual(copiedList.Size(), 0);
+			uint32_t size = 0;
+			Assert::AreEqual(copiedList.Size(), size);
 
 			TestExceptionSlist(list);
 		}
 
 		TEST_METHOD(SListIntCopyConstructor)
 		{
-			SList<int> list;
+			SList<int32_t> list;
 			int32_t firstPush = 10;
 			int32_t secondPush = 20;
 			int32_t thirdPush = 30;
@@ -385,7 +373,7 @@ namespace LibraryDesktopTest
 			list.PushBack(secondPush);
 			list.PushBack(thirdPush);
 
-			SList<int> copiedList = list;
+			SList<int32_t> copiedList = list;
 
 			TestSListSizeIsEmptyFrontBack(list, copiedList);
 
@@ -407,7 +395,7 @@ namespace LibraryDesktopTest
 
 		TEST_METHOD(SListIntPointerCopyConstructor)
 		{
-			SList<int*> list;
+			SList<int32_t*> list;
 			int32_t firstPush = 10;
 			int32_t secondPush = 20;
 			int32_t thirdPush = 30;
@@ -416,7 +404,7 @@ namespace LibraryDesktopTest
 			list.PushBack(&secondPush);
 			list.PushBack(&thirdPush);
 
-			SList<int*> copiedList = list;
+			SList<int32_t*> copiedList = list;
 
 			TestSListSizeIsEmptyFrontBack(list, copiedList);
 
@@ -483,7 +471,7 @@ namespace LibraryDesktopTest
 
 			TestSListSizeIsEmptyFrontBack(list, copiedList);
 
-			f3.setIntegerDataAndPointer(300);
+			f3.SetIntegerDataAndPointer(300);
 
 			TestSListSizeIsEmptyFrontBack(list, copiedList);
 
@@ -503,18 +491,19 @@ namespace LibraryDesktopTest
 		/************************************************************************/
 		TEST_METHOD(SListEmptyAssignmentOperator)
 		{
-			SList<int> list;
-			SList<int> copiedList = list;
+			SList<int32_t> list;
+			SList<int32_t> copiedList = list;
 			copiedList = list;
 
-			Assert::AreEqual(copiedList.Size(), 0);
+			uint32_t size = 0;
+			Assert::AreEqual(copiedList.Size(), size);
 
 			TestExceptionSlist(list);
 		}
 
 		TEST_METHOD(SListIntAssignmentOperator)
 		{
-			SList<int> list;
+			SList<int32_t> list;
 			int32_t firstPush = 10;
 			int32_t secondPush = 20;
 			int32_t thirdPush = 30;
@@ -523,7 +512,7 @@ namespace LibraryDesktopTest
 			list.PushBack(secondPush);
 			list.PushBack(thirdPush);
 
-			SList<int> copiedList = list;
+			SList<int32_t> copiedList = list;
 			copiedList = list;
 
 			TestSListSizeIsEmptyFrontBack(list, copiedList);
@@ -554,7 +543,7 @@ namespace LibraryDesktopTest
 
 		TEST_METHOD(SListIntPointerAssignmentOperator)
 		{
-			SList<int*> list;
+			SList<int32_t*> list;
 			int32_t firstPush = 10;
 			int32_t secondPush = 20;
 			int32_t thirdPush = 30;
@@ -563,7 +552,7 @@ namespace LibraryDesktopTest
 			list.PushBack(&secondPush);
 			list.PushBack(&thirdPush);
 
-			SList<int*> copiedList = list;
+			SList<int32_t*> copiedList = list;
 			copiedList = list;
 
 			TestSListSizeIsEmptyFrontBack(list, copiedList);
@@ -637,7 +626,7 @@ namespace LibraryDesktopTest
 
 			TestSListSizeIsEmptyFrontBack(list, copiedList);
 
-			f3.setIntegerDataAndPointer(300);
+			f3.SetIntegerDataAndPointer(300);
 
 			TestSListSizeIsEmptyFrontBack(list, copiedList);
 

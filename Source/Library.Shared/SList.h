@@ -9,8 +9,81 @@ namespace GameEngineLibrary
 	template <class T>
 	class SList
 	{
+	private:
+		struct Node
+		{
+			Node(const T& data, Node* next = nullptr);
+
+			T mData;
+			Node* mNext;
+		};
+
 	public:
-		/** Zero parameter constructor.
+		/** An Iterator class for the SList class.
+		*/
+		class Iterator
+		{
+			/** SList is marked as a friend class so that the SList can access the private members of the Iterator class.
+			*/
+			friend class SList;
+		public:
+			/** Zero parameterized constructor.
+			*	Initializes the private members of the class.
+			*/
+			Iterator();
+
+			//Iterator(const Iterator& rhs);
+
+			/** Overloaded equality operator.
+			*	Checks if both the Iterators point to the same data.
+			*	Note: The function will return true when two uninitialized Iterators are compared.
+			*	@param rhs The right hand side Iterator to be compared with.
+			*/
+			bool operator==(const Iterator& rhs) const;
+
+			/** Overloaded inequality operator.
+			*	Checks if both the Iterators are not equal or both the Iterators do not point to the same data.
+			*	Note: The function will return false when two uninitialized Iterators are compared.
+			*	@param rhs The right hand side Iterator to be compared with.
+			*/
+			bool operator!=(const Iterator& rhs) const;
+
+			/** Overloaded ++ - Prefix Increment operator.
+			*	Increments the iterator and points to the next consequent data.
+			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data.
+			*/
+			Iterator& operator++();
+
+			/** Overloaded ++ - Postfix Increment operator.
+			*	Makes a copy of the called iterator and returns it. It then later increments the called iterator and points to the next consequent data.
+			*	For gaining performance, use the ++ - Prefix Increment operator
+			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data.
+			*/
+			Iterator operator++(int);
+
+
+			//Iterator& operator=(const Iterator& rhs);		//Can be const correct
+
+			/** Overloaded * (content of) operator.
+			*	Provides the content of which the iterator was pointing to.
+			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data
+			*/
+			T& operator*();
+
+			/** Overloaded * (content of) operator.
+			*	Provides the content of which the iterator was pointing to.
+			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data
+			*/
+			const T& operator*() const;
+
+		private:
+			Iterator(Node* currentNode, SList* owner);
+
+			Node* mCurrentNode;								//Check if this can be const here
+			const SList* mOwner;
+		};
+
+		/** Zero parameterized constructor.
 		*	Initializes the private members of the class.
 		*/
 		SList();
@@ -93,15 +166,36 @@ namespace GameEngineLibrary
 		*/
 		void Clear();
 
+		/** Returns an iterator that points to the beginning of SList.
+		*	@returns Returns an iterator that points to the beginning of SList.
+		*/
+		Iterator Begin() const;
+
+		/** Returns an iterator that points past the end of SList.
+		*	@returns Returns an iterator that points past the end of SList.
+		*/
+		Iterator End() const;
+
+		/** This function inserts an item after the specified iterator.
+		*	@param data The data to be inserted in the SList.
+		*	@param iterator	The Iterator after which the data will be inserted.
+		*	@returns Returns true if the item was successfully inserted, false otherwise.
+		*/
+		bool InsertAfter(const T& data, const Iterator& iterator);
+
+		/** Finds the first found iterator for the specified value.
+		*	@param value The value for which the Iterator should be found.
+		*	@returns Returns an iterator for the first matched value. If no matches were found then the function returns an iterator that points past the end of SList.
+		*/
+		Iterator Find(const T& value) const;
+
+		/** Removes the first found specified data in SList.
+		*	@param value The data to be removed in SList.
+		*	@returns Returns true if the data was successfully removed, false otherwise.
+		*/
+		bool Remove(const T& value);
+
 	private:
-		struct Node
-		{
-			Node(const T& data, Node* next = nullptr);
-
-			T mData;
-			Node* mNext;
-		};
-
 		/** Node pointer pointing to the back of SList.
 		*/
 		Node* mBack;

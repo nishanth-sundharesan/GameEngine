@@ -195,46 +195,43 @@ namespace GameEngineLibrary
 	}
 
 	template<class T>
-	inline typename SList<T>::Iterator SList<T>::Begin() const
+	inline typename SList<T>::Iterator SList<T>::begin() const
 	{
-		Iterator begin(mFront, this);
-		return begin;
+		return Iterator(this, mFront);
 	}
 
 	template<class T>
-	inline typename SList<T>::Iterator SList<T>::End() const
+	inline typename SList<T>::Iterator SList<T>::end() const
 	{
-		Iterator end(nullptr, this);
-		return end;
+		return Iterator(this, nullptr);
 	}
 
 	template<class T>
-	inline bool SList<T>::InsertAfter(const T& data, const Iterator& iterator)
+	inline typename SList<T>::Iterator SList<T>::InsertAfter(const T& data, const Iterator& iterator)
 	{
-		bool isInsertSuccessful = false;
-
-		//Checks if the iterator is a valid iterator(i.e Iterator is not pointing to the end of list, Initialized iterator, Iterator pointing to a valid data)
-		if (iterator.mCurrentNode != nullptr)
+		//Checks if the iterator belongs to "this" SList and it is a valid iterator(i.e Iterator is not pointing to the end of list, Iterator is initialized, Iterator is pointing to a valid data)
+		if (iterator.mOwner == this && iterator.mCurrentNode != nullptr)
 		{
-			Node* newNode = new Node(data, iterator.mCurrentNode->next);
-			iterator.mCurrentNode->next = newNode;
+			Node* newNode = new Node(data, iterator.mCurrentNode->mNext);
+			iterator.mCurrentNode->mNext = newNode;
 
-			if (newNode->next == nullptr)
+			//If the Node is inserted at the end of SList
+			if (newNode->mNext == nullptr)
 			{
 				mBack = newNode;
 			}
 
-			isInsertSuccessful = true;
+			return Iterator(this, newNode);
 		}
 
-		return isInsertSuccessful;
+		return end();
 	}
 
 	template<class T>
 	inline typename SList<T>::Iterator SList<T>::Find(const T& value) const
 	{
-		Iterator endIterator = End();
-		for (Iterator iterator = Begin(); ++iterator; iterator != endIterator)
+		Iterator endIterator = end();
+		for (Iterator iterator = begin(); iterator != endIterator; ++iterator)
 		{
 			if ((*iterator) == value)
 			{
@@ -257,41 +254,47 @@ namespace GameEngineLibrary
 		else
 		{
 			//If the list is not empty
-
 			Node *currentNode = mFront;
 
 			//Checking if the value is present in the first node
 			if (currentNode->mData == value)
 			{
-				mFront = mFront->next;
+				mFront = mFront->mNext;
+				mBack = nullptr;
 
 				delete currentNode;
 				currentNode = nullptr;
+
+				//Decrement the size of SList
+				mSize--;
 
 				isSuccessfullyRemoved = true;
 			}
 			else
 			{
 				//Checking if the value is present in the subsequent nodes
-				Node *previousNode = nullptr;
-				currentNode = currentNode->next;
+				Node *previousNode = currentNode;
+				currentNode = currentNode->mNext;
 
 				while (currentNode != nullptr)
 				{
 					if (currentNode->mData == value)
 					{
-						previousNode->next = currentNode->next;
+						previousNode->mNext = currentNode->mNext;
 
 						delete currentNode;
 						currentNode = nullptr;
 
-						isSuccessfullyRemoved = true;
+						//Decrement the size of SList
+						mSize--;
+
+						isSuccessfullyRemoved = true;						
 
 						break;
 					}
 
 					previousNode = currentNode;
-					currentNode = currentNode->next;
+					currentNode = currentNode->mNext;
 				}
 			}
 		}
@@ -304,7 +307,7 @@ namespace GameEngineLibrary
 
 
 	/************************************************************************/
-	/* BEGIN	-Node struct-			Constructor							*/
+	/* BEGIN	-Node struct-			Constructor.						*/
 	/************************************************************************/
 	template<class T>
 	inline SList<T>::Node::Node(const T& data, Node* next)
@@ -319,7 +322,7 @@ namespace GameEngineLibrary
 
 	/************************************************************************/
 	/* BEGIN	-Iterator class-		Constructors & Functions.			*/
-	/************************************************************************/	
+	/************************************************************************/
 	template<class T>
 	inline SList<T>::Iterator::Iterator() :
 		mCurrentNode(nullptr), mOwner(nullptr)
@@ -328,26 +331,21 @@ namespace GameEngineLibrary
 	}
 
 	template<class T>
-	inline SList<T>::Iterator::Iterator(Node* currentNode, SList* owner) :
-		mCurrentNode(currentNode), mOwner(owner)
+	inline SList<T>::Iterator::Iterator(const SList* owner, Node* currentNode) :
+		mOwner(owner), mCurrentNode(currentNode)
 	{
 
 	}
-
-	/*template<class T>
-	inline SList<T>::Iterator::Iterator(const Iterator& rhs) :
-		mCurrentNode(rhs.mCurrentNode), mOwner(rhs.mOwner)
-	{
-
-	}*/
 
 	template<class T>
 	inline bool SList<T>::Iterator::operator==(const Iterator& rhs) const
 	{
 		bool areEqual = false;
 
+		//Checking if both the Iterators belong to the same SList
 		if (mOwner == rhs.mOwner)
 		{
+			//Checking if both the Iterators point to the same Node
 			if (mCurrentNode == rhs.mCurrentNode)
 			{
 				areEqual = true;
@@ -388,24 +386,12 @@ namespace GameEngineLibrary
 		return temp;
 	}
 
-	//template<class T>
-	//inline typename SList<T>::Iterator& SList<T>::Iterator::operator=(const Iterator& rhs)
-	//{
-	//	if (this != &rhs)
-	//	{
-	//		mCurrentNode = rhs.mCurrentNode;
-	//		mOwner = rhs.mOwner;
-	//	}
-
-	//	return (*this);
-	//}
-
 	template<class T>
 	inline T& SList<T>::Iterator::operator*()
 	{
 		if (mCurrentNode == nullptr)
 		{
-			throw exception("T& SList<T>::Iterator::operator*(): Iterator is uninitialized or is pointing to the end of the list or is pointing to invalid data!");
+			throw exception("T& SList<T>::Iterator::operator*(): Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data!");
 		}
 		return mCurrentNode->mData;
 	}
@@ -415,7 +401,7 @@ namespace GameEngineLibrary
 	{
 		if (mCurrentNode == nullptr)
 		{
-			throw exception("T& SList<T>::Iterator::operator*(): Iterator is uninitialized or is pointing to the end of the list or is pointing to invalid data!");
+			throw exception("T& SList<T>::Iterator::operator*(): Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data!");
 		}
 		return mCurrentNode->mData;
 	}

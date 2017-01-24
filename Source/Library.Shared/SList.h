@@ -23,7 +23,7 @@ namespace GameEngineLibrary
 		*/
 		class Iterator
 		{
-			/** SList is marked as a friend class so that the SList can access the private members of the Iterator class.
+			/** SList is marked as a friend class so that the SList class can access the private members of the Iterator class.
 			*/
 			friend class SList;
 		public:
@@ -32,7 +32,9 @@ namespace GameEngineLibrary
 			*/
 			Iterator();
 
-			//Iterator(const Iterator& rhs);
+			/** Use the default copy constructor to perform member wise copy.			
+			*/
+			Iterator(const Iterator&) = default;
 
 			/** Overloaded equality operator.
 			*	Checks if both the Iterators point to the same data.
@@ -61,8 +63,9 @@ namespace GameEngineLibrary
 			*/
 			Iterator operator++(int);
 
-
-			//Iterator& operator=(const Iterator& rhs);		//Can be const correct
+			/** Use the default assignment operator to perform member wise copy.			
+			*/
+			Iterator& operator=(const Iterator&) = default;
 
 			/** Overloaded * (content of) operator.
 			*	Provides the content of which the iterator was pointing to.
@@ -77,10 +80,10 @@ namespace GameEngineLibrary
 			const T& operator*() const;
 
 		private:
-			Iterator(Node* currentNode, SList* owner);
+			Iterator(const SList<T>* owner, Node* currentNode);
 
-			Node* mCurrentNode;								//Check if this can be const here
 			const SList* mOwner;
+			Node* mCurrentNode;
 		};
 
 		/** Zero parameterized constructor.
@@ -169,27 +172,27 @@ namespace GameEngineLibrary
 		/** Returns an iterator that points to the beginning of SList.
 		*	@returns Returns an iterator that points to the beginning of SList.
 		*/
-		Iterator Begin() const;
+		Iterator begin() const;
 
 		/** Returns an iterator that points past the end of SList.
 		*	@returns Returns an iterator that points past the end of SList.
 		*/
-		Iterator End() const;
+		Iterator end() const;
 
 		/** This function inserts an item after the specified iterator.
 		*	@param data The data to be inserted in the SList.
 		*	@param iterator	The Iterator after which the data will be inserted.
-		*	@returns Returns true if the item was successfully inserted, false otherwise.
+		*	@returns Returns an Iterator that points to the newly inserted data. If the insert fails then the function returns an iterator that points past the end of SList.
 		*/
-		bool InsertAfter(const T& data, const Iterator& iterator);
+		Iterator InsertAfter(const T& data, const Iterator& iterator);
 
-		/** Finds the first found iterator for the specified value.
+		/** Finds the iterator for the first matched specified value.
 		*	@param value The value for which the Iterator should be found.
 		*	@returns Returns an iterator for the first matched value. If no matches were found then the function returns an iterator that points past the end of SList.
 		*/
 		Iterator Find(const T& value) const;
 
-		/** Removes the first found specified data in SList.
+		/** Removes the first matched data in SList.
 		*	@param value The data to be removed in SList.
 		*	@returns Returns true if the data was successfully removed, false otherwise.
 		*/

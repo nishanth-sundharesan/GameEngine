@@ -8,11 +8,11 @@ namespace Microsoft
 	{
 		namespace CppUnitTestFramework
 		{
-			/*template<>
+			template<>
 			inline std::wstring ToString<UnitTestSupportClasses::Foo>(const UnitTestSupportClasses::Foo& t)
 			{
 				RETURN_WIDE_STRING(t.GetIntegerData());
-			}*/
+			}		
 		}
 	}
 }

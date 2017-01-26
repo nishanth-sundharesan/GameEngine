@@ -110,13 +110,15 @@ namespace GameEngineLibrary
 
 		/** Pushes/Adds the data at the front of the list.
 		*	@param pData The data to be pushed at the front of the list.
+		*	@returns Returns the Iterator of the newly pushed data
 		*/
-		void PushFront(const T& pData);
+		Iterator PushFront(const T& pData);
 
 		/** Pushes/Adds the data at the back of the list.
 		*	@param pData The data to be pushed at the back of the list.
+		*	@returns Returns the Iterator of the newly pushed data
 		*/
-		void PushBack(const T& pData);
+		Iterator PushBack(const T& pData);
 
 		/** Pops/Deletes the data at the front of the list.
 		*	@throws Throws an exception if SList is empty.
@@ -180,9 +182,10 @@ namespace GameEngineLibrary
 		Iterator end() const;
 
 		/** This function inserts an item after the specified iterator.
+		*	If the iterator points one past the end of the list, then it inserts the data at the end of the list.
 		*	@param data The data to be inserted in the SList.
 		*	@param iterator	The Iterator after which the data will be inserted.
-		*	@returns Returns an Iterator that points to the newly inserted data. If the insert fails then the function returns an iterator that points past the end of SList.
+		*	@returns Returns an Iterator that points to the newly inserted data.
 		*/
 		Iterator InsertAfter(const T& data, const Iterator& iterator);
 

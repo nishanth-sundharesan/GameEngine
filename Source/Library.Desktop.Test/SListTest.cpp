@@ -766,131 +766,155 @@ namespace LibraryDesktopTest
 		/************************************************************************/
 		TEST_METHOD(SListIntInsertAfter)
 		{
-			SList<int32_t> list;
+			SList<int32_t> firstList;
 			SList<int32_t>::Iterator iterator;
 
 			int32_t firstPushedVariable = 10;
 			int32_t secondPushedVariable = 20;
 			int32_t thirdPushedVariable = 30;
 
-			Assert::IsTrue(list.InsertAfter(firstPushedVariable, iterator) == list.end());
+			//Inserting data to the begin iterator of an empty SList
+			iterator = firstList.begin();
+			iterator = firstList.InsertAfter(firstPushedVariable, iterator);
+			Assert::IsTrue(iterator == firstList.begin());
+			Assert::IsTrue(*iterator == firstPushedVariable);
 
-			iterator = list.begin();
-			Assert::IsTrue(list.InsertAfter(firstPushedVariable, iterator) == list.end());
+			iterator = firstList.begin();
+			iterator = firstList.InsertAfter(secondPushedVariable, iterator);
+			Assert::IsTrue(*iterator == secondPushedVariable);
+			Assert::AreEqual(firstList.Back(), secondPushedVariable);
 
-			list.PushBack(firstPushedVariable);
-			iterator = list.end();
-			Assert::IsTrue(list.InsertAfter(secondPushedVariable, iterator) == list.end());
 
-			iterator = list.begin();
-			iterator = list.InsertAfter(secondPushedVariable, iterator);
-			Assert::AreEqual(*iterator, secondPushedVariable);
-			Assert::AreEqual(list.Back(), secondPushedVariable);
+			//Trying to insert data to SList using the iterator that belongs to a different SList
+			SList<int32_t> secondList;
+			Assert::ExpectException<exception>([&] { secondList.InsertAfter(firstPushedVariable, iterator); });
 
-			iterator = list.InsertAfter(thirdPushedVariable, iterator);
-			Assert::AreEqual(*iterator, thirdPushedVariable);
-			Assert::AreNotEqual(list.Front(), thirdPushedVariable);
-			Assert::AreEqual(list.Back(), thirdPushedVariable);
+			//Inserting data to the iterator that points one past the end of SList.
+			iterator = firstList.InsertAfter(thirdPushedVariable, firstList.end());
+			Assert::IsTrue(*iterator == thirdPushedVariable);
+			Assert::AreEqual(firstList.Back(), thirdPushedVariable);
 
-			++iterator;
-			Assert::IsTrue(iterator == list.end());
-
-			iterator = list.begin();
-			Assert::AreEqual(*iterator, firstPushedVariable);
-			++iterator;
-			Assert::AreEqual(*iterator, secondPushedVariable);
-			++iterator;
-			Assert::AreEqual(*iterator, thirdPushedVariable);
-			++iterator;
-
-			Assert::AreEqual(list.Front(), firstPushedVariable);
-			Assert::AreEqual(list.Back(), thirdPushedVariable);
+			//Combined testing of Iterator loop and InsertAfter()
+			int32_t i = 0;
+			for (iterator = firstList.begin(); iterator != firstList.end(); ++iterator, ++i)
+			{
+				if (i == 0)
+				{
+					Assert::AreEqual(*iterator, firstPushedVariable);
+				}
+				else if (i == 1)
+				{
+					Assert::AreEqual(*iterator, secondPushedVariable);
+				}
+				else
+				{
+					Assert::AreEqual(*iterator, thirdPushedVariable);
+				}				
+			}
+			Assert::AreEqual(firstList.Front(), firstPushedVariable);
+			Assert::AreEqual(firstList.Back(), thirdPushedVariable);
 		}
 
 		TEST_METHOD(SListIntPointerInsertAfter)
 		{
-			SList<int32_t*> list;
+			SList<int32_t*> firstList;
 			SList<int32_t*>::Iterator iterator;
 
 			int32_t firstPushedVariable = 10;
 			int32_t secondPushedVariable = 20;
 			int32_t thirdPushedVariable = 30;
 
-			Assert::IsTrue(list.InsertAfter(&firstPushedVariable, iterator) == list.end());
+			//Inserting data to the begin iterator of an empty SList
+			iterator = firstList.begin();
+			iterator = firstList.InsertAfter(&firstPushedVariable, iterator);
+			Assert::IsTrue(iterator == firstList.begin());
+			Assert::IsTrue(*(*iterator) == firstPushedVariable);
 
-			iterator = list.begin();
-			Assert::IsTrue(list.InsertAfter(&firstPushedVariable, iterator) == list.end());
+			iterator = firstList.begin();
+			iterator = firstList.InsertAfter(&secondPushedVariable, iterator);
+			Assert::IsTrue(*(*iterator) == secondPushedVariable);
+			Assert::AreEqual(*firstList.Back(), secondPushedVariable);
 
-			list.PushBack(&firstPushedVariable);
-			iterator = list.end();
-			Assert::IsTrue(list.InsertAfter(&secondPushedVariable, iterator) == list.end());
 
-			iterator = list.begin();
-			iterator = list.InsertAfter(&secondPushedVariable, iterator);
-			Assert::AreEqual(*(*iterator), secondPushedVariable);
-			Assert::AreEqual(*list.Back(), secondPushedVariable);
+			//Trying to insert data to SList using the iterator that belongs to a different SList
+			SList<int32_t*> secondList;
+			Assert::ExpectException<exception>([&] { secondList.InsertAfter(&firstPushedVariable, iterator); });
 
-			iterator = list.InsertAfter(&thirdPushedVariable, iterator);
-			Assert::AreEqual(*(*iterator), thirdPushedVariable);
-			Assert::AreNotEqual(*list.Front(), thirdPushedVariable);
-			Assert::AreEqual(*list.Back(), thirdPushedVariable);
+			//Inserting data to the iterator that points one past the end of SList.
+			iterator = firstList.InsertAfter(&thirdPushedVariable, firstList.end());
+			Assert::IsTrue(*(*iterator) == thirdPushedVariable);
+			Assert::AreEqual(*firstList.Back(), thirdPushedVariable);
 
-			++iterator;
-			Assert::IsTrue(iterator == list.end());
-
-			iterator = list.begin();
-			Assert::AreEqual(*(*iterator), firstPushedVariable);
-			++iterator;
-			Assert::AreEqual(*(*iterator), secondPushedVariable);
-			++iterator;
-			Assert::AreEqual(*(*iterator), thirdPushedVariable);
-			++iterator;
-
-			Assert::AreEqual(*list.Front(), firstPushedVariable);
-			Assert::AreEqual(*list.Back(), thirdPushedVariable);
+			//Combined testing of Iterator loop and InsertAfter()
+			int32_t i = 0;
+			for (iterator = firstList.begin(); iterator != firstList.end(); ++iterator, ++i)
+			{
+				if (i == 0)
+				{
+					Assert::AreEqual(*(*iterator), firstPushedVariable);
+				}
+				else if (i == 1)
+				{
+					Assert::AreEqual(*(*iterator), secondPushedVariable);
+				}
+				else
+				{
+					Assert::AreEqual(*(*iterator), thirdPushedVariable);
+				}				
+			}
+			Assert::AreEqual(*firstList.Front(), firstPushedVariable);
+			Assert::AreEqual(*firstList.Back(), thirdPushedVariable);
 		}
 
 		TEST_METHOD(SListUserDefinedTypeInsertAfter)
 		{
-			SList<Foo> list;
+			SList<Foo> firstList;
 			SList<Foo>::Iterator iterator;
 
 			Foo firstPushedVariable(10);
 			Foo secondPushedVariable(20);
 			Foo thirdPushedVariable(30);
 
-			Assert::IsTrue(list.InsertAfter(firstPushedVariable, iterator) == list.end());
+			//Inserting data to the begin iterator of an empty SList
+			iterator = firstList.begin();
+			iterator = firstList.InsertAfter(firstPushedVariable, iterator);
+			Assert::IsTrue(iterator == firstList.begin());
+			Assert::IsTrue(*iterator == firstPushedVariable);
 
-			iterator = list.begin();
-			Assert::IsTrue(list.InsertAfter(firstPushedVariable, iterator) == list.end());
+			iterator = firstList.begin();
+			iterator = firstList.InsertAfter(secondPushedVariable, iterator);
+			Assert::IsTrue(*iterator == secondPushedVariable);
+			Assert::AreEqual(firstList.Back(), secondPushedVariable);
 
-			list.PushBack(firstPushedVariable);
-			iterator = list.end();
-			Assert::IsTrue(list.InsertAfter(secondPushedVariable, iterator) == list.end());
 
-			iterator = list.begin();
-			iterator = list.InsertAfter(secondPushedVariable, iterator);
-			Assert::AreEqual(*iterator, secondPushedVariable);
-			Assert::AreEqual(list.Back(), secondPushedVariable);
+			//Trying to insert data to SList using the iterator that belongs to a different SList
+			SList<Foo> secondList;
+			Assert::ExpectException<exception>([&] { secondList.InsertAfter(firstPushedVariable, iterator); });
 
-			iterator = list.InsertAfter(thirdPushedVariable, iterator);
-			Assert::AreEqual(*iterator, thirdPushedVariable);
-			Assert::AreNotEqual(list.Front(), thirdPushedVariable);
-			Assert::AreEqual(list.Back(), thirdPushedVariable);
+			//Inserting data to the iterator that points one past the end of SList.
+			iterator = firstList.InsertAfter(thirdPushedVariable, firstList.end());
+			Assert::IsTrue(*iterator == thirdPushedVariable);
+			Assert::AreEqual(firstList.Back(), thirdPushedVariable);
 
-			++iterator;
-			Assert::IsTrue(iterator == list.end());
-
-			iterator = list.begin();
-			Assert::AreEqual(*iterator, firstPushedVariable);
-			++iterator;
-			Assert::AreEqual(*iterator, secondPushedVariable);
-			++iterator;
-			Assert::AreEqual(*iterator, thirdPushedVariable);
-			++iterator;
-
-			Assert::AreEqual(list.Front(), firstPushedVariable);
-			Assert::AreEqual(list.Back(), thirdPushedVariable);
+			//Combined testing of Iterator loop and InsertAfter()
+			int32_t i = 0;
+			for (iterator = firstList.begin(); iterator != firstList.end(); ++iterator, ++i)
+			{
+				if (i == 0)
+				{
+					Assert::AreEqual(*iterator, firstPushedVariable);
+				}
+				else if (i == 1)
+				{
+					Assert::AreEqual(*iterator, secondPushedVariable);
+				}
+				else
+				{
+					Assert::AreEqual(*iterator, thirdPushedVariable);
+				}				
+			}
+			Assert::AreEqual(firstList.Front(), firstPushedVariable);
+			Assert::AreEqual(firstList.Back(), thirdPushedVariable);
 		}
 		/*----------------------------------------------------------------------*/
 		/* END																	*/

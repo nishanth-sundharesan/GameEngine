@@ -46,9 +46,9 @@ namespace GameEngineLibrary
 	}
 
 	template <class T>
-	inline typename SList<T>::Iterator SList<T>::PushFront(const T& data)
+	inline typename SList<T>::Iterator SList<T>::PushFront(const T& value)
 	{
-		mFront = new Node(data, mFront);
+		mFront = new Node(value, mFront);
 		if (IsEmpty())
 		{
 			mBack = mFront;
@@ -58,9 +58,9 @@ namespace GameEngineLibrary
 	}
 
 	template <class T>
-	inline typename SList<T>::Iterator SList<T>::PushBack(const T& data)
+	inline typename SList<T>::Iterator SList<T>::PushBack(const T& value)
 	{
-		Node* newNode = new Node(data, nullptr);
+		Node* newNode = new Node(value, nullptr);
 
 		if (IsEmpty())
 		{
@@ -94,7 +94,7 @@ namespace GameEngineLibrary
 	}
 
 	template <class T>
-	inline void SList<T>::PopFront(T& data)
+	inline void SList<T>::PopFront(T& value)
 	{
 		if (IsEmpty())
 		{
@@ -104,7 +104,7 @@ namespace GameEngineLibrary
 		Node* tempNode = mFront;
 		mFront = mFront->mNext;
 
-		data = tempNode->mData;
+		value = tempNode->mData;
 
 		delete tempNode;
 		tempNode = nullptr;
@@ -123,7 +123,7 @@ namespace GameEngineLibrary
 	{
 		if (IsEmpty())
 		{
-			throw exception("T& Front(): SList is empty!");
+			throw exception("T& SList<T>::Front(): SList is empty!");
 		}
 
 		return mFront->mData;
@@ -134,7 +134,7 @@ namespace GameEngineLibrary
 	{
 		if (IsEmpty())
 		{
-			throw exception("const T& Front(): SList is empty!");
+			throw exception("const T& SList<T>::Front() const: SList is empty!");
 		}
 
 		return mFront->mData;
@@ -198,7 +198,7 @@ namespace GameEngineLibrary
 	}
 
 	template<class T>
-	inline typename SList<T>::Iterator SList<T>::InsertAfter(const T& data, const Iterator& iterator)
+	inline typename SList<T>::Iterator SList<T>::InsertAfter(const T& value, const Iterator& iterator)
 	{
 		if (iterator.mOwner != this)
 		{
@@ -206,11 +206,11 @@ namespace GameEngineLibrary
 		}
 		if (iterator == end())
 		{
-			return PushBack(data);
+			return PushBack(value);
 		}
 
 		//If the iterator belongs to "this" SList and it is already pointing to a data)
-		Node* newNode = new Node(data, iterator.mCurrentNode->mNext);
+		Node* newNode = new Node(value, iterator.mCurrentNode->mNext);
 		iterator.mCurrentNode->mNext = newNode;
 
 		//If the Node is inserted at the end of SList
@@ -224,7 +224,7 @@ namespace GameEngineLibrary
 
 	template<class T>
 	inline typename SList<T>::Iterator SList<T>::Find(const T& value) const
-	{
+	{		
 		Iterator iterator = begin();
 		for (; iterator != end(); ++iterator)
 		{
@@ -304,9 +304,9 @@ namespace GameEngineLibrary
 	/* BEGIN	-Node struct-			Constructor.						*/
 	/************************************************************************/
 	template<class T>
-	inline SList<T>::Node::Node(const T& data, Node* next)
+	inline SList<T>::Node::Node(const T& value, Node* next)
 	{
-		mData = data;
+		mData = value;
 		mNext = next;
 	}
 	/*----------------------------------------------------------------------*/
@@ -348,7 +348,7 @@ namespace GameEngineLibrary
 	{
 		if (mCurrentNode == nullptr)
 		{
-			throw exception("Iterator& SList<T>::Iterator::operator++(): Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data!");
+			throw exception("SList<T>::Iterator& SList<T>::Iterator::operator++(): Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data!");
 		}
 
 		mCurrentNode = mCurrentNode->mNext;
@@ -361,10 +361,10 @@ namespace GameEngineLibrary
 		//Make a copy of the current Iterator
 		Iterator temp(*this);
 
-		//Increment the current Iterator		
+		//Increment the current Iterator
 		operator++();
 
-		//Return the copy as VALUE and NOT by REFERENCE.
+		//Return the copy as a VALUE and NOT by REFERENCE.
 		return temp;
 	}
 

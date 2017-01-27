@@ -36,6 +36,10 @@ namespace GameEngineLibrary
 			*/
 			Iterator(const Iterator&) = default;
 
+			/** Use the default assignment operator to perform member wise copy.
+			*/
+			Iterator& operator=(const Iterator&) = default;
+
 			/** Overloaded equality operator.
 			*	Checks if both the Iterators point to the same data.
 			*	Note: The function will return true when two uninitialized Iterators are compared.
@@ -62,11 +66,7 @@ namespace GameEngineLibrary
 			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data.
 			*/
 			Iterator operator++(int);
-
-			/** Use the default assignment operator to perform member wise copy.			
-			*/
-			Iterator& operator=(const Iterator&) = default;
-
+			
 			/** Overloaded * (content of) operator.
 			*	Provides the content of which the iterator was pointing to.
 			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data
@@ -112,13 +112,13 @@ namespace GameEngineLibrary
 		*	@param pData The data to be pushed at the front of the list.
 		*	@returns Returns the Iterator of the newly pushed data
 		*/
-		Iterator PushFront(const T& pData);
+		Iterator PushFront(const T& value);
 
 		/** Pushes/Adds the data at the back of the list.
 		*	@param pData The data to be pushed at the back of the list.
 		*	@returns Returns the Iterator of the newly pushed data
 		*/
-		Iterator PushBack(const T& pData);
+		Iterator PushBack(const T& value);
 
 		/** Pops/Deletes the data at the front of the list.
 		*	@throws Throws an exception if SList is empty.
@@ -131,7 +131,7 @@ namespace GameEngineLibrary
 		*	@throws Throws an exception if SList is empty.
 		*	@see PopFront();
 		*/
-		void PopFront(T& pData);
+		void PopFront(T& value);
 
 		/** Checks if SList is empty or not.
 		*	@return Returns true if SList is empty, false otherwise.
@@ -187,7 +187,7 @@ namespace GameEngineLibrary
 		*	@param iterator	The Iterator after which the data will be inserted.
 		*	@returns Returns an Iterator that points to the newly inserted data.
 		*/
-		Iterator InsertAfter(const T& data, const Iterator& iterator);
+		Iterator InsertAfter(const T& value, const Iterator& iterator);
 
 		/** Finds the iterator for the first matched specified value.
 		*	@param value The value for which the Iterator should be found.

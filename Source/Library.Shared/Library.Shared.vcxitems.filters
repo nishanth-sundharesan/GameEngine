@@ -15,6 +15,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Vector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Pch.cpp">
@@ -23,6 +26,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)SList.inl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Vector.inl">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

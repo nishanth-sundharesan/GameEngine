@@ -183,6 +183,10 @@
     </ClCompile>
     <ClCompile Include="SListIteratorTest.cpp" />
     <ClCompile Include="SListTest.cpp" />
+    <ClCompile Include="VectorTest.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Foo.h" />

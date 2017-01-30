@@ -225,6 +225,11 @@ namespace GameEngineLibrary
 	template<class T>
 	inline typename SList<T>::Iterator SList<T>::Find(const T& value) const
 	{		
+		if (IsEmpty())
+		{
+			return end();
+		}
+
 		Iterator iterator = begin();
 		for (; iterator != end(); ++iterator)
 		{

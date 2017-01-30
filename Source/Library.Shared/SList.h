@@ -43,6 +43,7 @@ namespace GameEngineLibrary
 			/** Overloaded equality operator.
 			*	Checks if both the Iterators point to the same data.
 			*	Note: The function will return true when two uninitialized Iterators are compared.
+			*	@returns Returns true when both the Iterators point to the same node, false otherwise.
 			*	@param rhs The right hand side Iterator to be compared with.
 			*/
 			bool operator==(const Iterator& rhs) const;
@@ -50,12 +51,14 @@ namespace GameEngineLibrary
 			/** Overloaded inequality operator.
 			*	Checks if both the Iterators are not equal or both the Iterators do not point to the same data.
 			*	Note: The function will return false when two uninitialized Iterators are compared.
+			*	@returns Returns true when both the Iterators do not point to the same node, false otherwise.
 			*	@param rhs The right hand side Iterator to be compared with.
 			*/
 			bool operator!=(const Iterator& rhs) const;
 
 			/** Overloaded ++ - Prefix Increment operator.
 			*	Increments the iterator and points to the next consequent data.
+			*	@returns Returns the current Iterator reference after incrementing.
 			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data.
 			*/
 			Iterator& operator++();
@@ -63,31 +66,41 @@ namespace GameEngineLibrary
 			/** Overloaded ++ - Postfix Increment operator.
 			*	Makes a copy of the called iterator and returns it. It then later increments the called iterator and points to the next consequent data.
 			*	For gaining performance, use the ++ - Prefix Increment operator
+			*	@returns Returns a copy of the called iterator. It then later increments the called iterator.
 			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data.
 			*/
 			Iterator operator++(int);
 			
 			/** Overloaded * (content of) operator.
-			*	Provides the content of which the iterator was pointing to.
+			*	Returns the content of which the iterator was pointing to.
+			*	@returns Returns the content of which the iterator was pointing to.
 			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data
 			*/
 			T& operator*();
 
 			/** Overloaded * (content of) operator.
-			*	Provides the content of which the iterator was pointing to.
+			*	Returns the content of which the iterator was pointing to.
+			*	@returns Returns the content of which the iterator was pointing to.
 			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data
 			*/
 			const T& operator*() const;
 
 		private:
+			/** A private constructor which is called only by the SList.
+			*/
 			Iterator(const SList<T>* owner, Node* currentNode);
 
+			/** The SList of which the Iterator belongs to.
+			*/
 			const SList* mOwner;
+
+			/** To node to which the Iterator is currently pointing to.
+			*/
 			Node* mCurrentNode;
 		};
 
 		/** Zero parameterized constructor.
-		*	Initializes the private members of the class.
+		*	Initializes the private members of the class SList.
 		*/
 		SList();
 
@@ -98,7 +111,7 @@ namespace GameEngineLibrary
 		SList(const SList<T>& rhs);
 
 		/** Overloaded assignment operator.
-		*	Performs a deep copy of the right hand side object.
+		*	Performs a deep copy of the right hand side object: SList.
 		*	@param rhs It is the right hand side object which will be deep copied to the left hand side object.
 		*	@return Returns the deep copied SList
 		*/
@@ -116,7 +129,7 @@ namespace GameEngineLibrary
 
 		/** Pushes/Adds the data at the back of the list.
 		*	@param pData The data to be pushed at the back of the list.
-		*	@returns Returns the Iterator of the newly pushed data
+		*	@returns Returns the Iterator pointing to the newly pushed data
 		*/
 		Iterator PushBack(const T& value);
 
@@ -126,8 +139,8 @@ namespace GameEngineLibrary
 		*/
 		void PopFront();
 
-		/** Assigns the data at the front of the list to the pData and deletes the data at the front of the list.
-		*	@param pData The popped data from the front of the list.
+		/** Assigns the data at the front of the list to the param value and deletes the data at the front of the list.
+		*	@param value The popped data from the front of the list.
 		*	@throws Throws an exception if SList is empty.
 		*	@see PopFront();
 		*/
@@ -165,7 +178,7 @@ namespace GameEngineLibrary
 		/** Returns the size of SList.
 		*	@return Returns the size of SList.
 		*/
-		uint32_t Size() const;
+		std::uint32_t Size() const;
 
 		/** Clears the entire SList.
 		*/
@@ -176,8 +189,8 @@ namespace GameEngineLibrary
 		*/
 		Iterator begin() const;
 
-		/** Returns an iterator that points past the end of SList.
-		*	@returns Returns an iterator that points past the end of SList.
+		/** Returns an iterator that points one past the end of SList.
+		*	@returns Returns an iterator that points one past the end of SList.
 		*/
 		Iterator end() const;
 
@@ -195,8 +208,8 @@ namespace GameEngineLibrary
 		*/
 		Iterator Find(const T& value) const;
 
-		/** Removes the first matched data in SList.
-		*	@param value The data to be removed in SList.
+		/** Removes the first matched value in SList.
+		*	@param value The value to be removed in SList.
 		*	@returns Returns true if the data was successfully removed, false otherwise.
 		*/
 		bool Remove(const T& value);

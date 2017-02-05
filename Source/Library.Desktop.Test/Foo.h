@@ -7,7 +7,7 @@ namespace UnitTestSupportClasses
 	{
 	public:
 		Foo();
-		Foo(int32_t data);
+		Foo(int32_t data);		
 		Foo(const Foo& foo);
 		~Foo();
 

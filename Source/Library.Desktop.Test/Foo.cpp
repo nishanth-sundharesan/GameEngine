@@ -15,7 +15,14 @@ namespace UnitTestSupportClasses
 	Foo::Foo(const Foo& rhs)
 	{
 		mIntData = rhs.mIntData;
-		mIntPointer = new int32_t(*rhs.mIntPointer);
+		if (rhs.mIntPointer != nullptr)
+		{
+			mIntPointer = new int32_t(rhs.mIntData);
+		}
+		else
+		{
+			mIntPointer = rhs.mIntPointer;
+		}
 	}
 
 	Foo::~Foo()
@@ -46,7 +53,14 @@ namespace UnitTestSupportClasses
 		{
 			Clear();
 			mIntData = rhs.mIntData;
-			mIntPointer = new int32_t(*rhs.mIntPointer);
+			if (rhs.mIntPointer != nullptr)
+			{
+				mIntPointer = new int32_t(rhs.mIntData);
+			}
+			else
+			{
+				mIntPointer = rhs.mIntPointer;
+			}
 		}
 
 		return *this;
@@ -54,11 +68,27 @@ namespace UnitTestSupportClasses
 
 	bool Foo::operator==(const Foo& rhs) const
 	{
-		return (mIntData == rhs.mIntData && *mIntPointer == *rhs.mIntPointer);
+		if (mIntData == rhs.mIntData)
+		{
+			if (mIntPointer == nullptr && rhs.mIntPointer == nullptr)
+			{
+				return true;
+			}
+			if (mIntPointer == nullptr || rhs.mIntPointer == nullptr)
+			{
+				return false;
+			}
+			if (*mIntPointer == *rhs.mIntPointer)
+			{
+				return true;
+			}			
+		}
+		return false;
 	}
 
 	void Foo::Clear()
 	{
 		delete mIntPointer;
+		mIntPointer = nullptr;
 	}
 }

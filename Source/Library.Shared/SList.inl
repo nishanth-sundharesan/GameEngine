@@ -21,7 +21,7 @@ namespace GameEngineLibrary
 	SList<T>::SList(const SList<T>& rhs) :
 		mBack(nullptr), mFront(nullptr), mSize(0)
 	{
-		operator=(rhs);		
+		operator=(rhs);
 	}
 
 	template <class T>
@@ -81,7 +81,7 @@ namespace GameEngineLibrary
 	{
 		if (IsEmpty())
 		{
-			throw exception("void PopFront(): SList is empty!");
+			throw out_of_range("void PopFront(): SList is empty!");
 		}
 
 		Node* tempNode = mFront;
@@ -98,7 +98,7 @@ namespace GameEngineLibrary
 	{
 		if (IsEmpty())
 		{
-			throw exception("void PopFront(T& ): SList is empty!");
+			throw out_of_range("void PopFront(T& ): SList is empty!");
 		}
 
 		Node* tempNode = mFront;
@@ -123,7 +123,7 @@ namespace GameEngineLibrary
 	{
 		if (IsEmpty())
 		{
-			throw exception("T& SList<T>::Front(): SList is empty!");
+			throw out_of_range("T& SList<T>::Front(): SList is empty!");
 		}
 
 		return mFront->mData;
@@ -134,7 +134,7 @@ namespace GameEngineLibrary
 	{
 		if (IsEmpty())
 		{
-			throw exception("const T& SList<T>::Front() const: SList is empty!");
+			throw out_of_range("const T& SList<T>::Front() const: SList is empty!");
 		}
 
 		return mFront->mData;
@@ -145,7 +145,7 @@ namespace GameEngineLibrary
 	{
 		if (IsEmpty())
 		{
-			throw exception("T& Back(): SList is empty!");
+			throw out_of_range("T& Back(): SList is empty!");
 		}
 
 		return mBack->mData;
@@ -156,7 +156,7 @@ namespace GameEngineLibrary
 	{
 		if (IsEmpty())
 		{
-			throw exception("const T& Back(): SList is empty!");
+			throw out_of_range("const T& Back(): SList is empty!");
 		}
 
 		return mBack->mData;
@@ -224,7 +224,7 @@ namespace GameEngineLibrary
 
 	template<class T>
 	inline typename SList<T>::Iterator SList<T>::Find(const T& value) const
-	{		
+	{
 		if (IsEmpty())
 		{
 			return end();
@@ -300,6 +300,40 @@ namespace GameEngineLibrary
 
 		return isSuccessfullyRemoved;
 	}
+
+	template<class T>
+	inline bool SList<T>::Remove(const Iterator& iterator)
+	{
+		bool isSuccessfullyRemoved = false;
+		if (iterator != end())
+		{
+			if (iterator == begin())
+			{
+				PopFront();
+				isSuccessfullyRemoved = true;
+			}
+			else
+			{
+				Iterator prevIterator = begin();
+				while (prevIterator.mCurrentNode->mNext != iterator.mCurrentNode)
+				{
+					++prevIterator;
+				}
+
+				prevIterator.mCurrentNode->mNext = iterator.mCurrentNode->mNext;
+				if (mBack == iterator.mCurrentNode)
+				{
+					mBack = prevIterator.mCurrentNode;
+				}
+
+				delete iterator.mCurrentNode;
+				--mSize;
+
+				isSuccessfullyRemoved = true;
+			}
+		}
+		return isSuccessfullyRemoved;
+	}
 	/*----------------------------------------------------------------------*/
 	/* END																	*/
 	/*----------------------------------------------------------------------*/
@@ -353,7 +387,7 @@ namespace GameEngineLibrary
 	{
 		if (mCurrentNode == nullptr)
 		{
-			throw exception("SList<T>::Iterator& SList<T>::Iterator::operator++(): Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data!");
+			throw out_of_range("SList<T>::Iterator& SList<T>::Iterator::operator++(): Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data!");
 		}
 
 		mCurrentNode = mCurrentNode->mNext;
@@ -378,7 +412,7 @@ namespace GameEngineLibrary
 	{
 		if (mCurrentNode == nullptr)
 		{
-			throw exception("T& SList<T>::Iterator::operator*(): Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data!");
+			throw out_of_range("T& SList<T>::Iterator::operator*(): Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data!");
 		}
 		return mCurrentNode->mData;
 	}
@@ -388,7 +422,7 @@ namespace GameEngineLibrary
 	{
 		if (mCurrentNode == nullptr)
 		{
-			throw exception("T& SList<T>::Iterator::operator*(): Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data!");
+			throw out_of_range("T& SList<T>::Iterator::operator*(): Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data!");
 		}
 		return mCurrentNode->mData;
 	}

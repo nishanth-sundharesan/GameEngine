@@ -214,6 +214,8 @@ namespace GameEngineLibrary
 		*/
 		bool Remove(const T& value);
 
+		bool Remove(const Iterator& iterator);
+
 	private:
 		/** Node pointer pointing to the back of SList.
 		*/

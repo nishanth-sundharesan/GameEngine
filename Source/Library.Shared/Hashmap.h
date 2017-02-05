@@ -2,79 +2,8 @@
 #include <cstdint>
 #include "Vector.h"
 #include "SList.h"
+#include "DefaultHashFunctor.h"
 #define	HashmapInitialized
-
-namespace GameEngineLibrary
-{
-	template<class TKey>
-	class DefaultHashFunctor
-	{
-	public:
-		DefaultHashFunctor() = default;
-		std::uint32_t DefaultHashFunctor::operator()(const TKey& key) const
-		{
-			uint32_t hash = 0;
-			char* byteArray = reinterpret_cast<char*>(const_cast<TKey*>(&key));
-			for (uint32_t i = 0; i < sizeof(key); ++i)
-			{
-				hash += byteArray[i];
-			}
-			return hash;
-		}
-	};
-
-	template<>
-	class DefaultHashFunctor<char*>
-	{
-	public:
-		DefaultHashFunctor() = default;
-		std::uint32_t DefaultHashFunctor::operator()(const char* key) const
-		{
-			uint32_t hash = 0;
-
-			while (*key != '\0')
-			{
-				hash += static_cast<uint8_t>(*key);
-				++key;
-			}
-			return hash;
-		}
-	};
-
-	template<>
-	class DefaultHashFunctor<std::string>
-	{
-	public:
-		DefaultHashFunctor() = default;
-		std::uint32_t DefaultHashFunctor::operator()(const std::string key) const
-		{
-			uint32_t hash = 0;
-
-			for (uint32_t i = 0; i < key.length(); ++i)
-			{
-				hash += static_cast<uint8_t>(key[i]);
-			}
-			return hash;
-		}
-	};
-
-	template<class TKey>
-	class DefaultHashFunctor<TKey*>
-	{
-	public:
-		DefaultHashFunctor() = default;
-		inline std::uint32_t DefaultHashFunctor::operator()(const TKey* key) const
-		{
-			uint32_t hash = 0;
-			/*uint8_t* byteArray = reinterpret_cast<uint8_t*>(const_cast<TKey*>(&key));
-			for (uint32_t i = 0; i < sizeof(key); ++i)
-			{
-				hash += byteArray[i];
-			}*/
-			return hash;
-		}
-	};
-}
 
 namespace GameEngineLibrary
 {
@@ -201,7 +130,7 @@ namespace GameEngineLibrary
 		*/
 		Hashmap& operator=(const Hashmap&) = default;
 
-		/** Clears the entire Hashmap.		
+		/** Clears the entire Hashmap.
 		*/
 		virtual ~Hashmap() = default;
 
@@ -213,7 +142,7 @@ namespace GameEngineLibrary
 
 		/** Finds the iterator for the specified key in the Hashmap.
 		*	@param key The key to the pair for which the Iterator should be found.
-		*	@throws Throws an exception when specified key is not present in the Hashmap.
+		*	@throws Throws an exception if the specified key is not present in the Hashmap.
 		*	@returns Returns an iterator for the matched key. If no matches were found then the function throws an exception.
 		*/
 		Iterator Find(const TKey& key) const;
@@ -221,8 +150,8 @@ namespace GameEngineLibrary
 		/** Overloaded subscript operator.
 		*	This function returns the value for the specified key.
 		*	Note: If the value for the specified key was not found, then a default copy of the TValue is created and inserted into the Hashmap. The same is returned.
-		*	@param key The key to the pair for which the TValue should be returned.		
-		*	@returns Returns the value for the specified key. If the value for the specified key was not found, then a default copy of the TValue is created and inserted into the Hashmap. The same is returned.
+		*	@param key The key to the pair for which the TValue should be returned.
+		*	@returns Returns the value for the specified key. If the value of the specified key was not found, then a default copy of the TValue is created and inserted into the Hashmap. The same is returned.
 		*/
 		TValue& operator[](const TKey& key);
 
@@ -230,9 +159,23 @@ namespace GameEngineLibrary
 		*	This function returns the value for the specified key.
 		*	Note: If the value for the specified key was not found, then a default copy of the TValue is created and inserted into the Hashmap. The same is returned.
 		*	@param key The key to the pair for which the TValue should be returned.
-		*	@returns Returns the value for the specified key. If the value for the specified key was not found, then a default copy of the TValue is created and inserted into the Hashmap. The same is returned.
+		*	@returns Returns the value for the specified key. If the value of the specified key was not found, then a default copy of the TValue is created and inserted into the Hashmap. The same is returned.
 		*/
 		const TValue& operator[](const TKey& key) const;
+
+		/** Returns the Value of the pair based on the specified Key.
+		*	@param key The key to the pair for which the TValue should be returned.
+		*	@throws Throws an exception if the specified key is not present in the Hashmap.
+		*	@returns Returns the Value of the pair based on the specified Key. An exception is thrown if the key was not found.
+		*/
+		TValue& At(const TKey& key);
+
+		/** Returns the Value of the pair based on the specified Key.
+		*	@param key The key to the pair for which the TValue should be returned.
+		*	@throws Throws an exception if the specified key is not present in the Hashmap.
+		*	@returns Returns the Value of the pair based on the specified Key. An exception is thrown if the key was not found.
+		*/
+		const TValue& At(const TKey& key) const;
 
 		/** Removes the pair for the specified key in the Hashmap.
 		*	@param key The key to the pair which should be removed in the Hashmap.
@@ -265,10 +208,14 @@ namespace GameEngineLibrary
 		*	Note: This function doesn't reset the Bucket size of the Hashmap.
 		*/
 		void Clear();
-	private:		
-
+	private:
+		/** Returns an iterator to the pair/data based on the specified index/Bucket and the key. If the search fails, then the function returns an iterator that points one past the end of Hashmap.
+		*	@param index The index of the Bucket in the Hashmap.
+		*	@param key The key of the pair which should be searched.
+		*	Returns an iterator to the pair/data based on the specified index/Bucket and the key. If the search fails, then the function returns an iterator that points one past the end of Hashmap.
+		*/
 		Iterator SearchBasedOnIndex(const uint32_t index, const TKey& key) const;
-		
+
 		/** The total population of the data/pairs present in the Hashmap.
 		*	Note: This variable doesn't indicate the Bucket size of the Hashmap.
 		*/

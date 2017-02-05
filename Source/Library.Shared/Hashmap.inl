@@ -15,11 +15,11 @@ namespace GameEngineLibrary
 	inline Hashmap<TKey, TValue, HashFunctor>::Hashmap(uint32_t size) :
 		mSize(0)
 	{
-		mBuckets.Reserve(size);
+		mBuckets.Reserve(size);																			//Reserving the memory for all the buckets.
 		ChainType defaultChain;
 		for (uint32_t i = 0; i < size; ++i)
 		{
-			mBuckets.PushBack(defaultChain);
+			mBuckets.PushBack(defaultChain);															//Initializing all the buckets with the default chain.
 		}
 	}
 
@@ -28,21 +28,13 @@ namespace GameEngineLibrary
 	{
 		uint32_t index = (hashFunctor(pair.first)) % (mBuckets.Capacity());
 
-		/*for (auto chainIterator = mBuckets[index].begin(); chainIterator != mBuckets[index].end(); ++chainIterator)
-		{
-			if ((*chainIterator).first == pair.first)
-			{
-				return Iterator(this, index, chainIterator);
-			}
-		}*/
-
 		Iterator iterator = SearchBasedOnIndex(index, pair.first);
 		if (iterator == end())
 		{
 			++mSize;
-			return Iterator(this, index, mBuckets[index].PushBack(pair));
+			return Iterator(this, index, mBuckets[index].PushBack(pair));								//If the key of the pair is not present in the Hashmap, then insert the pair.
 		}
-		return iterator;		
+		return iterator;																				//Or else, return an iterator that points to the already present pair.
 	}
 
 	template <class TKey, class TValue, class HashFunctor>
@@ -63,16 +55,6 @@ namespace GameEngineLibrary
 	inline typename Hashmap<TKey, TValue, HashFunctor>::Iterator Hashmap<TKey, TValue, HashFunctor>::Find(const TKey& key) const
 	{
 		uint32_t index = (hashFunctor(key)) % (mBuckets.Capacity());
-
-		//for (auto chainIterator = mBuckets[index].begin(); chainIterator != mBuckets[index].end(); ++chainIterator)
-		//{
-		//	if ((*chainIterator).first == key)
-		//	{
-		//		return Iterator(this, index, chainIterator);
-		//	}
-		//}
-
-		//return end();
 		return SearchBasedOnIndex(index, key);
 	}
 
@@ -94,11 +76,21 @@ namespace GameEngineLibrary
 	}
 
 	template <class TKey, class TValue, class HashFunctor>
+	TValue& Hashmap<TKey, TValue, HashFunctor>::At(const TKey& key)
+	{
+		return const_cast<TValue&>(const_cast<const Hashmap*>(this)->At(key));
+	}
+
+	template <class TKey, class TValue, class HashFunctor>
+	const TValue& Hashmap<TKey, TValue, HashFunctor>::At(const TKey& key) const
+	{
+		return operator[](key);
+	}
+
+	template <class TKey, class TValue, class HashFunctor>
 	bool Hashmap<TKey, TValue, HashFunctor>::Remove(const TKey& key)
 	{
 		uint32_t index = (hashFunctor(key)) % (mBuckets.Capacity());
-
-
 
 		for (auto chainIterator = mBuckets[index].begin(); chainIterator != mBuckets[index].end(); ++chainIterator)
 		{
@@ -127,7 +119,7 @@ namespace GameEngineLibrary
 	template <class TKey, class TValue, class HashFunctor>
 	inline typename Hashmap<TKey, TValue, HashFunctor>::Iterator Hashmap<TKey, TValue, HashFunctor>::begin() const
 	{
-		for (uint32_t i = 0; i < mBuckets.Capacity(); ++i)
+		for (uint32_t i = 0; i < mBuckets.Capacity(); ++i)											//Do a DFS for the first found element in the Hashmap.
 		{
 			if (mBuckets[i].begin() != mBuckets[i].end())
 			{

@@ -253,11 +253,11 @@ namespace GameEngineLibrary
 	{
 		if (startIterator.mOwner != this || endIterator.mOwner != this)
 		{
-			throw exception("bool Vector<T,F>::Remove(const Iterator& startIterator, const Iterator& endIterator): One or more of the Iterators belong to a different Vector!");
+			throw out_of_range("bool Vector<T,F>::Remove(const Iterator& startIterator, const Iterator& endIterator): One or more of the Iterators belong to a different Vector!");
 		}
 		if ((startIterator == end()) || (endIterator != end() && startIterator.mCurrentNode >= endIterator.mCurrentNode))
 		{
-			throw exception("bool Vector<T,F>::Remove(const Iterator& startIterator, const Iterator& endIterator): start Iterator is greater than or equal to the end Iterator!");
+			throw out_of_range("bool Vector<T,F>::Remove(const Iterator& startIterator, const Iterator& endIterator): start Iterator is greater than or equal to the end Iterator!");
 		}
 
 		Iterator temp = startIterator;
@@ -410,7 +410,7 @@ namespace GameEngineLibrary
 	{
 		if (mCurrentNode == nullptr)
 		{
-			throw exception("T& Vector<T,F>::Iterator::operator*(): Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data!");
+			throw out_of_range("T& Vector<T,F>::Iterator::operator*(): Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data!");
 		}
 
 		return *mCurrentNode;
@@ -421,7 +421,7 @@ namespace GameEngineLibrary
 	{
 		if (mCurrentNode == nullptr)
 		{
-			throw exception("T& Vector<T,F>::Iterator::operator*(): Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data!");
+			throw out_of_range("T& Vector<T,F>::Iterator::operator*(): Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data!");
 		}
 
 		return *mCurrentNode;

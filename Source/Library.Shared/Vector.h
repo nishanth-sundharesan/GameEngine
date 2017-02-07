@@ -1,6 +1,5 @@
 #pragma once
 #include <cstdint>
-#include <windows.h>
 #define	VectorInitialized
 
 namespace GameEngineLibrary
@@ -9,7 +8,7 @@ namespace GameEngineLibrary
 	{
 		std::uint32_t DefaultIncrement::operator()(std::uint32_t size, uint32_t capacity) const
 		{
-			UNREFERENCED_PARAMETER(size);
+			size;
 			return capacity * 2;
 		}
 	};
@@ -21,15 +20,14 @@ namespace GameEngineLibrary
 	*/
 	//template<class T>
 	template<class T, typename F = DefaultIncrement>
-	class Vector
-		//class Vector final
+	class Vector		
 	{
 	public:
 		/** An Iterator class for the Vector class.
 		*/
-		class Iterator
+		class Iterator final
 		{
-			/** Vector is marked as a friend class so that the Vector class can access the private members of the Iterator class.
+			/** Vector class is marked as a friend class so that the Vector class can access the private members of the Iterator class.
 			*/
 			friend class Vector;
 
@@ -41,11 +39,15 @@ namespace GameEngineLibrary
 
 			/** Use the default copy constructor to perform member wise copy.
 			*/
-			Iterator(const Iterator& rhs) = default;
+			Iterator(const Iterator&) = default;
 
 			/** Use the default assignment operator to perform member wise copy.
 			*/
-			Iterator& operator=(const Iterator& rhs) = default;
+			Iterator& operator=(const Iterator&) = default;
+
+			/** Use the default destructor
+			*/
+			~Iterator() = default;
 
 			/** Overloaded equality operator.
 			*	Checks if both the Iterators point to the same data.
@@ -66,7 +68,7 @@ namespace GameEngineLibrary
 			/** Overloaded ++ - Prefix Increment operator.
 			*	Increments the iterator and points to the next consequent data.
 			*	@returns Returns the current Iterator reference after incrementing.
-			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data.
+			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the vector array or is pointing to an invalid data.
 			*/
 			Iterator& operator++();
 
@@ -74,29 +76,29 @@ namespace GameEngineLibrary
 			*	Makes a copy of the called iterator and returns it. It then later increments the called iterator and points to the next consequent data.
 			*	For gaining performance, use the ++ - Prefix Increment operator
 			*	@returns Returns a copy of the called iterator. It then later increments the called iterator.
-			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data.
+			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the vector array or is pointing to an invalid data.
 			*/
 			Iterator operator++(int);
 
 			/** Overloaded * (content of) operator.
 			*	Returns the content of which the iterator was pointing to.
 			*	@returns Returns the content of which the iterator was pointing to.
-			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data
+			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the vector array or is pointing to an invalid data
 			*/
 			T& operator*();
 
 			/** Overloaded * (content of) operator.
 			*	Returns the content of which the iterator was pointing to.
 			*	@returns Returns the content of which the iterator was pointing to.
-			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data
+			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the vector array or is pointing to an invalid data
 			*/
 			const T& operator*() const;
 		private:
-			/** A private constructor which is called only by the Vector.
+			/** A private constructor which is called only from within the Vector class.
 			*/
 			Iterator(const Vector* owner, T* currentNode);
 
-			/** The Vector of which the Iterator belongs to.
+			/** The Vector to which the Iterator belongs to.
 			*/
 			const Vector* mOwner;
 
@@ -134,8 +136,7 @@ namespace GameEngineLibrary
 		/** Clears the entire Vector.
 		*	Note: This function doesn't reset the capacity of the Vector array. Use ShrinkToFit() or Reserve().
 		*/
-		~Vector();
-		//virtual ~Vector();
+		virtual ~Vector();		
 
 		/** Pushes/Adds the data at the back of the Vector array.
 		*	@param pData The data to be pushed at the back of the array.

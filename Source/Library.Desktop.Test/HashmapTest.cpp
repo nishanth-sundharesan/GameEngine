@@ -60,8 +60,8 @@ namespace LibraryDesktopTest
 		template <class TKey, class TValue, typename HashFunctor>
 		void HashmapConstructorWithSize(Hashmap<TKey, TValue, HashFunctor>& hashmap, pair<TKey, TValue>& firstPair, pair<TKey, TValue>& secondPair, pair<TKey, TValue>& thirdPair)
 		{
-			UNREFERENCED_PARAMETER(secondPair);
-			UNREFERENCED_PARAMETER(thirdPair);
+			secondPair;
+			thirdPair;
 
 			uint32_t currentSize = 0;
 			currentSize;
@@ -361,9 +361,9 @@ namespace LibraryDesktopTest
 
 		template <class TKey, class TValue, typename HashFunctor>
 		void HashmapSubscriptOperator(Hashmap<TKey, TValue, HashFunctor>& hashmap, pair<TKey, TValue>& firstPair, pair<TKey, TValue>& secondPair, pair<TKey, TValue>& thirdPair)
-		{
-			UNREFERENCED_PARAMETER(secondPair);
-			UNREFERENCED_PARAMETER(thirdPair);
+		{			
+			secondPair;
+			thirdPair;
 
 			uint32_t currentSize = 0;
 			Hashmap<TKey, TValue, HashFunctor>::Iterator iterator;
@@ -1433,8 +1433,8 @@ namespace LibraryDesktopTest
 		{
 			Hashmap<TKey, TValue, HashFunctor>::Iterator iterator;
 
-			UNREFERENCED_PARAMETER(secondPair);
-			UNREFERENCED_PARAMETER(thirdPair);
+			secondPair;
+			thirdPair;
 			/************************************************************************/
 			//Checking with the empty hashmap
 			iterator = hashmap.begin();
@@ -1684,9 +1684,9 @@ namespace LibraryDesktopTest
 		template <class TKey, class TValue, typename HashFunctor>
 		void HashmapIteratorArrowOperator(Hashmap<TKey, TValue, HashFunctor>& hashmap, pair<TKey, TValue>& firstPair, pair<TKey, TValue>& secondPair, pair<TKey, TValue>& thirdPair)
 		{
-			UNREFERENCED_PARAMETER(firstPair);
-			UNREFERENCED_PARAMETER(secondPair);
-			UNREFERENCED_PARAMETER(thirdPair);
+			firstPair;
+			secondPair;
+			thirdPair;			
 
 			Hashmap<TKey, TValue, HashFunctor>::Iterator iterator;
 
@@ -1767,9 +1767,9 @@ namespace LibraryDesktopTest
 		template <class TKey, class TValue, typename HashFunctor>
 		void HashmapIteratorConstArrowOperator(Hashmap<TKey, TValue, HashFunctor>& hashmap, pair<TKey, TValue>& firstPair, pair<TKey, TValue>& secondPair, pair<TKey, TValue>& thirdPair)
 		{
-			UNREFERENCED_PARAMETER(firstPair);
-			UNREFERENCED_PARAMETER(secondPair);
-			UNREFERENCED_PARAMETER(thirdPair);
+			firstPair;
+			secondPair;
+			thirdPair;
 
 			//Checking with the empty Hashmap
 			const Hashmap<TKey, TValue, HashFunctor>::Iterator iteratorOne = hashmap.begin();
@@ -1848,8 +1848,8 @@ namespace LibraryDesktopTest
 		template <class TKey, class TValue, typename HashFunctor>
 		void HashmapIteratorEqualityOperator(Hashmap<TKey, TValue, HashFunctor>& hashmap, pair<TKey, TValue>& firstPair, pair<TKey, TValue>& secondPair, pair<TKey, TValue>& thirdPair)
 		{
-			UNREFERENCED_PARAMETER(secondPair);
-			UNREFERENCED_PARAMETER(thirdPair);
+			secondPair;
+			thirdPair;
 
 			Hashmap<TKey, TValue, HashFunctor> hashmapTemp;
 			Hashmap<TKey, TValue, HashFunctor>::Iterator iteratorOne;
@@ -1936,8 +1936,8 @@ namespace LibraryDesktopTest
 		template <class TKey, class TValue, typename HashFunctor>
 		void HashmapIteratorInEqualityOperator(Hashmap<TKey, TValue, HashFunctor>& hashmap, pair<TKey, TValue>& firstPair, pair<TKey, TValue>& secondPair, pair<TKey, TValue>& thirdPair)
 		{
-			UNREFERENCED_PARAMETER(secondPair);
-			UNREFERENCED_PARAMETER(thirdPair);
+			secondPair;
+			thirdPair;
 
 			Hashmap<TKey, TValue, HashFunctor> hashmapTemp;
 			Hashmap<TKey, TValue, HashFunctor>::Iterator iteratorOne;

@@ -24,12 +24,18 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)DefaultHashFunctor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Datum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)DefaultHashFunctor.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Datum.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)DefaultHashFunctor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)SList.inl">
@@ -41,5 +47,6 @@
     <None Include="$(MSBuildThisFileDirectory)Hashmap.inl">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="$(MSBuildThisFileDirectory)DefaultHashFunctor.inl" />
   </ItemGroup>
 </Project>

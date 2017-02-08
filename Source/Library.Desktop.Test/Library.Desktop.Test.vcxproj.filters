@@ -23,9 +23,6 @@
     <ClCompile Include="Pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SListIteratorTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="VectorTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

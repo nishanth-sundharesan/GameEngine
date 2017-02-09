@@ -1,12 +1,14 @@
 #pragma once
 #include <cstdint>
 #define	VectorInitialized
+#include "DefaultHashFunctor.h"
 
 namespace GameEngineLibrary
 {
-	class DefaultIncrement
+	class DefaultReserveStrategy
 	{
-		std::uint32_t DefaultIncrement::operator()(std::uint32_t size, uint32_t capacity) const
+	public:
+		std::uint32_t DefaultReserveStrategy::operator()(std::uint32_t size, uint32_t capacity) const
 		{
 			size;
 			return capacity * 2;
@@ -18,9 +20,8 @@ namespace GameEngineLibrary
 {
 	/** Templated Vector class
 	*/
-	//template<class T>
-	template<class T, typename F = DefaultIncrement>
-	class Vector		
+	template<class T, typename F = DefaultReserveStrategy>
+	class Vector
 	{
 	public:
 		/** An Iterator class for the Vector class.
@@ -96,29 +97,21 @@ namespace GameEngineLibrary
 		private:
 			/** A private constructor which is called only from within the Vector class.
 			*/
-			Iterator(const Vector* owner, T* currentNode);
+			Iterator(const Vector* owner, std::uint32_t mIndex);
 
 			/** The Vector to which the Iterator belongs to.
 			*/
 			const Vector* mOwner;
 
-			/** To node to which the Iterator is currently pointing to.
+			/** The index of the node in the Vector.
 			*/
-			T* mCurrentNode;
+			std::uint32_t mIndex;
 		};
-
-		/** Zero parameterized constructor.
-		*	Initializes the private members of the class Vector.
-		*/
-		explicit Vector();
-
 		/** Parameterized constructor.
 		*	Initializes the private members of the class Vector and Reserves the Vector with the specified capacity(memory).
 		*	@param capacity The expected size of the Vector array.
 		*/
-		explicit Vector(std::uint32_t capacity);
-
-		//explicit Vector(std::uint32_t capacity=DefaultCapacity, bool fixedSize = false);
+		explicit Vector(std::uint32_t capacity = 29);
 
 		/** Copy constructor.
 		*	Performs a deep copy of the Vector array.
@@ -136,7 +129,7 @@ namespace GameEngineLibrary
 		/** Clears the entire Vector.
 		*	Note: This function doesn't reset the capacity of the Vector array. Use ShrinkToFit() or Reserve().
 		*/
-		virtual ~Vector();		
+		virtual ~Vector();
 
 		/** Pushes/Adds the data at the back of the Vector array.
 		*	@param pData The data to be pushed at the back of the array.
@@ -271,9 +264,6 @@ namespace GameEngineLibrary
 		*/
 		void Reserve(std::uint32_t capacity);
 
-		//additional function
-		//void Reserve(std::uint32_t capacity,bool fixedSize = false);
-
 		/** Shrinks the capacity of the Vector array to the Size of the Vector array.
 		*	Note: This function doesn't affect the size of the Vector array.
 		*/
@@ -290,13 +280,6 @@ namespace GameEngineLibrary
 		/** The capacity of the Vector array.
 		*/
 		std::uint32_t mCapacity;
-
-		/** The default capacity of the Vector array. 10 by default.
-		*/
-		std::uint32_t mDefaultCapacity;
-
-
-		//static const std::uint32_t DefaultCapacity;
 	};
 }
 

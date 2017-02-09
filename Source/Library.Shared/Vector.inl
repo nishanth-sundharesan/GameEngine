@@ -1,5 +1,6 @@
 #include "Pch.h"
 #include <assert.h>
+#include <algorithm>
 #ifndef VectorInitialized
 #include "Vector.h"
 #endif
@@ -10,37 +11,24 @@ namespace GameEngineLibrary
 {
 	/************************************************************************/
 	/* BEGIN	-Vector class-		Constructors & Functions.				*/
-	/************************************************************************/
-	template<class T, typename F>
-	Vector<T, F>::Vector() :
-		mSize(0), mStartingAddress(nullptr), mCapacity(0), mDefaultCapacity(10)
-	{
-
-	}
-
+	/************************************************************************/	
 	template<class T, typename F>
 	Vector<T, F>::Vector(uint32_t capacity) :
-		mSize(0), mStartingAddress(nullptr), mCapacity(0), mDefaultCapacity(capacity)
-	{
+		mSize(0), mStartingAddress(nullptr), mCapacity(0)
+	{		
 		Reserve(capacity);
 	}
 
 	template<class T, typename F>
 	Vector<T, F>::Vector(const Vector<T, F>& rhs) :
-		mSize(0), mStartingAddress(nullptr)
+		mSize(0), mStartingAddress(nullptr), mCapacity(0)
 	{
-		operator=(rhs);
-
-		/*for (uint32_t i = 0; i < rhs.mSize; ++i)
+		Reserve(rhs.mCapacity);
+		for (uint32_t i = 0; i < rhs.mSize; ++i)
 		{
 			PushBack(rhs[i]);
-		}*/
+		}
 	}
-
-
-	/*Vector<T,F>::Vector()
-	{
-	}*/
 
 	template<class T, typename F>
 	inline Vector<T, F>& Vector<T, F>::operator=(const Vector<T, F>& rhs)
@@ -49,7 +37,6 @@ namespace GameEngineLibrary
 		{
 			Clear();
 			mCapacity = 0;
-			mDefaultCapacity = rhs.mDefaultCapacity;
 			Reserve(rhs.mCapacity);
 
 			for (uint32_t i = 0; i < rhs.mSize; ++i)
@@ -71,23 +58,18 @@ namespace GameEngineLibrary
 	template<class T, typename F>
 	inline typename Vector<T, F>::Iterator Vector<T, F>::PushBack(const T& value)
 	{
-		//Even this is being shared across all instances of the Vector class
-		//static IncrementFunctor incrementFunctor;
-
+		//Even this is being shared across all instances of the Vector class		
+		static F reserveStrategy;
 		if (mSize == mCapacity)
 		{
-			//triples the capacity
-			//std:uint32_t capacity = mCapacity + max<uint32_t>(1U,incrementFunctor(mSize,mCapacity));
-			Reserve(mCapacity == 0 ? mDefaultCapacity : (mCapacity + mCapacity));
+			uint32_t capacity = max<uint32_t>(1U, reserveStrategy(mSize, mCapacity));
+			Reserve(capacity);
 		}
 
 		//Placement new - Calls only the constructor. Doesn't allocate memory
 		new(mStartingAddress + mSize)T(value);
 
-
-		//return Iterator(this, mStartingAddress + mSize++);
-		++mSize;
-		return Iterator(this, mStartingAddress + mSize - 1);
+		return Iterator(this, mSize++);
 	}
 
 	template<class T, typename F>
@@ -99,9 +81,7 @@ namespace GameEngineLibrary
 		}
 
 		//Calls the destructor of the last element in the array
-		//(mStartingAddress + (--mSize))->~T();
-		(mStartingAddress + mSize - 1)->~T();
-		--mSize;
+		(mStartingAddress + (--mSize))->~T();
 
 		return true;
 	}
@@ -114,10 +94,9 @@ namespace GameEngineLibrary
 			return false;
 		}
 
-		//Calls the destructor of the last element in the array
 		value = *(mStartingAddress + mSize - 1);
-		(mStartingAddress + mSize - 1)->~T();
-		--mSize;
+		//Calls the destructor of the last element in the array
+		(mStartingAddress + (--mSize))->~T();
 
 		return true;
 	}
@@ -148,7 +127,6 @@ namespace GameEngineLibrary
 		}
 
 		return *mStartingAddress;
-		//return operator[](0);
 	}
 
 	template<class T, typename F>
@@ -160,7 +138,6 @@ namespace GameEngineLibrary
 		}
 
 		return *(mStartingAddress + mSize - 1);
-		//return operator[](size -1);
 	}
 
 	template<class T, typename F>
@@ -198,15 +175,13 @@ namespace GameEngineLibrary
 	template<class T, typename F>
 	inline typename Vector<T, F>::Iterator Vector<T, F>::begin() const
 	{
-		return Iterator(this, mStartingAddress);
-		//return Iterator(this, 0);
+		return Iterator(this, 0);
 	}
 
 	template<class T, typename F>
 	inline typename Vector<T, F>::Iterator Vector<T, F>::end() const
 	{
-		return Iterator(this, nullptr);
-		//return Iterator(this, size);
+		return Iterator(this, mSize);
 	}
 
 	template<class T, typename F>
@@ -234,15 +209,13 @@ namespace GameEngineLibrary
 
 		(*iterator).~T();
 
-		//auto size = (mSize - it.mIndex-1)*sizeof(T);
-		//if(size > 0)
-		//Checking if the removed item was not the last item of the Vector array.
-		if (iterator.mCurrentNode + 1 != mStartingAddress + mSize)
+
+		auto size = (mSize - iterator.mIndex - 1) * sizeof(T);
+		if (size > 0)																					//Checking if the removed item was not the last item of the Vector array.
 		{
-			memmove(iterator.mCurrentNode, iterator.mCurrentNode + 1, sizeof(T) * (mSize - 1));
-			//If we use the above one SDL life cycle will throw warning
-			//memmove_s(iterator.mCurrentNode, iterator.mCurrentNode + 1, sizeof(T) * (mSize - 1));
+			memmove(mStartingAddress + iterator.mIndex, mStartingAddress + iterator.mIndex + 1, size);
 		}
+
 		--mSize;
 
 		return true;
@@ -253,9 +226,13 @@ namespace GameEngineLibrary
 	{
 		if (startIterator.mOwner != this || endIterator.mOwner != this)
 		{
-			throw out_of_range("bool Vector<T,F>::Remove(const Iterator& startIterator, const Iterator& endIterator): One or more of the Iterators belong to a different Vector!");
+			throw out_of_range("bool Vector<T,F>::Remove(const Iterator& startIterator, const Iterator& endIterator): One or more Iterators belong to a different Vector!");
 		}
-		if ((startIterator == end()) || (endIterator != end() && startIterator.mCurrentNode >= endIterator.mCurrentNode))
+		if (startIterator.mIndex >= mSize || endIterator.mIndex > mSize)
+		{
+			throw out_of_range("bool Vector<T,F>::Remove(const Iterator& startIterator, const Iterator& endIterator): One or more iterators point to an invalid data!");
+		}
+		if (startIterator.mIndex >= endIterator.mIndex)
 		{
 			throw out_of_range("bool Vector<T,F>::Remove(const Iterator& startIterator, const Iterator& endIterator): start Iterator is greater than or equal to the end Iterator!");
 		}
@@ -268,13 +245,12 @@ namespace GameEngineLibrary
 			tempCount++;
 		}
 
-		//Checking if there are any data left after the endIterator
-		if (endIterator != end() && endIterator.mCurrentNode + 1 != mStartingAddress + mSize)
+		if ((endIterator.mIndex + 1) < mSize)
 		{
-			memmove(startIterator.mCurrentNode, endIterator.mCurrentNode, sizeof(T) * ((mStartingAddress + mSize) - endIterator.mCurrentNode));
+			memmove(mStartingAddress + startIterator.mIndex, mStartingAddress + endIterator.mIndex, (mSize - endIterator.mIndex) * sizeof(T));
 		}
 
-		mSize = mSize - tempCount;
+		mSize -= tempCount;
 		return true;
 	}
 
@@ -347,14 +323,14 @@ namespace GameEngineLibrary
 	/************************************************************************/
 	template<class T, typename F>
 	inline Vector<T, F>::Iterator::Iterator() :
-		mOwner(nullptr), mCurrentNode(nullptr)
+		mOwner(nullptr), mIndex(0)
 	{
 
 	}
 
 	template<class T, typename F>
-	inline Vector<T, F>::Iterator::Iterator(const Vector* owner, T* currentNode) :
-		mOwner(owner), mCurrentNode(currentNode)
+	inline Vector<T, F>::Iterator::Iterator(const Vector* owner, uint32_t index) :
+		mOwner(owner), mIndex(index)
 	{
 
 	}
@@ -362,7 +338,7 @@ namespace GameEngineLibrary
 	template<class T, typename F>
 	inline bool Vector<T, F>::Iterator::operator==(const Iterator& rhs) const
 	{
-		return ((mOwner == rhs.mOwner) && (mCurrentNode == rhs.mCurrentNode));
+		return ((mOwner == rhs.mOwner) && (mIndex == rhs.mIndex));
 	}
 
 	template<class T, typename F>
@@ -374,20 +350,11 @@ namespace GameEngineLibrary
 	template<class T, typename F>
 	inline typename Vector<T, F>::Iterator& Vector<T, F>::Iterator::operator++()
 	{
-		if (mCurrentNode == nullptr)
+		if (mOwner == nullptr || mIndex >= mOwner->mSize)
 		{
 			throw out_of_range("Vector<T,F>::Iterator& Vector<T,F>::Iterator::operator++(): Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data!");
 		}
-
-		if (mCurrentNode + 1 == mOwner->mStartingAddress + mOwner->mSize)
-		{
-			//Iterator is now pointing to the end of the list.
-			mCurrentNode = nullptr;
-		}
-		else
-		{
-			++mCurrentNode;
-		}
+		++mIndex;
 
 		return (*this);
 	}
@@ -408,23 +375,23 @@ namespace GameEngineLibrary
 	template<class T, typename F>
 	inline T& Vector<T, F>::Iterator::operator*()
 	{
-		if (mCurrentNode == nullptr)
+		if (mOwner == nullptr || mIndex >= mOwner->mSize)
 		{
 			throw out_of_range("T& Vector<T,F>::Iterator::operator*(): Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data!");
 		}
 
-		return *mCurrentNode;
+		return *(mOwner->mStartingAddress + mIndex);
 	}
 
 	template<class T, typename F>
 	inline const T& Vector<T, F>::Iterator::operator*() const
 	{
-		if (mCurrentNode == nullptr)
+		if (mOwner == nullptr || mIndex >= mOwner->mSize)
 		{
 			throw out_of_range("T& Vector<T,F>::Iterator::operator*(): Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data!");
 		}
 
-		return *mCurrentNode;
+		return *(mOwner->mStartingAddress + mIndex);
 	}
 	/*----------------------------------------------------------------------*/
 	/* END																	*/

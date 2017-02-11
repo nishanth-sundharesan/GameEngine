@@ -59,7 +59,7 @@ namespace GameEngineLibrary
 			/** Overloaded ++ - Prefix Increment operator.
 			*	Increments the iterator and points to the next consequent data.
 			*	@returns Returns the current Iterator reference after incrementing.
-			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data.
+			*	@exception Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data.
 			*/
 			Iterator& operator++();
 
@@ -67,21 +67,21 @@ namespace GameEngineLibrary
 			*	Makes a copy of the called iterator and returns it. It then later increments the called iterator and points to the next consequent data.
 			*	For gaining performance, use the ++ - Prefix Increment operator
 			*	@returns Returns a copy of the called iterator. It then later increments the called iterator.
-			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data.
+			*	@exception Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data.
 			*/
 			Iterator operator++(int);
 			
 			/** Overloaded * (content of) operator.
 			*	Returns the content of which the iterator was pointing to.
 			*	@returns Returns the content of which the iterator was pointing to.
-			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data
+			*	@exception Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data
 			*/
 			T& operator*();
 
 			/** Overloaded * (content of) operator.
 			*	Returns the content of which the iterator was pointing to.
 			*	@returns Returns the content of which the iterator was pointing to.
-			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data
+			*	@exception Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data
 			*/
 			const T& operator*() const;
 
@@ -134,14 +134,14 @@ namespace GameEngineLibrary
 		Iterator PushBack(const T& value);
 
 		/** Pops/Deletes the data at the front of the list.
-		*	@throws Throws an exception if SList is empty.
+		*	@exception Throws an exception if SList is empty.
 		*	@see PopFront(T& pData);
 		*/
 		void PopFront();
 
 		/** Assigns the data at the front of the list to the param value and deletes the data at the front of the list.
 		*	@param value The popped data from the front of the list.
-		*	@throws Throws an exception if SList is empty.
+		*	@exception Throws an exception if SList is empty.
 		*	@see PopFront();
 		*/
 		void PopFront(T& value);
@@ -153,25 +153,25 @@ namespace GameEngineLibrary
 
 		/** Returns the data at the front of SList.
 		*	@return Returns the data at the front of SList.
-		*	@throws Throws an exception if SList is empty.
+		*	@exception Throws an exception if SList is empty.
 		*/
 		T& Front();
 
 		/** Returns the data at the front of SList.
 		*	@return Returns the data at the front of SList.
-		*	@throws Throws an exception if SList is empty.
+		*	@exception Throws an exception if SList is empty.
 		*/
 		const T& Front() const;
 
 		/** Returns the data at the back of SList.
 		*	@return Returns the data at the back of SList.
-		*	@throws Throws an exception if SList is empty.
+		*	@exception Throws an exception if SList is empty.
 		*/
 		T& Back();
 
 		/** Returns the data at the back of SList.
 		*	@return Returns the data at the back of SList.
-		*	@throws Throws an exception if SList is empty.
+		*	@exception Throws an exception if SList is empty.
 		*/
 		const T& Back() const;
 

@@ -1,20 +1,7 @@
 #pragma once
 #include <cstdint>
 #define	VectorInitialized
-#include "DefaultHashFunctor.h"
-
-namespace GameEngineLibrary
-{
-	class DefaultReserveStrategy
-	{
-	public:
-		std::uint32_t DefaultReserveStrategy::operator()(std::uint32_t size, uint32_t capacity) const
-		{
-			size;
-			return capacity * 2;
-		}
-	};
-}
+#include "DefaultReserveStrategy.h"
 
 namespace GameEngineLibrary
 {
@@ -69,7 +56,7 @@ namespace GameEngineLibrary
 			/** Overloaded ++ - Prefix Increment operator.
 			*	Increments the iterator and points to the next consequent data.
 			*	@returns Returns the current Iterator reference after incrementing.
-			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the vector array or is pointing to an invalid data.
+			*	@exception Throws an exception if the Iterator is uninitialized or is pointing to the end of the vector array or is pointing to an invalid data.
 			*/
 			Iterator& operator++();
 
@@ -77,21 +64,21 @@ namespace GameEngineLibrary
 			*	Makes a copy of the called iterator and returns it. It then later increments the called iterator and points to the next consequent data.
 			*	For gaining performance, use the ++ - Prefix Increment operator
 			*	@returns Returns a copy of the called iterator. It then later increments the called iterator.
-			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the vector array or is pointing to an invalid data.
+			*	@exception Throws an exception if the Iterator is uninitialized or is pointing to the end of the vector array or is pointing to an invalid data.
 			*/
 			Iterator operator++(int);
 
 			/** Overloaded * (content of) operator.
 			*	Returns the content of which the iterator was pointing to.
 			*	@returns Returns the content of which the iterator was pointing to.
-			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the vector array or is pointing to an invalid data
+			*	@exception Throws an exception if the Iterator is uninitialized or is pointing to the end of the vector array or is pointing to an invalid data
 			*/
 			T& operator*();
 
 			/** Overloaded * (content of) operator.
 			*	Returns the content of which the iterator was pointing to.
 			*	@returns Returns the content of which the iterator was pointing to.
-			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the vector array or is pointing to an invalid data
+			*	@exception Throws an exception if the Iterator is uninitialized or is pointing to the end of the vector array or is pointing to an invalid data
 			*/
 			const T& operator*() const;
 		private:
@@ -158,25 +145,25 @@ namespace GameEngineLibrary
 
 		/** Returns the data at the front of the Vector array.
 		*	@return Returns the data at the front of the Vector array.
-		*	@throws Throws an exception if the Vector is empty.
+		*	@exception Throws an exception if the Vector is empty.
 		*/
 		T& Front();
 
 		/** Returns the data at the front of the Vector array.
 		*	@return Returns the data at the front of the Vector array.
-		*	@throws Throws an exception if the Vector is empty.
+		*	@exception Throws an exception if the Vector is empty.
 		*/
 		const T& Front() const;
 
 		/** Returns the data at the back of the Vector array.
 		*	@return Returns the data at the back of the Vector array.
-		*	@throws Throws an exception if the Vector is empty.
+		*	@exception Throws an exception if the Vector is empty.
 		*/
 		T& Back();
 
 		/** Returns the data at the back of the Vector array.
 		*	@return Returns the data at the back of the Vector array.
-		*	@throws Throws an exception if the Vector is empty.
+		*	@exception Throws an exception if the Vector is empty.
 		*/
 		const T& Back() const;
 
@@ -221,7 +208,7 @@ namespace GameEngineLibrary
 		/** Removes all the elements between the startIterator and endIterator.
 		*	@param startIterator The starting Iterator(inclusive).
 		*	@param endIterator The ending Iterator(exclusive).
-		*	@throws Throws an exception if the Iterators belong to a different Vector or if the start Iterator is greater than or equal to the end Iterator.
+		*	@exception Throws an exception if the Iterators belong to a different Vector or if the start Iterator is greater than or equal to the end Iterator.
 		*	@returns Returns true if the values were successfully removed, false otherwise.
 		*/
 		bool Remove(const Iterator& startIterator, const Iterator& endIterator);
@@ -229,7 +216,7 @@ namespace GameEngineLibrary
 		/** Overloaded subscript operator.
 		*	This function returns the value present at the specified index.
 		*	@param index The index of the value in the Vector array to be returned.
-		*	@throws Throws an exception if the index is greater than or equal to the size of the Vector array.
+		*	@exception Throws an exception if the index is greater than or equal to the size of the Vector array.
 		*	@returns Returns the value present at the specified index.
 		*/
 		T& operator[](const std::uint32_t index);
@@ -237,21 +224,21 @@ namespace GameEngineLibrary
 		/** Overloaded subscript operator.
 		*	This function returns the value present at the specified index.
 		*	@param index The index of the value in the Vector array to be returned.
-		*	@throws Throws an exception if the index is greater than or equal to the size of the Vector array.
+		*	@exception Throws an exception if the index is greater than or equal to the size of the Vector array.
 		*	@returns Returns the value present at the specified index.
 		*/
 		const T& operator[](const std::uint32_t index) const;
 
 		/** Returns the value present at the specified index.
 		*	@param index The index of the value in the Vector array to be returned.
-		*	@throws Throws an exception if the index is greater than or equal to the size of the Vector array.
+		*	@exception Throws an exception if the index is greater than or equal to the size of the Vector array.
 		*	@returns Returns the value present at the specified index.
 		*/
 		T& At(const std::uint32_t index);
 
 		/** Returns the value present at the specified index.
 		*	@param index The index of the value in the Vector array to be returned.
-		*	@throws Throws an exception if the index is greater than or equal to the size of the Vector array.
+		*	@exception Throws an exception if the index is greater than or equal to the size of the Vector array.
 		*	@returns Returns the value present at the specified index.
 		*/
 		const T& At(const std::uint32_t index) const;
@@ -260,7 +247,7 @@ namespace GameEngineLibrary
 		*	Reserves the memory for the param "capacity" number of objects in the Vector array.
 		*	Reserves/Allocates the memory only if the specified capacity is greater than the current capacity.
 		*	@param capacity The new capacity of the Vector array. This should be greater than the current capacity
-		*	@throws Throws an exception if the function fails to allocate memory.
+		*	@exception Throws an exception if the function fails to allocate memory.
 		*/
 		void Reserve(std::uint32_t capacity);
 

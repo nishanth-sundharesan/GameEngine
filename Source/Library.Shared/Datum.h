@@ -1,8 +1,11 @@
 #pragma once
 #include <cstdint>
 #include "RTTI.h"
+#pragma warning ( push )
+#pragma warning ( disable: 4201 )							//Suppressing the warning message "nonstandard extension used : nameless struct / union" in the file"
 #include "../../External/Glm/Glm/vec4.hpp"
 #include "../../External/Glm/Glm/mat4x4.hpp"
+#pragma warning ( pop )
 #include "DefaultReserveStrategy.h"
 
 namespace GameEngineLibrary
@@ -30,6 +33,19 @@ namespace GameEngineLibrary
 	public:
 		Datum();
 
+		Datum(const Datum& rhs);
+
+#pragma region Overloaded Assignment Operator Declarations
+		Datum& operator=(const Datum& rhs);
+		Datum& operator=(const std::int32_t& rhs);
+		Datum& operator=(const float& rhs);
+		Datum& operator=(const std::string& rhs);
+		Datum& operator=(const glm::vec4& rhs);
+		Datum& operator=(const glm::mat4x4& rhs);
+#pragma endregion
+
+		~Datum();
+
 		std::uint32_t Size() const;
 
 		DatumType Type() const;
@@ -49,11 +65,11 @@ namespace GameEngineLibrary
 #pragma endregion
 
 #pragma region PushBack
-		void PushBack(std::int32_t& value);
-		void PushBack(float& value);
-		void PushBack(std::string& value);
-		void PushBack(glm::vec4& value);
-		void PushBack(glm::mat4x4& value);
+		void PushBack(const std::int32_t& value);
+		void PushBack(const float& value);
+		void PushBack(const std::string& value);
+		void PushBack(const glm::vec4& value);
+		void PushBack(const glm::mat4x4& value);
 #pragma endregion
 
 #pragma region Overloaded Equality Operators
@@ -75,20 +91,36 @@ namespace GameEngineLibrary
 #pragma endregion
 
 #pragma region Set Method Declarations
-		void Set(std::int32_t& value, uint32_t index = 0);
-		void Set(float& value, uint32_t index = 0);
-		void Set(std::string& value, uint32_t index = 0);
-		void Set(glm::vec4& value, uint32_t index = 0);
-		void Set(glm::mat4x4& value, uint32_t index = 0);
+		void Set(const std::int32_t& value, uint32_t index = 0);
+		void Set(const float& value, uint32_t index = 0);
+		void Set(const std::string& value, uint32_t index = 0);
+		void Set(const glm::vec4& value, uint32_t index = 0);
+		void Set(const glm::mat4x4& value, uint32_t index = 0);
 #pragma endregion
 
 		void ShrinkToFit();
 
+#pragma region Get Method Declarations
 		template<typename T>
-		T Get(std::uint32_t index = 0) const;
+		T& Get(std::uint32_t index = 0);
+		template<> std::int32_t& Get(std::uint32_t index);
+		template<> float& Get(std::uint32_t index);
+		template<> std::string& Get(std::uint32_t index);
+		template<> glm::vec4& Get(std::uint32_t index);
+		template<> glm::mat4x4& Get(std::uint32_t index);
 
-		template<> std::int32_t Get(std::uint32_t index) const;
-		template<> float Get<float>(std::uint32_t index) const;
+		template<typename T>
+		const T& Get(std::uint32_t index = 0) const;
+		template<> const std::int32_t& Get(std::uint32_t index) const;
+		template<> const float& Get<float>(std::uint32_t index) const;
+		template<> const std::string& Get(std::uint32_t index) const;
+		template<> const glm::vec4& Get(std::uint32_t index) const;
+		template<> const glm::mat4x4& Get(std::uint32_t index) const;
+#pragma endregion
+
+		std::string ToString(std::uint32_t index = 0) const;
+		void SetFromString(std::string inputString, std::uint32_t index = 0) const;
+
 	private:
 #pragma region Reserve Method Declarations
 		void Reserve(uint32_t capacity);
@@ -102,24 +134,23 @@ namespace GameEngineLibrary
 		template<typename T>
 		bool PerformDeepSearch(T *lhs, T *rhs, std::uint32_t size) const;
 
-		/*bool PerformDeepSearch(int32_t *lhs, int32_t *rhs, uint32_t size) const;
-		bool PerformDeepSearch(float *lhs, float *rhs, uint32_t size) const;
-		bool PerformDeepSearch(std::string *lhs, std::string *rhs, uint32_t size) const;*/
-	private:
-		/*template<class T>
-		class TestClass
-		{
-		public:
-			static T test;
-		};*/
+#pragma region Pushbacking based on each data type (Declarations)
+		void PushBackIntData();
+		void PushBackFloatData();
+		void PushBackStringData();
+		void PushBackVec4Data();
+		void PushBackMat4x4Data();
+#pragma endregion
 
-
-
+#pragma region Destructing based on each data type (Declarations)
 		void DestructIntData(std::uint32_t startIndex, std::uint32_t endIndex);
 		void DestructFloatData(std::uint32_t startIndex, std::uint32_t endIndex);
 		void DestructStringData(std::uint32_t startIndex, std::uint32_t endIndex);
 		void DestructVec4Data(std::uint32_t startIndex, std::uint32_t endIndex);
 		void DestructMat4x4Data(std::uint32_t startIndex, std::uint32_t endIndex);
+#pragma endregion
+
+		void AssignFunctionalityForEachType();
 
 		union DatumValues
 		{
@@ -132,19 +163,21 @@ namespace GameEngineLibrary
 			RTTI** rttiPointer;
 		};
 
-		/*bool isInternalStorage;*/
+		//Private members
 		std::uint32_t mSize;
 		std::uint32_t mCapacity;
+		DatumType mDatumType;
 		DatumMemoryType mMemoryType;
 		DatumValues mDatumValues;
-		DatumType mDatumType;
 		DefaultReserveStrategy reserveStrategy;
 
 		typedef void (Datum::*DestructorsForDataType)(std::uint32_t startIndex, std::uint32_t endIndex);
+		typedef void (Datum::*PushBackForDataType)();
 
 		const uint32_t mNumberOfTypesSupported = 7;
 		uint32_t mDataTypeSizes[7];
 		DestructorsForDataType mDestructors[7];
+		PushBackForDataType mPushBacks[7];
 	};
 
 	template<typename T>

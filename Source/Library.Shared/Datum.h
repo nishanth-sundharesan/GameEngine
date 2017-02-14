@@ -46,14 +46,14 @@ namespace GameEngineLibrary
 
 		~Datum();
 
-		std::uint32_t Size() const;
-
-		DatumType Type() const;
-
 		void SetType(DatumType datumType);
 
 		void SetSize(std::uint32_t size);
 
+		DatumType Type() const;
+
+		std::uint32_t Size() const;
+		
 		void Clear();
 
 #pragma region SetStorage
@@ -103,9 +103,7 @@ namespace GameEngineLibrary
 		void Set(const glm::mat4x4& value, uint32_t index = 0);
 		void Set(const RTTI* value, uint32_t index = 0);
 #pragma endregion
-
-		void ShrinkToFit();
-
+		
 #pragma region Get Method Declarations
 		template<typename T>
 		T& Get(std::uint32_t index = 0);
@@ -116,6 +114,8 @@ namespace GameEngineLibrary
 
 		std::string ToString(std::uint32_t index = 0) const;
 		void SetFromString(std::string& inputString, std::uint32_t index = 0);
+
+		void ShrinkToFit();
 
 	private:
 		void Reserve(uint32_t capacity);

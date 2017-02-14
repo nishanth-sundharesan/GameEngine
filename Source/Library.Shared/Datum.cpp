@@ -216,10 +216,7 @@ namespace GameEngineLibrary
 		ShrinkToFit();
 	}
 
-	DatumType Datum::Type() const
-	{
-		return mDatumType;
-	}
+#pragma region Public Methods
 
 	void Datum::SetType(DatumType datumType)
 	{
@@ -229,12 +226,7 @@ namespace GameEngineLibrary
 		}
 		mDatumType = datumType;
 	}
-
-	uint32_t Datum::Size() const
-	{
-		return mSize;
-	}
-
+	
 	void Datum::SetSize(uint32_t size)
 	{
 		if (mDatumType == DatumType::UNASSIGNED)
@@ -260,6 +252,16 @@ namespace GameEngineLibrary
 		mSize = size;
 	}
 
+	DatumType Datum::Type() const
+	{
+		return mDatumType;
+	}
+
+	uint32_t Datum::Size() const
+	{
+		return mSize;
+	}
+
 	void Datum::Clear()
 	{
 		if (mMemoryType == DatumMemoryType::INTERNAL)
@@ -267,240 +269,7 @@ namespace GameEngineLibrary
 			(this->*mDestructors[static_cast<uint32_t>(mDatumType)])(0, mSize);
 			mSize = 0;
 		}
-	}
-
-#pragma region Search based on each data type(Declarations)
-	bool Datum::PerformVoidSearch(void * lhs, void * rhs, std::uint32_t size) const
-	{
-		return true;
-		lhs;
-		rhs;
-		size;
-	}
-
-	bool Datum::PerformIntSearch(void* lhs, void* rhs, uint32_t size) const
-	{
-		return PerformDeepSearch(static_cast<int32_t*>(lhs), static_cast<int32_t*>(rhs), size);
-	}
-
-	bool Datum::PerformFloatSearch(void* lhs, void* rhs, uint32_t size) const
-	{
-		return PerformDeepSearch(static_cast<std::float_t*>(lhs), static_cast<std::float_t*>(rhs), size);
-	}
-
-	bool Datum::PerformStringSearch(void* lhs, void* rhs, uint32_t size) const
-	{
-		return PerformDeepSearch(static_cast<string*>(lhs), static_cast<string*>(rhs), size);
-	}
-
-	bool Datum::PerformVec4Search(void* lhs, void* rhs, uint32_t size) const
-	{
-		return PerformDeepSearch(static_cast<vec4*>(lhs), static_cast<vec4*>(rhs), size);
-	}
-
-	bool Datum::PerformMat4x4Search(void* lhs, void* rhs, uint32_t size) const
-	{
-		return PerformDeepSearch(static_cast<mat4x4*>(lhs), static_cast<mat4x4*>(rhs), size);
-	}
-
-	bool Datum::PerformRTTIPointerSearch(void* lhs, void* rhs, uint32_t size) const
-	{
-		RTTI** lhsRTTI = static_cast<RTTI**>(lhs);
-		RTTI** rhsRTTI = static_cast<RTTI**>(rhs);
-
-		for (uint32_t i = 0; i < size; ++i)
-		{
-			if (!((**(lhsRTTI + i)).Equals(*(rhsRTTI + i))))
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-
-#pragma endregion
-
-#pragma region Pushbacking based on each data type	
-	void Datum::PushBackIntData(uint32_t startIndex, uint32_t endIndex)
-	{
-		for (uint32_t i = startIndex; i < endIndex; ++i)
-		{
-			PushBack(int32_t());
-		}
-	}
-
-	void Datum::PushBackFloatData(uint32_t startIndex, uint32_t endIndex)
-	{
-		for (uint32_t i = startIndex; i < endIndex; ++i)
-		{
-			PushBack(std::float_t());
-		}
-	}
-
-	void Datum::PushBackStringData(uint32_t startIndex, uint32_t endIndex)
-	{
-		for (uint32_t i = startIndex; i < endIndex; ++i)
-		{
-			PushBack(string());
-		}
-	}
-
-	void Datum::PushBackVec4Data(uint32_t startIndex, uint32_t endIndex)
-	{
-		for (uint32_t i = startIndex; i < endIndex; ++i)
-		{
-			PushBack(vec4());
-		}
-	}
-
-	void Datum::PushBackMat4x4Data(uint32_t startIndex, uint32_t endIndex)
-	{
-		for (uint32_t i = startIndex; i < endIndex; ++i)
-		{
-			PushBack(mat4x4());
-		}
-	}
-
-	void Datum::PushBackRTTIPointer(uint32_t startIndex, uint32_t endIndex)
-	{
-		for (uint32_t i = startIndex; i < endIndex; ++i)
-		{
-			PushBack(nullptr);
-		}
-	}
-
-#pragma endregion
-
-#pragma region Destructing for each data type
-	void Datum::DestructIntData(uint32_t startIndex, uint32_t endIndex)
-	{
-		for (uint32_t i = startIndex; i < endIndex; ++i)
-		{
-			(mDatumValues.intPointer + i)->~int32_t();
-		}
-	}
-
-	void Datum::DestructFloatData(uint32_t startIndex, uint32_t endIndex)
-	{
-		typedef std::float_t float_std;
-		for (uint32_t i = startIndex; i < endIndex; ++i)
-		{
-			(mDatumValues.floatPointer + i)->~float_std();
-		}
-	}
-
-	void Datum::DestructStringData(uint32_t startIndex, uint32_t endIndex)
-	{
-		for (uint32_t i = startIndex; i < endIndex; ++i)
-		{
-			(mDatumValues.stringPointer + i)->~string();
-		}
-	}
-
-	void Datum::DestructVec4Data(uint32_t startIndex, uint32_t endIndex)
-	{
-		for (uint32_t i = startIndex; i < endIndex; ++i)
-		{
-			(mDatumValues.vector4Pointer + i)->~vec4();
-		}
-	}
-
-	void Datum::DestructMat4x4Data(uint32_t startIndex, uint32_t endIndex)
-	{
-		for (uint32_t i = startIndex; i < endIndex; ++i)
-		{
-			(mDatumValues.mat4x4Pointer + i)->~mat4x4();
-		}
-	}
-
-#pragma endregion
-
-#pragma region Converting each data type to std::string Implementations
-	std::string Datum::ToStringUnassigned(std::uint32_t index) const
-	{
-		throw exception("std::string Datum::ToStringUnassigned() const: Cannot convert unassigned Datum to std::string.");
-		index;
-	}
-
-	std::string Datum::ToStringInt(std::uint32_t index) const
-	{
-		return std::to_string(*(mDatumValues.intPointer + index));
-	}
-
-	std::string Datum::ToStringFloat(std::uint32_t index) const
-	{
-		return std::to_string(*(mDatumValues.floatPointer + index));
-	}
-
-	std::string Datum::ToStringString(std::uint32_t index) const
-	{
-		return *(mDatumValues.stringPointer + index);
-	}
-
-	std::string Datum::ToStringVec4(std::uint32_t index) const
-	{
-		return glm::to_string(*(mDatumValues.vector4Pointer + index));
-	}
-
-	std::string Datum::ToStringMat4x4(std::uint32_t index) const
-	{
-		return glm::to_string(*(mDatumValues.mat4x4Pointer + index));
-	}
-
-	std::string Datum::ToStringRTTIPointer(std::uint32_t index) const
-	{
-		return (*(*(mDatumValues.rttiPointer + index))).ToString();
-	}
-
-#pragma endregion
-
-	void Datum::AssignFunctionalityForEachType()
-	{
-		mDataTypeSizes[static_cast<uint32_t>(DatumType::UNASSIGNED)] = 0;
-		mDataTypeSizes[static_cast<uint32_t>(DatumType::INT32_T)] = sizeof(int32_t);
-		mDataTypeSizes[static_cast<uint32_t>(DatumType::FLOAT)] = sizeof(std::float_t);
-		mDataTypeSizes[static_cast<uint32_t>(DatumType::STRING)] = sizeof(string);
-		mDataTypeSizes[static_cast<uint32_t>(DatumType::GLM_VECTOR4)] = sizeof(vec4);
-		mDataTypeSizes[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = sizeof(mat4x4);
-		mDataTypeSizes[static_cast<uint32_t>(DatumType::POINTER)] = sizeof(RTTI**);
-
-		mDestructors[static_cast<uint32_t>(DatumType::UNASSIGNED)] = nullptr;
-		mDestructors[static_cast<uint32_t>(DatumType::INT32_T)] = &Datum::DestructIntData;
-		mDestructors[static_cast<uint32_t>(DatumType::FLOAT)] = &Datum::DestructFloatData;
-		mDestructors[static_cast<uint32_t>(DatumType::STRING)] = &Datum::DestructStringData;
-		mDestructors[static_cast<uint32_t>(DatumType::GLM_VECTOR4)] = &Datum::DestructVec4Data;
-		mDestructors[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = &Datum::DestructMat4x4Data;
-		mDestructors[static_cast<uint32_t>(DatumType::POINTER)] = nullptr;
-
-		mPushBacks[static_cast<uint32_t>(DatumType::UNASSIGNED)] = nullptr;
-		mPushBacks[static_cast<uint32_t>(DatumType::INT32_T)] = &Datum::PushBackIntData;
-		mPushBacks[static_cast<uint32_t>(DatumType::FLOAT)] = &Datum::PushBackFloatData;
-		mPushBacks[static_cast<uint32_t>(DatumType::STRING)] = &Datum::PushBackStringData;
-		mPushBacks[static_cast<uint32_t>(DatumType::GLM_VECTOR4)] = &Datum::PushBackVec4Data;
-		mPushBacks[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = &Datum::PushBackMat4x4Data;
-		mPushBacks[static_cast<uint32_t>(DatumType::POINTER)] = &Datum::PushBackRTTIPointer;
-
-		mPerformSearch[static_cast<uint32_t>(DatumType::UNASSIGNED)] = &Datum::PerformVoidSearch;
-		mPerformSearch[static_cast<uint32_t>(DatumType::INT32_T)] = &Datum::PerformIntSearch;
-		mPerformSearch[static_cast<uint32_t>(DatumType::FLOAT)] = &Datum::PerformFloatSearch;
-		mPerformSearch[static_cast<uint32_t>(DatumType::STRING)] = &Datum::PerformStringSearch;
-		mPerformSearch[static_cast<uint32_t>(DatumType::GLM_VECTOR4)] = &Datum::PerformVec4Search;
-		mPerformSearch[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = &Datum::PerformMat4x4Search;
-		mPerformSearch[static_cast<uint32_t>(DatumType::POINTER)] = &Datum::PerformRTTIPointerSearch;
-
-		mToString[static_cast<uint32_t>(DatumType::UNASSIGNED)] = &Datum::ToStringUnassigned;
-		mToString[static_cast<uint32_t>(DatumType::INT32_T)] = &Datum::ToStringInt;
-		mToString[static_cast<uint32_t>(DatumType::FLOAT)] = &Datum::ToStringFloat;
-		mToString[static_cast<uint32_t>(DatumType::STRING)] = &Datum::ToStringString;
-		mToString[static_cast<uint32_t>(DatumType::GLM_VECTOR4)] = &Datum::ToStringVec4;
-		mToString[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = &Datum::ToStringMat4x4;
-		mToString[static_cast<uint32_t>(DatumType::POINTER)] = &Datum::ToStringRTTIPointer;
-	}
-
-	uint32_t Datum::ReserveStrategy(std::uint32_t capacity)
-	{
-		return std::max<uint32_t>(1U, capacity + capacity);
-	}
+	}		
 
 #pragma region SetStorage Implementations
 	void Datum::SetStorage(int32_t* pointerToData, uint32_t size)
@@ -916,16 +685,7 @@ namespace GameEngineLibrary
 	}
 
 #pragma endregion
-
-	void Datum::ShrinkToFit()
-	{
-		if (mMemoryType == DatumMemoryType::INTERNAL && mDatumType != DatumType::UNASSIGNED && mSize != mCapacity)
-		{
-			mDatumValues.voidPointer = realloc(mDatumValues.voidPointer, mDataTypeSizes[static_cast<uint32_t>(mDatumType)] * mSize);
-			mCapacity = mSize;
-		}
-	}
-
+	
 #pragma region Get Method Implementations
 
 #pragma region Non Const Get Method Implementations
@@ -1114,7 +874,7 @@ namespace GameEngineLibrary
 #pragma endregion
 
 #pragma endregion
-
+	
 	string Datum::ToString(uint32_t index) const
 	{
 		if (index >= mSize)
@@ -1195,6 +955,18 @@ namespace GameEngineLibrary
 		index;
 	}
 
+	void Datum::ShrinkToFit()
+	{
+		if (mMemoryType == DatumMemoryType::INTERNAL && mDatumType != DatumType::UNASSIGNED && mSize != mCapacity)
+		{
+			mDatumValues.voidPointer = realloc(mDatumValues.voidPointer, mDataTypeSizes[static_cast<uint32_t>(mDatumType)] * mSize);
+			mCapacity = mSize;
+		}
+	}
+
+#pragma endregion
+
+#pragma region Private Methods
 	void Datum::Reserve(uint32_t capacity)
 	{
 		if (capacity > mCapacity)
@@ -1203,5 +975,236 @@ namespace GameEngineLibrary
 			mDatumValues.voidPointer = realloc(mDatumValues.voidPointer, mDataTypeSizes[static_cast<uint32_t>(mDatumType)] * capacity);
 			mCapacity = capacity;
 		}
-	}	
+	}
+
+	void Datum::AssignFunctionalityForEachType()
+	{
+		mDataTypeSizes[static_cast<uint32_t>(DatumType::UNASSIGNED)] = 0;
+		mDataTypeSizes[static_cast<uint32_t>(DatumType::INT32_T)] = sizeof(int32_t);
+		mDataTypeSizes[static_cast<uint32_t>(DatumType::FLOAT)] = sizeof(std::float_t);
+		mDataTypeSizes[static_cast<uint32_t>(DatumType::STRING)] = sizeof(string);
+		mDataTypeSizes[static_cast<uint32_t>(DatumType::GLM_VECTOR4)] = sizeof(vec4);
+		mDataTypeSizes[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = sizeof(mat4x4);
+		mDataTypeSizes[static_cast<uint32_t>(DatumType::POINTER)] = sizeof(RTTI**);
+
+		mDestructors[static_cast<uint32_t>(DatumType::UNASSIGNED)] = nullptr;
+		mDestructors[static_cast<uint32_t>(DatumType::INT32_T)] = &Datum::DestructIntData;
+		mDestructors[static_cast<uint32_t>(DatumType::FLOAT)] = &Datum::DestructFloatData;
+		mDestructors[static_cast<uint32_t>(DatumType::STRING)] = &Datum::DestructStringData;
+		mDestructors[static_cast<uint32_t>(DatumType::GLM_VECTOR4)] = &Datum::DestructVec4Data;
+		mDestructors[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = &Datum::DestructMat4x4Data;
+		mDestructors[static_cast<uint32_t>(DatumType::POINTER)] = nullptr;
+
+		mPushBacks[static_cast<uint32_t>(DatumType::UNASSIGNED)] = nullptr;
+		mPushBacks[static_cast<uint32_t>(DatumType::INT32_T)] = &Datum::PushBackIntData;
+		mPushBacks[static_cast<uint32_t>(DatumType::FLOAT)] = &Datum::PushBackFloatData;
+		mPushBacks[static_cast<uint32_t>(DatumType::STRING)] = &Datum::PushBackStringData;
+		mPushBacks[static_cast<uint32_t>(DatumType::GLM_VECTOR4)] = &Datum::PushBackVec4Data;
+		mPushBacks[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = &Datum::PushBackMat4x4Data;
+		mPushBacks[static_cast<uint32_t>(DatumType::POINTER)] = &Datum::PushBackRTTIPointer;
+
+		mPerformSearch[static_cast<uint32_t>(DatumType::UNASSIGNED)] = &Datum::PerformVoidSearch;
+		mPerformSearch[static_cast<uint32_t>(DatumType::INT32_T)] = &Datum::PerformIntSearch;
+		mPerformSearch[static_cast<uint32_t>(DatumType::FLOAT)] = &Datum::PerformFloatSearch;
+		mPerformSearch[static_cast<uint32_t>(DatumType::STRING)] = &Datum::PerformStringSearch;
+		mPerformSearch[static_cast<uint32_t>(DatumType::GLM_VECTOR4)] = &Datum::PerformVec4Search;
+		mPerformSearch[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = &Datum::PerformMat4x4Search;
+		mPerformSearch[static_cast<uint32_t>(DatumType::POINTER)] = &Datum::PerformRTTIPointerSearch;
+
+		mToString[static_cast<uint32_t>(DatumType::UNASSIGNED)] = &Datum::ToStringUnassigned;
+		mToString[static_cast<uint32_t>(DatumType::INT32_T)] = &Datum::ToStringInt;
+		mToString[static_cast<uint32_t>(DatumType::FLOAT)] = &Datum::ToStringFloat;
+		mToString[static_cast<uint32_t>(DatumType::STRING)] = &Datum::ToStringString;
+		mToString[static_cast<uint32_t>(DatumType::GLM_VECTOR4)] = &Datum::ToStringVec4;
+		mToString[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = &Datum::ToStringMat4x4;
+		mToString[static_cast<uint32_t>(DatumType::POINTER)] = &Datum::ToStringRTTIPointer;
+	}
+
+	uint32_t Datum::ReserveStrategy(uint32_t capacity)
+	{
+		return std::max<uint32_t>(1U, capacity + capacity);
+	}
+
+#pragma region Search based on each data type(Declarations)
+	bool Datum::PerformVoidSearch(void * lhs, void * rhs, std::uint32_t size) const
+	{
+		return true;
+		lhs;
+		rhs;
+		size;
+	}
+
+	bool Datum::PerformIntSearch(void* lhs, void* rhs, uint32_t size) const
+	{
+		return PerformDeepSearch(static_cast<int32_t*>(lhs), static_cast<int32_t*>(rhs), size);
+	}
+
+	bool Datum::PerformFloatSearch(void* lhs, void* rhs, uint32_t size) const
+	{
+		return PerformDeepSearch(static_cast<std::float_t*>(lhs), static_cast<std::float_t*>(rhs), size);
+	}
+
+	bool Datum::PerformStringSearch(void* lhs, void* rhs, uint32_t size) const
+	{
+		return PerformDeepSearch(static_cast<string*>(lhs), static_cast<string*>(rhs), size);
+	}
+
+	bool Datum::PerformVec4Search(void* lhs, void* rhs, uint32_t size) const
+	{
+		return PerformDeepSearch(static_cast<vec4*>(lhs), static_cast<vec4*>(rhs), size);
+	}
+
+	bool Datum::PerformMat4x4Search(void* lhs, void* rhs, uint32_t size) const
+	{
+		return PerformDeepSearch(static_cast<mat4x4*>(lhs), static_cast<mat4x4*>(rhs), size);
+	}
+
+	bool Datum::PerformRTTIPointerSearch(void* lhs, void* rhs, uint32_t size) const
+	{
+		RTTI** lhsRTTI = static_cast<RTTI**>(lhs);
+		RTTI** rhsRTTI = static_cast<RTTI**>(rhs);
+
+		for (uint32_t i = 0; i < size; ++i)
+		{
+			if (!((**(lhsRTTI + i)).Equals(*(rhsRTTI + i))))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+#pragma endregion
+
+#pragma region Pushbacking based on each data type	
+	void Datum::PushBackIntData(uint32_t startIndex, uint32_t endIndex)
+	{
+		for (uint32_t i = startIndex; i < endIndex; ++i)
+		{
+			PushBack(int32_t());
+		}
+	}
+
+	void Datum::PushBackFloatData(uint32_t startIndex, uint32_t endIndex)
+	{
+		for (uint32_t i = startIndex; i < endIndex; ++i)
+		{
+			PushBack(std::float_t());
+		}
+	}
+
+	void Datum::PushBackStringData(uint32_t startIndex, uint32_t endIndex)
+	{
+		for (uint32_t i = startIndex; i < endIndex; ++i)
+		{
+			PushBack(string());
+		}
+	}
+
+	void Datum::PushBackVec4Data(uint32_t startIndex, uint32_t endIndex)
+	{
+		for (uint32_t i = startIndex; i < endIndex; ++i)
+		{
+			PushBack(vec4());
+		}
+	}
+
+	void Datum::PushBackMat4x4Data(uint32_t startIndex, uint32_t endIndex)
+	{
+		for (uint32_t i = startIndex; i < endIndex; ++i)
+		{
+			PushBack(mat4x4());
+		}
+	}
+
+	void Datum::PushBackRTTIPointer(uint32_t startIndex, uint32_t endIndex)
+	{
+		for (uint32_t i = startIndex; i < endIndex; ++i)
+		{
+			PushBack(nullptr);
+		}
+	}
+#pragma endregion
+
+#pragma region Destructing for each data type
+	void Datum::DestructIntData(uint32_t startIndex, uint32_t endIndex)
+	{
+		for (uint32_t i = startIndex; i < endIndex; ++i)
+		{
+			(mDatumValues.intPointer + i)->~int32_t();
+		}
+	}
+
+	void Datum::DestructFloatData(uint32_t startIndex, uint32_t endIndex)
+	{
+		typedef std::float_t float_std;
+		for (uint32_t i = startIndex; i < endIndex; ++i)
+		{
+			(mDatumValues.floatPointer + i)->~float_std();
+		}
+	}
+
+	void Datum::DestructStringData(uint32_t startIndex, uint32_t endIndex)
+	{
+		for (uint32_t i = startIndex; i < endIndex; ++i)
+		{
+			(mDatumValues.stringPointer + i)->~string();
+		}
+	}
+
+	void Datum::DestructVec4Data(uint32_t startIndex, uint32_t endIndex)
+	{
+		for (uint32_t i = startIndex; i < endIndex; ++i)
+		{
+			(mDatumValues.vector4Pointer + i)->~vec4();
+		}
+	}
+
+	void Datum::DestructMat4x4Data(uint32_t startIndex, uint32_t endIndex)
+	{
+		for (uint32_t i = startIndex; i < endIndex; ++i)
+		{
+			(mDatumValues.mat4x4Pointer + i)->~mat4x4();
+		}
+	}
+#pragma endregion
+
+#pragma region Converting each data type to std::string Implementations
+	std::string Datum::ToStringUnassigned(uint32_t index) const
+	{
+		throw exception("std::string Datum::ToStringUnassigned() const: Cannot convert unassigned Datum to std::string.");
+		index;
+	}
+
+	std::string Datum::ToStringInt(uint32_t index) const
+	{
+		return std::to_string(*(mDatumValues.intPointer + index));
+	}
+
+	std::string Datum::ToStringFloat(uint32_t index) const
+	{
+		return std::to_string(*(mDatumValues.floatPointer + index));
+	}
+
+	std::string Datum::ToStringString(uint32_t index) const
+	{
+		return *(mDatumValues.stringPointer + index);
+	}
+
+	std::string Datum::ToStringVec4(uint32_t index) const
+	{
+		return glm::to_string(*(mDatumValues.vector4Pointer + index));
+	}
+
+	std::string Datum::ToStringMat4x4(uint32_t index) const
+	{
+		return glm::to_string(*(mDatumValues.mat4x4Pointer + index));
+	}
+
+	std::string Datum::ToStringRTTIPointer(uint32_t index) const
+	{
+		return (*(*(mDatumValues.rttiPointer + index))).ToString();
+	}
+#pragma endregion
+
+#pragma endregion
 }

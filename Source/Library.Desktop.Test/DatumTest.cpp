@@ -103,50 +103,48 @@ namespace LibraryDesktopTest
 			DatumSizeAndTypeTest(datum, currentSize, DatumType::INT32_T);
 		}
 
-		TEST_METHOD(DatumSetSize)
+		template<typename T1>
+		void DatumSetSize(T1 firstPushedValue, T1 secondPushedValue, T1 thirdPushedValue, DatumType datumType)
 		{
 			Datum datum;
 			uint32_t currentSize = 0;
 			Assert::ExpectException<exception>([&] {datum.SetSize(currentSize); });
 
-			datum.SetType(DatumType::FLOAT);
+			datum.SetType(datumType);
 			Assert::ExpectException<exception>([&] {datum.SetSize(currentSize); });
 
-			DatumSizeAndTypeTest(datum, currentSize, DatumType::FLOAT);
+			DatumSizeAndTypeTest(datum, currentSize, datumType);
 
-			float firstPushedValue = 10.0f;
-			float secondPushedValue = 20.0f;
-			float thirdPushedValue = 30.0f;
 			datum.PushBack(firstPushedValue);
 			++currentSize;
 
-			DatumSizeAndTypeTest(datum, currentSize, DatumType::FLOAT);
+			DatumSizeAndTypeTest(datum, currentSize, datumType);
 
 			datum.SetSize(currentSize);
-			DatumSizeAndTypeTest(datum, currentSize, DatumType::FLOAT);
+			DatumSizeAndTypeTest(datum, currentSize, datumType);
 
-			Assert::AreEqual(datum.Get<std::float_t>(currentSize - 1), firstPushedValue);
-			Assert::ExpectException<exception>([&] {datum.Get<std::float_t>(currentSize); });
-			Assert::ExpectException<exception>([&] {datum.Get<std::float_t>(currentSize + 1); });
+			Assert::IsTrue(datum.Get<T1>(currentSize - 1) == firstPushedValue);
+			Assert::ExpectException<exception>([&] {datum.Get<T1>(currentSize); });
+			Assert::ExpectException<exception>([&] {datum.Get<T1>(currentSize + 1); });
 
 			datum.SetSize(currentSize + 1);
 			++currentSize;
-			DatumSizeAndTypeTest(datum, currentSize, DatumType::FLOAT);
-			Assert::AreEqual(datum.Get<std::float_t>(currentSize - 1), std::float_t());
-			Assert::AreEqual(datum.Get<std::float_t>(currentSize - 2), firstPushedValue);
+			DatumSizeAndTypeTest(datum, currentSize, datumType);
+			Assert::IsTrue(datum.Get<T1>(currentSize - 1) == T1());
+			Assert::IsTrue(datum.Get<T1>(currentSize - 2) == firstPushedValue);
 
 			datum.SetSize(100);
 			currentSize = 100;
-			Assert::AreEqual(datum.Get<std::float_t>(0), firstPushedValue);
-			Assert::AreEqual(datum.Get<std::float_t>(1), std::float_t());
-			Assert::AreEqual(datum.Get<std::float_t>(2), std::float_t());
-			Assert::AreEqual(datum.Get<std::float_t>(5), std::float_t());
-			Assert::AreEqual(datum.Get<std::float_t>(20), std::float_t());
-			Assert::AreEqual(datum.Get<std::float_t>(50), std::float_t());
-			Assert::AreEqual(datum.Get<std::float_t>(80), std::float_t());
-			Assert::AreEqual(datum.Get<std::float_t>(99), std::float_t());
-			Assert::ExpectException<exception>([&] {datum.Get<std::float_t>(100); });
-			DatumSizeAndTypeTest(datum, currentSize, DatumType::FLOAT);
+			Assert::IsTrue(datum.Get<T1>(0) == firstPushedValue);
+			Assert::IsTrue(datum.Get<T1>(1) == T1());
+			Assert::IsTrue(datum.Get<T1>(2) == T1());
+			Assert::IsTrue(datum.Get<T1>(5) == T1());
+			Assert::IsTrue(datum.Get<T1>(20) == T1());
+			Assert::IsTrue(datum.Get<T1>(50) == T1());
+			Assert::IsTrue(datum.Get<T1>(80) == T1());
+			Assert::IsTrue(datum.Get<T1>(99) == T1());
+			Assert::ExpectException<exception>([&] {datum.Get<T1>(100); });
+			DatumSizeAndTypeTest(datum, currentSize, datumType);
 
 			datum.Clear();
 			currentSize = 0;
@@ -159,21 +157,55 @@ namespace LibraryDesktopTest
 
 			datum.PushBack(thirdPushedValue);
 			++currentSize;
-			DatumSizeAndTypeTest(datum, currentSize, DatumType::FLOAT);
+			DatumSizeAndTypeTest(datum, currentSize, datumType);
 
 			datum.SetSize(2);
 			currentSize = 2;
-			DatumSizeAndTypeTest(datum, currentSize, DatumType::FLOAT);
-			Assert::AreEqual(datum.Get<std::float_t>(0), firstPushedValue);
-			Assert::AreEqual(datum.Get<std::float_t>(1), secondPushedValue);
-			Assert::ExpectException<exception>([&] {datum.Get<std::float_t>(2); });
+			DatumSizeAndTypeTest(datum, currentSize, datumType);
+			Assert::IsTrue(datum.Get<T1>(0) == firstPushedValue);
+			Assert::IsTrue(datum.Get<T1>(1) == secondPushedValue);
+			Assert::ExpectException<exception>([&] {datum.Get<T1>(2); });
 
 			datum.SetSize(1);
 			currentSize = 1;
-			DatumSizeAndTypeTest(datum, currentSize, DatumType::FLOAT);
-			Assert::AreEqual(datum.Get<std::float_t>(0), firstPushedValue);
-			Assert::ExpectException<exception>([&] {datum.Get<std::float_t>(1); });
-			Assert::ExpectException<exception>([&] {datum.Get<std::float_t>(2); });
+			DatumSizeAndTypeTest(datum, currentSize, datumType);
+			Assert::IsTrue(datum.Get<T1>(0) == firstPushedValue);
+			Assert::ExpectException<exception>([&] {datum.Get<T1>(1); });
+			Assert::ExpectException<exception>([&] {datum.Get<T1>(2); });
+		}
+
+		TEST_METHOD(DatumSetSize)
+		{
+			int32_t firstPushedInt = 10;
+			int32_t secondPushedInt = 20;
+			int32_t thirdPushedInt = 30;
+
+			std::float_t firstPushedFloat = 10.0f;
+			std::float_t secondPushedFloat = 20.0f;
+			std::float_t thirdPushedFloat = 30.0f;
+
+			string firstPushedString = "Hello";
+			string secondPushedString = "How";
+			string thirdPushedString = "Ummm";
+
+			vec4 firstPushedVec4(10, 20, 30, 40);
+			vec4 secondPushedVec4(50, 60, 70, 80);
+			vec4 thirdPushedVec4(90, 100, 110, 120);
+
+			vec4 fourthVec4(90, 100, 110, 120);
+			mat4x4 firstPushedMat4x4(firstPushedVec4, secondPushedVec4, thirdPushedVec4, fourthVec4);
+			mat4x4 secondPushedMat4x4(secondPushedVec4, thirdPushedVec4, fourthVec4, firstPushedVec4);
+			mat4x4 thirdPushedMat4x4(thirdPushedVec4, fourthVec4, firstPushedVec4, secondPushedVec4);
+
+			DatumSetSize(firstPushedInt, secondPushedInt, thirdPushedInt, DatumType::INT32_T);
+
+			DatumSetSize(firstPushedFloat, secondPushedFloat, thirdPushedFloat, DatumType::FLOAT);
+
+			DatumSetSize(firstPushedString, secondPushedString, thirdPushedString, DatumType::STRING);
+
+			DatumSetSize(firstPushedVec4, secondPushedVec4, thirdPushedVec4, DatumType::GLM_VECTOR4);
+
+			DatumSetSize(firstPushedMat4x4, secondPushedMat4x4, thirdPushedMat4x4, DatumType::GLM_MATRIX4X4);
 		}
 
 		TEST_METHOD(DatumClear)
@@ -1218,45 +1250,311 @@ namespace LibraryDesktopTest
 			DatumCopyConstructor(firstPushedMat4x4, secondPushedMat4x4, thirdPushedMat4x4, DatumType::GLM_MATRIX4X4);
 		}
 
-		TEST_METHOD(DatumAssignmentOperator)
+		template<typename T1>
+		void DatumAssignmentOperatorLHSunassigned(T1 firstPushedValue, T1 secondPushedValue, T1 thirdPushedValue, DatumType datumType)
 		{
-			Datum datum;
-
 			Datum datumOne;
-			datumOne = datum;
-			Assert::IsTrue(datum == datumOne);
+			Datum internalDatum;
+			internalDatum = firstPushedValue;
+			internalDatum.PushBack(secondPushedValue);
+			internalDatum.PushBack(thirdPushedValue);
 
+			datumOne = internalDatum;
+			Assert::IsTrue(datumOne == internalDatum);
+
+			datumType;
+			Datum datumTwo;
+			Datum externalDatum;
+			externalDatum.SetType(datumType);
+			externalDatum.SetStorage(&firstPushedValue, 1);
+			datumTwo = externalDatum;
+			Assert::IsTrue(datumTwo == externalDatum);
+
+			Datum datumThree;
+			Datum unassignedDatumOne;
+			datumThree = unassignedDatumOne;
+			Assert::IsTrue(datumThree == unassignedDatumOne);
+
+			Datum datumFour;
+			Datum unassignedDatumTwo;
+			unassignedDatumTwo.SetType(datumType);
+			datumFour = unassignedDatumTwo;
+			Assert::IsTrue(datumFour == unassignedDatumTwo);
+		}
+
+		TEST_METHOD(DatumAssignmentOperatorLHSunassigned)
+		{
 			int32_t firstPushedInt = 10;
 			int32_t secondPushedInt = 20;
 			int32_t thirdPushedInt = 30;
 
-			datum.SetType(DatumType::INT32_T);
+			std::float_t firstPushedFloat = 10.0f;
+			std::float_t secondPushedFloat = 20.0f;
+			std::float_t thirdPushedFloat = 30.0f;
 
-			datum.PushBack(firstPushedInt);
-			datum.PushBack(secondPushedInt);
-			datum.PushBack(thirdPushedInt);
+			string firstPushedString = "Hello";
+			string secondPushedString = "How";
+			string thirdPushedString = "Ummm";
 
-			Datum datumtwo;
-			datumtwo = datum;
-			Assert::IsTrue(datum == datumtwo);
+			vec4 firstPushedVec4(10, 20, 30, 40);
+			vec4 secondPushedVec4(50, 60, 70, 80);
+			vec4 thirdPushedVec4(90, 100, 110, 120);
 
-			Datum externalDatum;
-			externalDatum.SetType(DatumType::INT32_T);
-			externalDatum.SetStorage(&firstPushedInt, 1);
+			vec4 fourthVec4(90, 100, 110, 120);
+			mat4x4 firstPushedMat4x4(firstPushedVec4, secondPushedVec4, thirdPushedVec4, fourthVec4);
+			mat4x4 secondPushedMat4x4(secondPushedVec4, thirdPushedVec4, fourthVec4, firstPushedVec4);
+			mat4x4 thirdPushedMat4x4(thirdPushedVec4, fourthVec4, firstPushedVec4, secondPushedVec4);
 
-			Datum datumThree;
-			datumThree = externalDatum;
-			Assert::IsTrue(datumThree == externalDatum);
-			
-			Datum externalDatumTwo;
-			externalDatumTwo.SetType(DatumType::INT32_T);
-			externalDatumTwo.SetStorage(&secondPushedInt, 1);
-			
-			externalDatum = externalDatumTwo;
-			Assert::IsTrue(externalDatum == externalDatumTwo);
+			DatumAssignmentOperatorLHSunassigned(firstPushedInt, secondPushedInt, thirdPushedInt, DatumType::INT32_T);
 
-			externalDatum = datum;
-			Assert::IsTrue(externalDatum == datum);
+			DatumAssignmentOperatorLHSunassigned(firstPushedFloat, secondPushedFloat, thirdPushedFloat, DatumType::FLOAT);
+
+			DatumAssignmentOperatorLHSunassigned(firstPushedString, secondPushedString, thirdPushedString, DatumType::STRING);
+
+			DatumAssignmentOperatorLHSunassigned(firstPushedVec4, secondPushedVec4, thirdPushedVec4, DatumType::GLM_VECTOR4);
+
+			DatumAssignmentOperatorLHSunassigned(firstPushedMat4x4, secondPushedMat4x4, thirdPushedMat4x4, DatumType::GLM_MATRIX4X4);
+		}
+
+		template<typename T1, typename T2>
+		void DatumAssignmentOperatorLHSInternal(T1 firstPushedValue, T1 secondPushedValue, T1 thirdPushedValue, T2 falseValueOne, T2 falseValueTwo, T2 falseValueThree, DatumType datumType, DatumType falseDatumType)
+		{
+			Datum lhsInternalDatum;
+			lhsInternalDatum.SetType(datumType);
+
+			lhsInternalDatum.PushBack(firstPushedValue);
+			lhsInternalDatum.PushBack(secondPushedValue);
+			lhsInternalDatum.PushBack(thirdPushedValue);
+
+			//RHS - Internal
+			Datum rhsInternalDatum;
+			rhsInternalDatum.SetType(falseDatumType);
+
+			rhsInternalDatum.PushBack(falseValueOne);
+			rhsInternalDatum.PushBack(falseValueTwo);
+			rhsInternalDatum.PushBack(falseValueThree);
+
+			lhsInternalDatum = rhsInternalDatum;
+			Assert::IsTrue(lhsInternalDatum == rhsInternalDatum);
+
+			rhsInternalDatum.Clear();
+			lhsInternalDatum = rhsInternalDatum;
+			Assert::IsTrue(lhsInternalDatum == rhsInternalDatum);
+
+			//RHS - External
+			Datum rhsExternalDatum;
+			rhsExternalDatum.SetType(falseDatumType);
+			rhsExternalDatum.SetStorage(&falseValueOne, 1);
+
+			lhsInternalDatum = rhsExternalDatum;
+			Assert::IsTrue(lhsInternalDatum == rhsExternalDatum);
+
+			//RHS - Unassigned
+			lhsInternalDatum = rhsInternalDatum;
+			Datum rhsUnassignedDatum;
+			lhsInternalDatum = rhsUnassignedDatum;
+			Assert::IsTrue(lhsInternalDatum == rhsUnassignedDatum);
+
+			lhsInternalDatum = rhsInternalDatum;
+			rhsUnassignedDatum.SetType(datumType);
+			lhsInternalDatum = rhsUnassignedDatum;
+			Assert::IsTrue(lhsInternalDatum == rhsUnassignedDatum);
+		}
+
+		TEST_METHOD(DatumAssignmentOperatorLHSInternal)
+		{
+			int32_t firstPushedInt = 10;
+			int32_t secondPushedInt = 20;
+			int32_t thirdPushedInt = 30;
+
+			std::float_t firstPushedFloat = 10.0f;
+			std::float_t secondPushedFloat = 20.0f;
+			std::float_t thirdPushedFloat = 30.0f;
+
+			string firstPushedString = "Hello";
+			string secondPushedString = "How";
+			string thirdPushedString = "Ummm";
+
+			vec4 firstPushedVec4(10, 20, 30, 40);
+			vec4 secondPushedVec4(50, 60, 70, 80);
+			vec4 thirdPushedVec4(90, 100, 110, 120);
+
+			vec4 fourthVec4(90, 100, 110, 120);
+			mat4x4 firstPushedMat4x4(firstPushedVec4, secondPushedVec4, thirdPushedVec4, fourthVec4);
+			mat4x4 secondPushedMat4x4(secondPushedVec4, thirdPushedVec4, fourthVec4, firstPushedVec4);
+			mat4x4 thirdPushedMat4x4(thirdPushedVec4, fourthVec4, firstPushedVec4, secondPushedVec4);
+
+			DatumAssignmentOperatorLHSInternal(firstPushedInt, secondPushedInt, thirdPushedInt, firstPushedFloat, secondPushedFloat, thirdPushedFloat, DatumType::INT32_T, DatumType::FLOAT);
+
+			DatumAssignmentOperatorLHSInternal(firstPushedFloat, secondPushedFloat, thirdPushedFloat, firstPushedString, secondPushedString, thirdPushedString, DatumType::FLOAT, DatumType::STRING);
+
+			DatumAssignmentOperatorLHSInternal(firstPushedString, secondPushedString, thirdPushedString, firstPushedVec4, secondPushedVec4, thirdPushedVec4, DatumType::STRING, DatumType::GLM_VECTOR4);
+
+			DatumAssignmentOperatorLHSInternal(firstPushedVec4, secondPushedVec4, thirdPushedVec4, firstPushedMat4x4, secondPushedMat4x4, thirdPushedMat4x4, DatumType::GLM_VECTOR4, DatumType::GLM_MATRIX4X4);
+
+			DatumAssignmentOperatorLHSInternal(firstPushedMat4x4, secondPushedMat4x4, thirdPushedMat4x4, firstPushedString, secondPushedString, thirdPushedString, DatumType::GLM_MATRIX4X4, DatumType::STRING);
+		}
+
+		template<typename T1, typename T2>
+		void DatumAssignmentOperatorLHSExternal(T1 firstPushedValue, T2 falseValueOne, T2 falseValueTwo, T2 falseValueThree, DatumType datumType, DatumType falseDatumType)
+		{
+			Datum lhsExternalDatum;
+			lhsExternalDatum.SetType(datumType);
+			lhsExternalDatum.SetStorage(&firstPushedValue, 1);
+			Datum savedExternalDatum = lhsExternalDatum;
+
+			//RHS - Internal
+			Datum rhsInternalDatum;
+			rhsInternalDatum.SetType(falseDatumType);
+
+			rhsInternalDatum.PushBack(falseValueOne);
+			rhsInternalDatum.PushBack(falseValueTwo);
+			rhsInternalDatum.PushBack(falseValueThree);
+
+			lhsExternalDatum = rhsInternalDatum;
+			Assert::IsTrue(lhsExternalDatum == rhsInternalDatum);
+
+			rhsInternalDatum.Clear();
+			lhsExternalDatum = savedExternalDatum;
+			lhsExternalDatum = rhsInternalDatum;
+			Assert::IsTrue(lhsExternalDatum == rhsInternalDatum);
+
+			//RHS - External
+			Datum rhsExternalDatum;
+			rhsExternalDatum.SetType(falseDatumType);
+			rhsExternalDatum.SetStorage(&falseValueTwo, 1);
+
+			lhsExternalDatum = savedExternalDatum;
+			lhsExternalDatum = rhsExternalDatum;
+			Assert::IsTrue(lhsExternalDatum == rhsExternalDatum);
+
+			//RHS - Unassigned
+			Datum rhsUnassignedDatum;
+			lhsExternalDatum = savedExternalDatum;
+			lhsExternalDatum = rhsUnassignedDatum;
+			Assert::IsTrue(lhsExternalDatum == rhsUnassignedDatum);
+
+			lhsExternalDatum = savedExternalDatum;
+			lhsExternalDatum = rhsInternalDatum;
+			rhsUnassignedDatum.SetType(datumType);
+			lhsExternalDatum = rhsUnassignedDatum;
+			Assert::IsTrue(lhsExternalDatum == rhsUnassignedDatum);
+		}
+
+		TEST_METHOD(DatumAssignmentOperatorLHSExternal)
+		{
+			int32_t firstPushedInt = 10;			
+
+			std::float_t firstPushedFloat = 10.0f;
+			std::float_t secondPushedFloat = 20.0f;
+			std::float_t thirdPushedFloat = 30.0f;
+
+			string firstPushedString = "Hello";
+			string secondPushedString = "How";
+			string thirdPushedString = "Ummm";
+
+			vec4 firstPushedVec4(10, 20, 30, 40);
+			vec4 secondPushedVec4(50, 60, 70, 80);
+			vec4 thirdPushedVec4(90, 100, 110, 120);
+
+			vec4 fourthVec4(90, 100, 110, 120);
+			mat4x4 firstPushedMat4x4(firstPushedVec4, secondPushedVec4, thirdPushedVec4, fourthVec4);
+			mat4x4 secondPushedMat4x4(secondPushedVec4, thirdPushedVec4, fourthVec4, firstPushedVec4);
+			mat4x4 thirdPushedMat4x4(thirdPushedVec4, fourthVec4, firstPushedVec4, secondPushedVec4);
+
+			DatumAssignmentOperatorLHSExternal(firstPushedInt, firstPushedFloat, secondPushedFloat, thirdPushedFloat, DatumType::INT32_T, DatumType::FLOAT);
+
+			DatumAssignmentOperatorLHSExternal(firstPushedFloat, firstPushedString, secondPushedString, thirdPushedString, DatumType::FLOAT, DatumType::STRING);
+
+			DatumAssignmentOperatorLHSExternal(firstPushedString, firstPushedVec4, secondPushedVec4, thirdPushedVec4, DatumType::STRING, DatumType::GLM_VECTOR4);
+
+			DatumAssignmentOperatorLHSExternal(firstPushedVec4, firstPushedMat4x4, secondPushedMat4x4, thirdPushedMat4x4, DatumType::GLM_VECTOR4, DatumType::GLM_MATRIX4X4);
+
+			DatumAssignmentOperatorLHSExternal(firstPushedMat4x4, firstPushedString, secondPushedString, thirdPushedString, DatumType::GLM_MATRIX4X4, DatumType::STRING);
+		}
+
+		template<typename T1, typename T2>
+		void DatumAssignmentOperatorForEachType(T1 firstPushedValue, T1 secondPushedValue, T1 thirdPushedValue, T2 falseValue, DatumType datumType)
+		{
+			Datum datum;
+			datum = firstPushedValue;
+
+			Datum datumOne;
+			datumOne.SetType(datumType);
+			datumOne.PushBack(firstPushedValue);
+
+			Assert::IsTrue(datum == datumOne);
+
+			datum.SetType(datumType);
+			datum = secondPushedValue;
+
+			datumOne.Clear();
+			datumOne.PushBack(secondPushedValue);
+
+			Assert::IsTrue(datum == datumOne);
+			Assert::ExpectException<exception>([&] {datum = falseValue; });
+
+			//Clearing both the Datums and assigning again
+			datum.Clear();
+			datumOne.Clear();
+
+			datum.PushBack(firstPushedValue);
+			datum.PushBack(secondPushedValue);
+			datum.PushBack(thirdPushedValue);
+
+			datumOne.PushBack(firstPushedValue);
+			datumOne.PushBack(secondPushedValue);
+			datumOne.PushBack(thirdPushedValue);
+
+			Assert::IsTrue(datum == datumOne);
+
+			datum = thirdPushedValue;
+			datumOne.Set(thirdPushedValue);
+
+			Assert::IsTrue(datum == datumOne);
+
+			datum = secondPushedValue;
+			datumOne.Set(secondPushedValue);
+
+			Assert::IsTrue(datum == datumOne);
+
+			Datum datumTwo;
+			datumTwo.SetType(datumType);
+			Assert::ExpectException<exception>([&] {datumTwo = firstPushedValue; });
+		}
+
+		TEST_METHOD(DatumAssignmentOperatorForEachType)
+		{
+			int32_t firstPushedInt = 10;
+			int32_t secondPushedInt = 20;
+			int32_t thirdPushedInt = 30;
+
+			std::float_t firstPushedFloat = 10.0f;
+			std::float_t secondPushedFloat = 20.0f;
+			std::float_t thirdPushedFloat = 30.0f;
+
+			string firstPushedString = "Hello";
+			string secondPushedString = "How";
+			string thirdPushedString = "Ummm";
+
+			vec4 firstPushedVec4(10, 20, 30, 40);
+			vec4 secondPushedVec4(50, 60, 70, 80);
+			vec4 thirdPushedVec4(90, 100, 110, 120);
+
+			vec4 fourthVec4(90, 100, 110, 120);
+			mat4x4 firstPushedMat4x4(firstPushedVec4, secondPushedVec4, thirdPushedVec4, fourthVec4);
+			mat4x4 secondPushedMat4x4(secondPushedVec4, thirdPushedVec4, fourthVec4, firstPushedVec4);
+			mat4x4 thirdPushedMat4x4(thirdPushedVec4, fourthVec4, firstPushedVec4, secondPushedVec4);
+
+			DatumAssignmentOperatorForEachType(firstPushedInt, secondPushedInt, thirdPushedInt, firstPushedFloat, DatumType::INT32_T);
+
+			DatumAssignmentOperatorForEachType(firstPushedFloat, secondPushedFloat, thirdPushedFloat, firstPushedString, DatumType::FLOAT);
+
+			DatumAssignmentOperatorForEachType(firstPushedString, secondPushedString, thirdPushedString, firstPushedVec4, DatumType::STRING);
+
+			DatumAssignmentOperatorForEachType(firstPushedVec4, secondPushedVec4, thirdPushedVec4, firstPushedMat4x4, DatumType::GLM_VECTOR4);
+
+			DatumAssignmentOperatorForEachType(firstPushedMat4x4, secondPushedMat4x4, thirdPushedMat4x4, firstPushedFloat, DatumType::GLM_MATRIX4X4);
 		}
 	private:
 		static _CrtMemState sStartMemState;

@@ -1,10 +1,9 @@
 #pragma once
-#include <cstdint>
 #include "RTTI.h"
 #pragma warning ( push )
 #pragma warning ( disable: 4201 )							//Suppressing the warning message "nonstandard extension used : nameless struct / union" in the file"
-#include "../../External/Glm/Glm/vec4.hpp"
-#include "../../External/Glm/Glm/mat4x4.hpp"
+#include <Glm/vec4.hpp>
+#include <Glm/mat4x4.hpp>
 #pragma warning ( pop )
 
 namespace GameEngineLibrary
@@ -430,7 +429,7 @@ namespace GameEngineLibrary
 		*	@exception throws an exception if the passed memoryType matches with the Datum's memory type.
 		*/
 		void CheckForTheMemoryType(const DatumMemoryType memoryType) const;
-		
+
 		/** Checks if the passed index is in bounds of the size of the Datum
 		*	@param index The index which has to be checked for bounds
 		*	@exception throws an exception if the index is out of bounds/range.
@@ -710,6 +709,57 @@ namespace GameEngineLibrary
 		*	@param index The index where the date has to be set in the Datum.
 		*/
 		void SetFromStringRTTIPointer(const std::string& inputString, const std::uint32_t index);
+
+
+		/** Performs deep copy for the unassigned type.
+		*	@param lhsVoidPointer The left hand side pointer for which the data has to be copied.
+		*	@param rhsVoidPointer The right hand side pointer which will be copied.
+		*	@param mSize The length of the data which has to be copied
+		*/
+		void PerformDeepCopyUnassigned(void* lhsVoidPointer, const void* const rhsVoidPointer, const std::uint32_t mSize);
+
+		/** Performs deep copy for the std::int32_t type.
+		*	@param lhsVoidPointer The left hand side pointer for which the data has to be copied.
+		*	@param rhsVoidPointer The right hand side pointer which will be copied.
+		*	@param mSize The length of the data which has to be copied
+		*/
+		void PerformDeepCopyInt(void* lhsVoidPointer, const void* const rhsVoidPointer, const std::uint32_t mSize);
+
+		/** Performs deep copy for the std::float_t type.
+		*	@param lhsVoidPointer The left hand side pointer for which the data has to be copied.
+		*	@param rhsVoidPointer The right hand side pointer which will be copied.
+		*	@param mSize The length of the data which has to be copied
+		*/
+		void PerformDeepCopyFloat(void* lhsVoidPointer, const void* const rhsVoidPointer, const std::uint32_t mSize);
+
+		/** Performs deep copy for the std::string type.
+		*	@param lhsVoidPointer The left hand side pointer for which the data has to be copied.
+		*	@param rhsVoidPointer The right hand side pointer which will be copied.
+		*	@param mSize The length of the data which has to be copied
+		*/
+		void PerformDeepCopyString(void* lhsVoidPointer, const void* const rhsVoidPointer, const std::uint32_t mSize);
+
+		/** Performs deep copy for the glm::vec4 type.
+		*	@param lhsVoidPointer The left hand side pointer for which the data has to be copied.
+		*	@param rhsVoidPointer The right hand side pointer which will be copied.
+		*	@param mSize The length of the data which has to be copied
+		*/
+		void PerformDeepCopyVec4(void* lhsVoidPointer, const void* const rhsVoidPointer, const std::uint32_t mSize);
+
+		/** Performs deep copy for the glm::mat4x4 type.
+		*	@param lhsVoidPointer The left hand side pointer for which the data has to be copied.
+		*	@param rhsVoidPointer The right hand side pointer which will be copied.
+		*	@param mSize The length of the data which has to be copied
+		*/
+		void PerformDeepCopyMat4x4(void* lhsVoidPointer, const void* const rhsVoidPointer, const std::uint32_t mSize);
+
+		/** Performs deep copy for the POINTER type.
+		*	@param lhsVoidPointer The left hand side pointer for which the data has to be copied.
+		*	@param rhsVoidPointer The right hand side pointer which will be copied.
+		*	@param mSize The length of the data which has to be copied
+		*/
+		void PerformDeepCopyRTTIPointer(void* lhsVoidPointer, const void* const rhsVoidPointer, const std::uint32_t mSize);
+
 #pragma endregion		
 
 		/** The Union which holds the pointers to various supported data types.
@@ -750,6 +800,7 @@ namespace GameEngineLibrary
 		typedef bool (Datum::*PerformSearchForDataType)(const void* const lhs, const void* const rhs) const;
 		typedef void (Datum::*ToStringForDataType)(const std::uint32_t index, std::string& convertedString) const;
 		typedef void (Datum::*SetFromStringForDataType)(const std::string& inputString, const std::uint32_t index);
+		typedef void (Datum::*PerformDeepCopyForDataType)(void* lhsVoidPointer, const void* const rhsVoidPointer, const std::uint32_t mSize);
 
 		/** An unsigned integer array containing the sizes of the various supported data types.
 		*/
@@ -774,6 +825,10 @@ namespace GameEngineLibrary
 		/** Function pointer array containing pointers to the Set from string functions which convert each specific data to std::string.
 		*/
 		SetFromStringForDataType mSetFromString[7];
+
+		/** Function pointer array containing pointers to functions which perform deep copy based on their specific type.
+		*/
+		PerformDeepCopyForDataType mPerformDeepCopy[7];
 	};
 
 	template<typename T>

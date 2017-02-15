@@ -476,64 +476,6 @@ namespace GameEngineLibrary
 		template<typename T>
 		bool PerformDeepSearch(const T* const lhs, const T* const rhs) const;
 
-#pragma region Search based on each data type(Declarations)
-		/** This function will be called when two Datums of type UNASSIGNED are compared.
-		*	This function will always return true.
-		*	@param lhs The left hand side pointer pointing to the data which has to be compared.
-		*	@param rhs The right hand side pointer pointing to the data which has to be compared.
-		*	@returns Always return true.
-		*/
-		bool PerformVoidSearch(const void* const lhs, const void* const rhs) const;
-
-		/** This function will be called when two Datums of type INT32_T are compared.
-		*	This function will internally call the templated PerformDeepSearch();
-		*	@param lhs The left hand side pointer pointing to the data which has to be compared.
-		*	@param rhs The right hand side pointer pointing to the data which has to be compared.
-		*	@returns Returns true if both the pointers contain the same data.
-		*/
-		bool PerformIntSearch(const void* const lhs, const void* const rhs) const;
-
-		/** This function will be called when two Datums of type FLOAT are compared.
-		*	This function will internally call the templated PerformDeepSearch();
-		*	@param lhs The left hand side pointer pointing to the data which has to be compared.
-		*	@param rhs The right hand side pointer pointing to the data which has to be compared.
-		*	@returns Returns true if both the pointers contain the same data.
-		*/
-		bool PerformFloatSearch(const void* const lhs, const void* const rhs) const;
-
-		/** This function will be called when two Datums of type STRING are compared.
-		*	This function will internally call the templated PerformDeepSearch();
-		*	@param lhs The left hand side pointer pointing to the data which has to be compared.
-		*	@param rhs The right hand side pointer pointing to the data which has to be compared.
-		*	@returns Returns true if both the pointers contain the same data.
-		*/
-		bool PerformStringSearch(const void* const lhs, const void* const rhs) const;
-
-		/** This function will be called when two Datums of type GLM_VECTOR4 are compared.
-		*	This function will internally call the templated PerformDeepSearch();
-		*	@param lhs The left hand side pointer pointing to the data which has to be compared.
-		*	@param rhs The right hand side pointer pointing to the data which has to be compared.
-		*	@returns Returns true if both the pointers contain the same data.
-		*/
-		bool PerformVec4Search(const void* const lhs, const void* const rhs) const;
-
-		/** This function will be called when two Datums of type GLM_MATRIX4X4 are compared.
-		*	This function will internally call the templated PerformDeepSearch();
-		*	@param lhs The left hand side pointer pointing to the data which has to be compared.
-		*	@param rhs The right hand side pointer pointing to the data which has to be compared.
-		*	@returns Returns true if both the pointers contain the same data.
-		*/
-		bool PerformMat4x4Search(const void* const lhs, const void* const rhs) const;
-
-		/** This function will be called when two Datums of type POINTER are compared.
-		*	This function will internally call the .Equals() of the RTTI class.
-		*	@param lhs The left hand side pointer pointing to the data which has to be compared.
-		*	@param rhs The right hand side pointer pointing to the data which has to be compared.
-		*	@returns Returns true if both the pointers contain the same data.
-		*/
-		bool PerformRTTIPointerSearch(const void* const lhs, const void* const rhs) const;
-#pragma endregion
-
 #pragma region Pushbacking based on each data type (Declarations)
 		/** This function appends the default std::int32_t() to the Datum object.
 		*	Note: The function push backs endIndex - startIndex times. It is named that way to keep consistency with the Destructor functions.
@@ -570,7 +512,7 @@ namespace GameEngineLibrary
 		*/
 		void PushBackMat4x4Data(const std::uint32_t startIndex, const std::uint32_t endIndex);
 
-		/** This function appends the default nullpointer to the Datum object.
+		/** This function appends the default null pointer to the Datum object.
 		*	Note: The function push backs endIndex - startIndex times. It is named that way to keep consistency with the Destructor functions.
 		*	@param startIndex The lower hand value.
 		*	@param endIndex The higher hand value.
@@ -579,35 +521,17 @@ namespace GameEngineLibrary
 #pragma endregion
 
 #pragma region Destructing based on each data type (Declarations)
-		/** This function calls the destructor for the type std::int32_t from startIndex to endIndex.
+		/** This function calls the destructor for the all the primitive types (std::int32_t, std::float_t, glm::vec4, glm::mat4x4).
 		*	@param startIndex The starting index from where the destructor will be called.
 		*	@param endIndex The ending index(exclusive) until which the destructor will be called.
 		*/
-		void DestructIntData(const std::uint32_t startIndex, const std::uint32_t endIndex);
-
-		/** This function calls the destructor for the type std::float_t from startIndex to endIndex.
-		*	@param startIndex The starting index from where the destructor will be called.
-		*	@param endIndex The ending index(exclusive) until which the destructor will be called.
-		*/
-		void DestructFloatData(const std::uint32_t startIndex, const std::uint32_t endIndex);
-
+		void DestructPrimitiveTypes(const std::uint32_t startIndex, const std::uint32_t endIndex);
+	
 		/** This function calls the destructor for the type std::string from startIndex to endIndex.
 		*	@param startIndex The starting index from where the destructor will be called.
 		*	@param endIndex The ending index(exclusive) until which the destructor will be called.
 		*/
-		void DestructStringData(const std::uint32_t startIndex, const std::uint32_t endIndex);
-
-		/** This function calls the destructor for the type glm::Vec4 from startIndex to endIndex.
-		*	@param startIndex The starting index from where the destructor will be called.
-		*	@param endIndex The ending index(exclusive) until which the destructor will be called.
-		*/
-		void DestructVec4Data(const std::uint32_t startIndex, const std::uint32_t endIndex);
-
-		/** This function calls the destructor for the type glm::mat4x4 from startIndex to endIndex.
-		*	@param startIndex The starting index from where the destructor will be called.
-		*	@param endIndex The ending index(exclusive) until which the destructor will be called.
-		*/
-		void DestructMat4x4Data(const std::uint32_t startIndex, const std::uint32_t endIndex);
+		void DestructStringData(const std::uint32_t startIndex, const std::uint32_t endIndex);	
 #pragma endregion
 
 #pragma region Converting each data type to std::string(Declarations)
@@ -710,56 +634,6 @@ namespace GameEngineLibrary
 		*/
 		void SetFromStringRTTIPointer(const std::string& inputString, const std::uint32_t index);
 
-
-		/** Performs deep copy for the unassigned type.
-		*	@param lhsVoidPointer The left hand side pointer for which the data has to be copied.
-		*	@param rhsVoidPointer The right hand side pointer which will be copied.
-		*	@param mSize The length of the data which has to be copied
-		*/
-		void PerformDeepCopyUnassigned(void* lhsVoidPointer, const void* const rhsVoidPointer, const std::uint32_t mSize);
-
-		/** Performs deep copy for the std::int32_t type.
-		*	@param lhsVoidPointer The left hand side pointer for which the data has to be copied.
-		*	@param rhsVoidPointer The right hand side pointer which will be copied.
-		*	@param mSize The length of the data which has to be copied
-		*/
-		void PerformDeepCopyInt(void* lhsVoidPointer, const void* const rhsVoidPointer, const std::uint32_t mSize);
-
-		/** Performs deep copy for the std::float_t type.
-		*	@param lhsVoidPointer The left hand side pointer for which the data has to be copied.
-		*	@param rhsVoidPointer The right hand side pointer which will be copied.
-		*	@param mSize The length of the data which has to be copied
-		*/
-		void PerformDeepCopyFloat(void* lhsVoidPointer, const void* const rhsVoidPointer, const std::uint32_t mSize);
-
-		/** Performs deep copy for the std::string type.
-		*	@param lhsVoidPointer The left hand side pointer for which the data has to be copied.
-		*	@param rhsVoidPointer The right hand side pointer which will be copied.
-		*	@param mSize The length of the data which has to be copied
-		*/
-		void PerformDeepCopyString(void* lhsVoidPointer, const void* const rhsVoidPointer, const std::uint32_t mSize);
-
-		/** Performs deep copy for the glm::vec4 type.
-		*	@param lhsVoidPointer The left hand side pointer for which the data has to be copied.
-		*	@param rhsVoidPointer The right hand side pointer which will be copied.
-		*	@param mSize The length of the data which has to be copied
-		*/
-		void PerformDeepCopyVec4(void* lhsVoidPointer, const void* const rhsVoidPointer, const std::uint32_t mSize);
-
-		/** Performs deep copy for the glm::mat4x4 type.
-		*	@param lhsVoidPointer The left hand side pointer for which the data has to be copied.
-		*	@param rhsVoidPointer The right hand side pointer which will be copied.
-		*	@param mSize The length of the data which has to be copied
-		*/
-		void PerformDeepCopyMat4x4(void* lhsVoidPointer, const void* const rhsVoidPointer, const std::uint32_t mSize);
-
-		/** Performs deep copy for the POINTER type.
-		*	@param lhsVoidPointer The left hand side pointer for which the data has to be copied.
-		*	@param rhsVoidPointer The right hand side pointer which will be copied.
-		*	@param mSize The length of the data which has to be copied
-		*/
-		void PerformDeepCopyRTTIPointer(void* lhsVoidPointer, const void* const rhsVoidPointer, const std::uint32_t mSize);
-
 #pragma endregion		
 
 		/** The Union which holds the pointers to various supported data types.
@@ -774,6 +648,101 @@ namespace GameEngineLibrary
 			glm::mat4x4* mat4x4Pointer;
 			RTTI** rttiPointer;
 		};
+
+#pragma region Search based on each data type(Declarations)
+		/** This function will be called when two Datums of type UNASSIGNED are compared.
+		*	This function will always return true.
+		*	@param rhsDatumValues The right hand side DatumValue which will be compared and checked for equality.
+		*	@returns Always return true.
+		*/
+		bool PerformVoidDeepCompare(const DatumValues& rhsDatumValues) const;
+
+		/** This function will be called when two Datums of type INT32_T are compared.
+		*	This function will internally call the templated PerformDeepSearch();
+		*	@param rhsDatumValues The right hand side DatumValue which will be compared and checked for equality.
+		*	@returns Returns true if both the pointers contain the same data.
+		*/
+		bool PerformIntDeepCompare(const DatumValues& rhsDatumValues) const;
+
+		/** This function will be called when two Datums of type FLOAT are compared.
+		*	This function will internally call the templated PerformDeepSearch();
+		*	@param rhsDatumValues The right hand side DatumValue which will be compared and checked for equality.		
+		*	@returns Returns true if both the pointers contain the same data.
+		*/
+		bool PerformFloatDeepCompare(const DatumValues& rhsDatumValues) const;
+
+		/** This function will be called when two Datums of type STRING are compared.
+		*	This function will internally call the templated PerformDeepSearch();
+		*	@param rhsDatumValues The right hand side DatumValue which will be compared and checked for equality.
+		*	@returns Returns true if both the pointers contain the same data.
+		*/
+		bool PerformStringDeepCompare(const DatumValues& rhsDatumValues) const;
+
+		/** This function will be called when two Datums of type GLM_VECTOR4 are compared.
+		*	This function will internally call the templated PerformDeepSearch();
+		*	@param rhsDatumValues The right hand side DatumValue which will be compared and checked for equality.
+		*	@returns Returns true if both the pointers contain the same data.
+		*/
+		bool PerformVec4DeepCompare(const DatumValues& rhsDatumValues) const;
+
+		/** This function will be called when two Datums of type GLM_MATRIX4X4 are compared.
+		*	This function will internally call the templated PerformDeepSearch();
+		*	@param rhsDatumValues The right hand side DatumValue which will be compared and checked for equality.
+		*	@returns Returns true if both the pointers contain the same data.
+		*/
+		bool PerformMat4x4DeepCompare(const DatumValues& rhsDatumValues) const;
+
+		/** This function will be called when two Datums of type POINTER are compared.
+		*	This function will internally call the .Equals() of the RTTI class.
+		*	@param rhsDatumValues The right hand side DatumValue which will be compared and checked for equality.
+		*	@returns Returns true if both the pointers contain the same data.
+		*/
+		bool PerformRTTIPointerDeepCompare(const DatumValues& rhsDatumValues) const;
+#pragma endregion
+
+#pragma region Perform deep copy for each type Implementations
+		/** Performs deep copy for the unassigned type.
+		*	@param rhsDatumValues The right hand side DatumValue which will be copied.
+		*	@param mSize The length of the data which has to be copied
+		*/
+		void PerformDeepCopyUnassigned(const DatumValues& rhsDatumValues, const std::uint32_t size);
+
+		/** Performs deep copy for the std::int32_t type.
+		*	@param rhsDatumValues The right hand side DatumValue which will be copied.		
+		*	@param mSize The length of the data which has to be copied
+		*/
+		void PerformDeepCopyInt(const DatumValues& rhsDatumValues, const std::uint32_t size);
+
+		/** Performs deep copy for the std::float_t type.
+		*	@param rhsDatumValues The right hand side DatumValue which will be copied.
+		*	@param mSize The length of the data which has to be copied
+		*/
+		void PerformDeepCopyFloat(const DatumValues& rhsDatumValues, const std::uint32_t size);
+
+		/** Performs deep copy for the std::string type.
+		*	@param rhsDatumValues The right hand side DatumValue which will be copied.
+		*	@param mSize The length of the data which has to be copied
+		*/
+		void PerformDeepCopyString(const DatumValues& rhsDatumValues, const std::uint32_t size);
+
+		/** Performs deep copy for the glm::vec4 type.
+		*	@param rhsDatumValues The right hand side DatumValue which will be copied.
+		*	@param mSize The length of the data which has to be copied
+		*/
+		void PerformDeepCopyVec4(const DatumValues& rhsDatumValues, const std::uint32_t size);
+
+		/** Performs deep copy for the glm::mat4x4 type.
+		*	@param rhsDatumValues The right hand side DatumValue which will be copied.
+		*	@param mSize The length of the data which has to be copied
+		*/
+		void PerformDeepCopyMat4x4(const DatumValues& rhsDatumValues, const std::uint32_t size);
+
+		/** Performs deep copy for the POINTER type.
+		*	@param rhsDatumValues The right hand side DatumValue which will be copied.
+		*	@param mSize The length of the data which has to be copied
+		*/
+		void PerformDeepCopyRTTIPointer(const DatumValues& rhsDatumValues, const std::uint32_t size);
+#pragma endregion
 
 		/** The size of the Datum object.
 		*/
@@ -797,10 +766,10 @@ namespace GameEngineLibrary
 
 		typedef void (Datum::*DestructorsForDataType)(const std::uint32_t startIndex, const std::uint32_t endIndex);
 		typedef void (Datum::*PushBackForDataType)(const std::uint32_t startIndex, const std::uint32_t endIndex);
-		typedef bool (Datum::*PerformSearchForDataType)(const void* const lhs, const void* const rhs) const;
+		typedef bool (Datum::*PerformDeepCompareForDataType)(const DatumValues& rhsDatumValues) const;
 		typedef void (Datum::*ToStringForDataType)(const std::uint32_t index, std::string& convertedString) const;
 		typedef void (Datum::*SetFromStringForDataType)(const std::string& inputString, const std::uint32_t index);
-		typedef void (Datum::*PerformDeepCopyForDataType)(void* lhsVoidPointer, const void* const rhsVoidPointer, const std::uint32_t mSize);
+		typedef void (Datum::*PerformDeepCopyForDataType)(const DatumValues& rhsDatumValues, const std::uint32_t mSize);
 
 		/** An unsigned integer array containing the sizes of the various supported data types.
 		*/
@@ -816,7 +785,7 @@ namespace GameEngineLibrary
 
 		/** Function pointer array containing pointers to the search functions of each supported data type.
 		*/
-		PerformSearchForDataType mPerformSearch[7];
+		PerformDeepCompareForDataType mPerformDeepCompare[7];
 
 		/** Function pointer array containing pointers to the ToString functions of each supported data type.
 		*/

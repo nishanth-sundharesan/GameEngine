@@ -1,9 +1,10 @@
 #include "Pch.h"
 #include "CppUnitTest.h"
 #include "Datum.h"
+
 #pragma warning ( push )
 #pragma warning ( disable: 4201 )							//Suppressing the warning message "nonstandard extension used : nameless struct / union" in the file"
-#include "../../External/Glm/Glm/gtx/string_cast.hpp"
+#include <Glm/gtx/string_cast.hpp>
 #pragma warning ( pop )
 
 using namespace GameEngineLibrary;
@@ -1145,7 +1146,7 @@ namespace LibraryDesktopTest
 			DatumSizeAndTypeTest(datum, currentSize, DatumType::INT32_T);
 			datum.ShrinkToFit();
 			DatumSizeAndTypeTest(datum, currentSize, DatumType::INT32_T);
-			
+
 			//Checking for the external Datum
 			Datum externalDatum;
 			currentSize = 1;
@@ -1154,6 +1155,108 @@ namespace LibraryDesktopTest
 			DatumSizeAndTypeTest(externalDatum, currentSize, DatumType::INT32_T);
 			externalDatum.ShrinkToFit();
 			DatumSizeAndTypeTest(externalDatum, currentSize, DatumType::INT32_T);
+		}
+
+		template<typename T1>
+		void DatumCopyConstructor(T1 firstPushedValue, T1 secondPushedValue, T1 thirdPushedValue, DatumType datumType)
+		{
+			Datum datum;
+			datum.SetType(datumType);
+
+			Datum datumCopiedOne(datum);
+			Assert::IsTrue(datum == datumCopiedOne);
+
+			datum.PushBack(firstPushedValue);
+			datum.PushBack(secondPushedValue);
+			datum.PushBack(thirdPushedValue);
+
+			Datum datumCopiedTwo(datum);
+			Assert::IsTrue(datum == datumCopiedTwo);
+
+			datum.Clear();
+			datumCopiedTwo.Clear();
+			Assert::IsTrue(datum == datumCopiedTwo);
+
+			datum.PushBack(firstPushedValue);
+			datum.PushBack(secondPushedValue);
+
+			Datum datumCopiedThree(datum);
+			Assert::IsTrue(datum == datumCopiedThree);
+		}
+
+		TEST_METHOD(DatumCopyConstructor)
+		{
+			int32_t firstPushedInt = 10;
+			int32_t secondPushedInt = 20;
+			int32_t thirdPushedInt = 30;
+
+			std::float_t firstPushedFloat = 10.0f;
+			std::float_t secondPushedFloat = 20.0f;
+			std::float_t thirdPushedFloat = 30.0f;
+
+			string firstPushedString = "Hello";
+			string secondPushedString = "How";
+			string thirdPushedString = "Ummm";
+
+			vec4 firstPushedVec4(10, 20, 30, 40);
+			vec4 secondPushedVec4(50, 60, 70, 80);
+			vec4 thirdPushedVec4(90, 100, 110, 120);
+
+			vec4 fourthVec4(90, 100, 110, 120);
+			mat4x4 firstPushedMat4x4(firstPushedVec4, secondPushedVec4, thirdPushedVec4, fourthVec4);
+			mat4x4 secondPushedMat4x4(secondPushedVec4, thirdPushedVec4, fourthVec4, firstPushedVec4);
+			mat4x4 thirdPushedMat4x4(thirdPushedVec4, fourthVec4, firstPushedVec4, secondPushedVec4);
+
+			DatumCopyConstructor(firstPushedInt, secondPushedInt, thirdPushedInt, DatumType::INT32_T);
+
+			DatumCopyConstructor(firstPushedFloat, secondPushedFloat, thirdPushedFloat, DatumType::FLOAT);
+
+			DatumCopyConstructor(firstPushedString, secondPushedString, thirdPushedString, DatumType::STRING);
+
+			DatumCopyConstructor(firstPushedVec4, secondPushedVec4, thirdPushedVec4, DatumType::GLM_VECTOR4);
+
+			DatumCopyConstructor(firstPushedMat4x4, secondPushedMat4x4, thirdPushedMat4x4, DatumType::GLM_MATRIX4X4);
+		}
+
+		TEST_METHOD(DatumAssignmentOperator)
+		{
+			Datum datum;
+
+			Datum datumOne;
+			datumOne = datum;
+			Assert::IsTrue(datum == datumOne);
+
+			int32_t firstPushedInt = 10;
+			int32_t secondPushedInt = 20;
+			int32_t thirdPushedInt = 30;
+
+			datum.SetType(DatumType::INT32_T);
+
+			datum.PushBack(firstPushedInt);
+			datum.PushBack(secondPushedInt);
+			datum.PushBack(thirdPushedInt);
+
+			Datum datumtwo;
+			datumtwo = datum;
+			Assert::IsTrue(datum == datumtwo);
+
+			Datum externalDatum;
+			externalDatum.SetType(DatumType::INT32_T);
+			externalDatum.SetStorage(&firstPushedInt, 1);
+
+			Datum datumThree;
+			datumThree = externalDatum;
+			Assert::IsTrue(datumThree == externalDatum);
+			
+			Datum externalDatumTwo;
+			externalDatumTwo.SetType(DatumType::INT32_T);
+			externalDatumTwo.SetStorage(&secondPushedInt, 1);
+			
+			externalDatum = externalDatumTwo;
+			Assert::IsTrue(externalDatum == externalDatumTwo);
+
+			externalDatum = datum;
+			Assert::IsTrue(externalDatum == datum);
 		}
 	private:
 		static _CrtMemState sStartMemState;

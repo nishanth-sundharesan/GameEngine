@@ -69,21 +69,34 @@ namespace LibraryDesktopTest
 			Assert::IsFalse(vector.PopBack(tempValue));
 		}
 
+		template<typename T>
+		void TestVectorDefaultConstructor(Vector<T>& vector, T& tempValue, uint32_t allocatedCapacity)
+		{
+			TestEmptyVector(vector, tempValue, allocatedCapacity);
+
+			vector.ShrinkToFit();
+			vector.Reserve(0);
+
+			allocatedCapacity = 0;
+			TestEmptyVector(vector, tempValue, 0);
+		}
+
 		TEST_METHOD(TestVectorDefaultConstructor)
 		{
 			Vector<int32_t> intVector;
 			int32_t tempInt = 10;
-			TestVectorDefaultConstructor(intVector, tempInt);
+			uint32_t capacity = 29;
+			TestVectorDefaultConstructor(intVector, tempInt, capacity);
 
 			Vector<Foo> fooVector;
 			Foo tempFoo(10);
-			TestVectorDefaultConstructor(fooVector, tempFoo);
+			TestVectorDefaultConstructor(fooVector, tempFoo, capacity);
 		}
 
 		template<typename T>
-		void TestVectorDefaultConstructor(Vector<T>& vector, T& tempValue)
+		void TestVectorConstructorWithCapacity(Vector<T>& vector, T& tempValue, uint32_t allocatedCapacity)
 		{
-			TestEmptyVector(vector, tempValue, 0);
+			TestEmptyVector(vector, tempValue, allocatedCapacity);
 
 			vector.ShrinkToFit();
 			vector.Reserve(0);
@@ -103,18 +116,7 @@ namespace LibraryDesktopTest
 			Vector<Foo> fooVector(capacity);
 			TestVectorConstructorWithCapacity(fooVector, tempFoo, capacity);
 		}
-
-		template<typename T>
-		void TestVectorConstructorWithCapacity(Vector<T>& vector, T& tempValue, uint32_t allocatedCapacity)
-		{
-			TestEmptyVector(vector, tempValue, allocatedCapacity);
-
-			vector.ShrinkToFit();
-			vector.Reserve(0);
-
-			TestEmptyVector(vector, tempValue, 0);
-		}
-
+		
 		template<typename T>
 		void TestVectorIsEmpty(Vector<T>& vector, T& firstPushedValue, T& secondPushedValue, T& thirdPushedValue)
 		{
@@ -252,7 +254,7 @@ namespace LibraryDesktopTest
 		TEST_METHOD(TestVectorCapacity)
 		{
 			Vector<int32_t> intVector;
-			uint32_t capacity = 0;
+			uint32_t capacity = 29;
 			int32_t firstPushedIntValue = 10;
 			TestVectorCapacity(intVector, firstPushedIntValue, capacity);
 
@@ -260,7 +262,7 @@ namespace LibraryDesktopTest
 			Vector<int32_t> intVectorWithCapacity(capacity);
 			TestVectorCapacity(intVectorWithCapacity, firstPushedIntValue, capacity);
 
-			capacity = 0;
+			capacity = 29;
 			Vector<Foo> fooVector;
 			Foo firstPushedFooValue(10);
 			TestVectorCapacity(fooVector, firstPushedFooValue, capacity);
@@ -827,7 +829,6 @@ namespace LibraryDesktopTest
 			Assert::IsTrue(vector.IsEmpty());
 		}
 
-
 		TEST_METHOD(TestVectorRemoveWithIterators)
 		{
 			Vector<int32_t> intVector;
@@ -846,6 +847,9 @@ namespace LibraryDesktopTest
 		template<typename T>
 		void TestVectorIteratorContentOfOperator(Vector<T>& vector, T& firstPushedValue, T& secondPushedValue, T& thirdPushedValue)
 		{
+			secondPushedValue;
+			thirdPushedValue;
+
 			Vector<T>::Iterator iterator;
 			Assert::ExpectException<exception>([&] { *iterator; });
 

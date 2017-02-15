@@ -9,6 +9,8 @@
 
 namespace GameEngineLibrary
 {
+	/** A union to represent the type of data Datum is holding
+	*/
 	enum class DatumType
 	{
 		UNASSIGNED = 0,
@@ -20,148 +22,698 @@ namespace GameEngineLibrary
 		POINTER = 6
 	};
 
-	enum class DatumMemoryType
-	{
-		UNASSIGNED,
-		INTERNAL,
-		EXTERNAL
-	};
-
 	class Datum final
 	{
 	public:
+		/** Zero parameterized constructor. Initializes the private members of the class.
+		*/
 		Datum();
 
+		/** Copy constructor.
+		*	Performs a deep copy of the Datum object.
+		*	@param rhs The object of which the deep copy will be made.
+		*/
 		Datum(const Datum& rhs);
 
 #pragma region Overloaded Assignment Operator Declarations
+		/** Overloaded assignment operator.
+		*	Performs a deep copy of the right hand side object: Datum.
+		*	@param rhs It is the right hand side object which will be deep copied to the left hand side object.
+		*	@return Returns the deep copied Datum object
+		*/
 		Datum& operator=(const Datum& rhs);
-		Datum& operator=(const std::int32_t& rhs);
-		Datum& operator=(const std::float_t& rhs);
-		Datum& operator=(const std::string& rhs);
-		Datum& operator=(const glm::vec4& rhs);
-		Datum& operator=(const glm::mat4x4& rhs);
-		Datum& operator=(const RTTI* rhs);
-#pragma endregion
 
+		/** Overloaded assignment operator.
+		*	Push backs the rhs value and sets the DatumType to INT32_T if the DatumType is UNASSIGNED or else replaces the first element of the Datum Object.
+		*	@param rhs It is the right hand side value which will be Pushed back or Set at the 0th index of the Datum object.
+		*	@return Returns the Datum object after Push back or after Set.
+		*/
+		Datum& operator=(const std::int32_t& rhs);
+
+		/** Overloaded assignment operator.
+		*	Push backs the rhs value and sets the DatumType to FLOAT if the DatumType is UNASSIGNED or else replaces the first element of the Datum Object.
+		*	@param rhs It is the right hand side value which will be Pushed back or Set at the 0th index of the Datum object.
+		*	@return Returns the Datum object after Push back or after Set.
+		*/
+		Datum& operator=(const std::float_t& rhs);
+
+		/** Overloaded assignment operator.
+		*	Push backs the rhs value and sets the DatumType to STRING if the DatumType is UNASSIGNED or else replaces the first element of the Datum Object.
+		*	@param rhs It is the right hand side value which will be Pushed back or Set at the 0th index of the Datum object.
+		*	@return Returns the Datum object after Push back or after Set.
+		*/
+		Datum& operator=(const std::string& rhs);
+
+		/** Overloaded assignment operator.
+		*	Push backs the rhs value and sets the DatumType to GLM_VECTOR4 if the DatumType is UNASSIGNED or else replaces the first element of the Datum Object.
+		*	@param rhs It is the right hand side value which will be Pushed back or Set at the 0th index of the Datum object.
+		*	@return Returns the Datum object after Push back or after Set.
+		*/
+		Datum& operator=(const glm::vec4& rhs);
+
+		/** Overloaded assignment operator.
+		*	Push backs the rhs value and sets the DatumType to GLM_MATRIX4X4 if the DatumType is UNASSIGNED or else replaces the first element of the Datum Object.
+		*	@param rhs It is the right hand side value which will be Pushed back or Set at the 0th index of the Datum object.
+		*	@return Returns the Datum object after Push back or after Set.
+		*/
+		Datum& operator=(const glm::mat4x4& rhs);
+
+		/** Overloaded assignment operator.
+		*	Push backs the rhs pointer and sets the DatumType to POINTER if the DatumType is UNASSIGNED or else replaces the first element of the Datum Object.
+		*	@param rhs It is the right hand side pointer which will be Pushed back or Set at the 0th index of the Datum object.
+		*	@return Returns the Datum object after Push back or after Set.
+		*/
+		Datum& operator=(const RTTI* const rhs);
+#pragma endregion
+		/** Clears the entire Datum object.
+		*/
 		~Datum();
 
-		void SetType(DatumType datumType);
+		/** Sets the DatumType of the Datum object.
+		*	Note: This has to be called before Push back and it can be called only once.
+		*	@params datumType The DatumType of the Datum object.
+		*	@exception throws an exception if we trying to assign a different DatumType to the Datum object.
+		*/
+		void SetType(const DatumType datumType);
 
-		void SetSize(std::uint32_t size);
+		/** Sets the size of the Datum Object.
+		*	It reserves memory in advance if the passed size is greater than the capacity.
+		*	It instantiates data(with default constructor) inside the Datum if the passed size is greater than its size but less than its capacity.
+		*	It truncates the values if the passed size if less than its size.
+		*	@params size The size to be assigned to the Datum object.
+		*	@exception throws an exception if the Datum stores external data or if the DatumType is UNASSIGNED.
+		*/
+		void SetSize(const std::uint32_t size);
 
+		/** Returns the DatumType of the Datum object.
+		*	@returns Returns the DatumType of the Datum object.
+		*/
 		DatumType Type() const;
 
+		/** Returns the size of the Datum object.
+		*	@return Returns the size of the Datum object.
+		*/
 		std::uint32_t Size() const;
-		
+
+		/** Clears the entire Datum object.
+		*	Note: This function doesn't reset/free the capacity of the Datum object.
+		*	@see ShrinkToFit();
+		*/
 		void Clear();
 
 #pragma region SetStorage
-		void SetStorage(int32_t* pointerToData, std::uint32_t size);
-		void SetStorage(std::float_t* pointerToData, std::uint32_t size);
-		void SetStorage(std::string* pointerToData, std::uint32_t size);
-		void SetStorage(glm::vec4* pointerToData, std::uint32_t size);
-		void SetStorage(glm::mat4x4* pointerToData, std::uint32_t size);
-		void SetStorage(RTTI** pointerToData, std::uint32_t size);
+		/** Sets the storage of the Datum Object.
+		*	Marks the Datum object as EXTERNAL and assigns the pointer and the size.
+		*	Note: This is only function which can make the Datum object hold external memory.
+		*	@params pointerToData The pointer to the external data.
+		*	@params	size The size of the external data.
+		*	@exception throws an exception if the Datum object is Internal or if the DatumType is invalid.
+		*/
+		void SetStorage(const int32_t* const pointerToData, const std::uint32_t size);
+
+		/** Sets the storage of the Datum Object.
+		*	Marks the Datum object as EXTERNAL and assigns the pointer and the size.
+		*	Note: This is only function which can make the Datum object hold external memory.
+		*	@params pointerToData The pointer to the external data.
+		*	@params	size The size of the external data.
+		*	@exception throws an exception if the Datum object is Internal or if the DatumType is mismatched.
+		*/
+		void SetStorage(const std::float_t* const pointerToData, const std::uint32_t size);
+
+		/** Sets the storage of the Datum Object.
+		*	Marks the Datum object as EXTERNAL and assigns the pointer and the size.
+		*	Note: This is only function which can make the Datum object hold external memory.
+		*	@params pointerToData The pointer to the external data.
+		*	@params	size The size of the external data.
+		*	@exception throws an exception if the Datum object is Internal or if the DatumType is invalid.
+		*/
+		void SetStorage(const std::string* const pointerToData, const std::uint32_t size);
+
+		/** Sets the storage of the Datum Object.
+		*	Marks the Datum object as EXTERNAL and assigns the pointer and the size.
+		*	Note: This is only function which can make the Datum object hold external memory.
+		*	@params pointerToData The pointer to the external data.
+		*	@params	size The size of the external data.
+		*	@exception throws an exception if the Datum object is Internal or if the DatumType is invalid.
+		*/
+		void SetStorage(const glm::vec4* const pointerToData, const std::uint32_t size);
+
+		/** Sets the storage of the Datum Object.
+		*	Marks the Datum object as EXTERNAL and assigns the pointer and the size.
+		*	Note: This is only function which can make the Datum object hold external memory.
+		*	@params pointerToData The pointer to the external data.
+		*	@params	size The size of the external data.
+		*	@exception throws an exception if the Datum object is Internal or if the DatumType is invalid.
+		*/
+		void SetStorage(const glm::mat4x4* const pointerToData, const std::uint32_t size);
+
+		/** Sets the storage of the Datum Object.
+		*	Marks the Datum object as EXTERNAL and assigns the pointer and the size.
+		*	Note: This is only function which can make the Datum object hold external memory.
+		*	@params pointerToData The pointer to the external data.
+		*	@params	size The size of the external data.
+		*	@exception throws an exception if the Datum object is Internal or if the DatumType is invalid.
+		*/
+		void SetStorage(const RTTI** const pointerToData, const std::uint32_t size);
 #pragma endregion
 
 #pragma region PushBack
+		/** Appends/Push backs the data to the Datum object.
+		*	Note: PushBacks work only for the INTERNAL Datum types.
+		*	@param value The data to be appended to the Datum object.
+		*	@exception throws an exception if the Datum object holds external data or if the DatumType is invalid.
+		*/
 		void PushBack(const std::int32_t& value);
+
+		/** Appends/Push backs the data to the Datum object.
+		*	Note: PushBacks work only for the INTERNAL Datum types.
+		*	@param value The data to be appended to the Datum object.
+		*	@exception throws an exception if the Datum object holds external data or if the DatumType is invalid.
+		*/
 		void PushBack(const std::float_t& value);
+
+		/** Appends/Push backs the data to the Datum object.
+		*	Note: PushBacks work only for the INTERNAL Datum types.
+		*	@param value The data to be appended to the Datum object.
+		*	@exception throws an exception if the Datum object holds external data or if the DatumType is invalid.
+		*/
 		void PushBack(const std::string& value);
+
+		/** Appends/Push backs the data to the Datum object.
+		*	Note: PushBacks work only for the INTERNAL Datum types.
+		*	@param value The data to be appended to the Datum object.
+		*	@exception throws an exception if the Datum object holds external data or if the DatumType is invalid.
+		*/
 		void PushBack(const glm::vec4& value);
+
+		/** Appends/Push backs the data to the Datum object.
+		*	Note: PushBacks work only for the INTERNAL Datum types.
+		*	@param value The data to be appended to the Datum object.
+		*	@exception throws an exception if the Datum object holds external data or if the DatumType is invalid.
+		*/
 		void PushBack(const glm::mat4x4& value);
+
+		/** Appends/Push backs the data to the Datum object.
+		*	Note: PushBacks work only for the INTERNAL Datum types.
+		*	@param value The data to be appended to the Datum object.
+		*	@exception throws an exception if the Datum object holds external data or if the DatumType is invalid.
+		*/
 		void PushBack(const RTTI* value);
 #pragma endregion
 
 #pragma region Overloaded Equality Operators
-		bool operator==(const Datum& rhs)const;
-		bool operator==(const std::int32_t& intValue)const;
-		bool operator==(const std::float_t& floatValue)const;
-		bool operator==(const std::string& stringValue)const;
+		/** Overloaded Equality operator.
+		*	Checks if both the Datum objects contain the same values.
+		*	Note: This function doesn't check for the equality of its internal reserved capacity.
+		*	@params rhs The right hand side Datum object to be compared with.
+		*	@returns Returns true if both the Datum objects contain the same data, false otherwise.
+		*/
+		bool operator==(const Datum& rhs) const;
+
+		/** Overloaded Equality operator.
+		*	Checks if the Datum is a scalar(size 1) and contains the passed value.
+		*	@params intValue The value to be compared with the Datum.
+		*	@returns Returns true if the Datum contains a single value and it is equal to the passed value, false otherwise.
+		*/
+		bool operator==(const std::int32_t& intValue) const;
+
+		/** Overloaded Equality operator.
+		*	Checks if the Datum is a scalar(size 1) and contains the passed value.
+		*	@params floatValue The value to be compared with the Datum.
+		*	@returns Returns true if the Datum contains a single value and it is equal to the passed value, false otherwise.
+		*/
+		bool operator==(const std::float_t& floatValue) const;
+
+		/** Overloaded Equality operator.
+		*	Checks if the Datum is a scalar(size 1) and contains the passed value.
+		*	@params stringValue The value to be compared with the Datum.
+		*	@returns Returns true if the Datum contains a single value and it is equal to the passed value, false otherwise.
+		*/
+		bool operator==(const std::string& stringValue) const;
+
+		/** Overloaded Equality operator.
+		*	Checks if the Datum is a scalar(size 1) and contains the passed value.
+		*	@params vector4Value The value to be compared with the Datum.
+		*	@returns Returns true if the Datum contains a single value and it is equal to the passed value, false otherwise.
+		*/
 		bool operator==(const glm::vec4& vector4Value) const;
+
+		/** Overloaded Equality operator.
+		*	Checks if the Datum is a scalar(size 1) and contains the passed value.
+		*	@params matrix4x4Value The value to be compared with the Datum.
+		*	@returns Returns true if the Datum contains a single value and it is equal to the passed value, false otherwise.
+		*/
 		bool operator==(const glm::mat4x4& matrix4x4Value) const;
-		bool operator==(const RTTI* rttiPointer) const;
+
+		/** Overloaded Equality operator.
+		*	Checks if the Datum is a scalar(size 1) and contains the content of the passed pointer.
+		*	@params rttiPointer The content of the pointer to be compared with the Datum.
+		*	@returns Returns true if the Datum contains a single value and it is equal to the content of the passed pointer, false otherwise.
+		*/
+		bool operator==(const RTTI* const rttiPointer) const;
 
 #pragma endregion
 
 #pragma region Overloaded InEquality Operators
-		bool operator!=(const Datum& rhs)const;
-		bool operator!=(const std::int32_t& intValue)const;
-		bool operator!=(const std::float_t& floatValue)const;
-		bool operator!=(const std::string& stringValue)const;
+		/** Overloaded Inequality operator.
+		*	Checks if both the Datum objects do not contain the same values.
+		*	Note: This function doesn't check for the inequality of its internal reserved capacity.
+		*	@params rhs The right hand side Datum object to be compared with.
+		*	@returns Returns true if both the Datum objects do not contain the same data, false otherwise.
+		*/
+		bool operator!=(const Datum& rhs) const;
+
+		/** Overloaded Inequality operator.
+		*	Checks if the Datum is not a scalar(size 1) or doesn't contain the passed value.
+		*	@params intValue The value to be compared with the Datum.
+		*	@returns Returns true if the Datum is not a scalar or is not equal to the passed value, false otherwise.
+		*/
+		bool operator!=(const std::int32_t& intValue) const;
+
+		/** Overloaded Inequality operator.
+		*	Checks if the Datum is not a scalar(size 1) or doesn't contain the passed value.
+		*	@params floatValue The value to be compared with the Datum.
+		*	@returns Returns true if the Datum is not a scalar or is not equal to the passed value, false otherwise.
+		*/
+		bool operator!=(const std::float_t& floatValue) const;
+
+		/** Overloaded Inequality operator.
+		*	Checks if the Datum is not a scalar(size 1) or doesn't contain the passed value.
+		*	@params stringValue The value to be compared with the Datum.
+		*	@returns Returns true if the Datum is not a scalar or is not equal to the passed value, false otherwise.
+		*/
+		bool operator!=(const std::string& stringValue) const;
+
+		/** Overloaded Inequality operator.
+		*	Checks if the Datum is not a scalar(size 1) or doesn't contain the passed value.
+		*	@params vector4Value The value to be compared with the Datum.
+		*	@returns Returns true if the Datum is not a scalar or is not equal to the passed value, false otherwise.
+		*/
 		bool operator!=(const glm::vec4& vector4Value) const;
+
+		/** Overloaded Inequality operator.
+		*	Checks if the Datum is not a scalar(size 1) or doesn't contain the passed value.
+		*	@params matrix4x4Value The value to be compared with the Datum.
+		*	@returns Returns true if the Datum is not a scalar or is not equal to the passed value, false otherwise.
+		*/
 		bool operator!=(const glm::mat4x4& matrix4x4Value) const;
-		bool operator!=(const RTTI* rttiPointer) const;
+
+		/** Overloaded Inequality operator.
+		*	Checks if the Datum is not a scalar(size 1) or doesn't contain the content of the passed pointer.
+		*	@params rttiPointer The content of the pointer to be compared with the Datum.
+		*	@returns Returns true if the Datum is not a scalar or is not equal to the content of the passed pointer, false otherwise.
+		*/
+		bool operator!=(const RTTI* const rttiPointer) const;
 #pragma endregion
 
 #pragma region Set Method Declarations
-		void Set(const std::int32_t& value, uint32_t index = 0);
-		void Set(const std::float_t& value, uint32_t index = 0);
-		void Set(const std::string& value, uint32_t index = 0);
-		void Set(const glm::vec4& value, uint32_t index = 0);
-		void Set(const glm::mat4x4& value, uint32_t index = 0);
-		void Set(const RTTI* value, uint32_t index = 0);
+		/** Sets the corresponding value at the corresponding index.
+		*	Note: This function doesn't resize the Datum. It only replaces the values.
+		*	@param value The data to be set at the specified index.
+		*	@param index The index for the value.
+		*	@exception throws an exception if the index is out of range or if the DatumType is invalid.
+		*/
+		void Set(const std::int32_t& value, const uint32_t index = 0);
+
+		/** Sets the corresponding value at the corresponding index.
+		*	Note: This function doesn't resize the Datum. It only replaces the values.
+		*	@param value The data to be set at the specified index.
+		*	@param index The index for the value.
+		*	@exception throws an exception if the index is out of range or if the DatumType is invalid.
+		*/
+		void Set(const std::float_t& value, const uint32_t index = 0);
+
+		/** Sets the corresponding value at the corresponding index.
+		*	Note: This function doesn't resize the Datum. It only replaces the values.
+		*	@param value The data to be set at the specified index.
+		*	@param index The index for the value.
+		*	@exception throws an exception if the index is out of range or if the DatumType is invalid.
+		*/
+		void Set(const std::string& value, const uint32_t index = 0);
+
+		/** Sets the corresponding value at the corresponding index.
+		*	Note: This function doesn't resize the Datum. It only replaces the values.
+		*	@param value The data to be set at the specified index.
+		*	@param index The index for the value.
+		*	@exception throws an exception if the index is out of range or if the DatumType is invalid.
+		*/
+		void Set(const glm::vec4& value, const uint32_t index = 0);
+
+		/** Sets the corresponding value at the corresponding index.
+		*	Note: This function doesn't resize the Datum. It only replaces the values.
+		*	@param value The data to be set at the specified index.
+		*	@param index The index for the value.
+		*	@exception throws an exception if the index is out of range or if the DatumType is invalid.
+		*/
+		void Set(const glm::mat4x4& value, const uint32_t index = 0);
+
+		/** Sets the corresponding pointer at the corresponding index.
+		*	Note: This function doesn't resize the Datum. It only replaces the values.
+		*	@param value The pointer to the data which has to be stored.
+		*	@param index The index for the pointer.
+		*	@exception throws an exception if the index is out of range or if the DatumType is invalid.
+		*/
+		void Set(const RTTI* const value, const uint32_t index = 0);
 #pragma endregion
-		
+
 #pragma region Get Method Declarations
+		/** Template Specialized Get function.
+		*	Returns the data from the Datum object at the specified index.
+		*	@param index The index of the data to be returned (defaulted to 0).
+		*	@returns Returns the data from the Datum object at the specified index.
+		*	@exception throws an exception if the index is out of range or if the DatumType is invalid.
+		*/
 		template<typename T>
-		T& Get(std::uint32_t index = 0);
+		T& Get(const std::uint32_t index = 0);
 
+		/** Template Specialized Get function.
+		*	Returns the data from the Datum object at the specified index.
+		*	@param index The index of the data to be returned (defaulted to 0).
+		*	@returns Returns the data from the Datum object at the specified index.
+		*	@exception throws an exception if the index is out of range or if the DatumType is invalid.
+		*/
 		template<typename K>
-		const K& Get(std::uint32_t index = 0) const;
+		const K& Get(const std::uint32_t index = 0) const;
 #pragma endregion
 
-		std::string ToString(std::uint32_t index = 0) const;
-		void SetFromString(std::string& inputString, std::uint32_t index = 0);
+		/** Returns the std::string representation of the data at the specified index.
+		*	@param index The index of the data which has to be converted to std::string and returned (defaulted to 0).
+		*	@returns Returns the std::string representation of the data at the specified index.
+		*	@exception throws an exception if the index is out of range or if the DatumType is UNASSIGNED.
+		*/
+		std::string ToString(const std::uint32_t index = 0) const;
 
+		/** Converts the inputString to the appropriate type and sets it at the specified index.
+		*	@param inputString The input string which has to be converted to the appropriate type.
+		*	@param index The index of the Datum object where the converted data has to be placed.
+		*	@exception throws an exception if the index is out of range or if the DatumType is UNASSIGNED or POINTER.
+		*/
+		void SetFromString(const std::string& inputString, const std::uint32_t index = 0);
+
+		/** Shrinks the capacity of the Datum object to the Size of the Datum object.
+		*	Note: This function doesn't affect the size of the Datum object.
+		*/
 		void ShrinkToFit();
 
 	private:
-		void Reserve(uint32_t capacity);
-		void AssignFunctionalityForEachType();
-		uint32_t ReserveStrategy(std::uint32_t capacity);
+		/** A union to represent the memory type if the Datum.
+		*/
+		enum class DatumMemoryType
+		{
+			UNASSIGNED,
+			INTERNAL,
+			EXTERNAL
+		};
 
+		/** This helper function checks if the passed memoryType is the same as the Datum's memory type. If yes then it throws an exception.
+		*	@param memoryType The memory type which has to be checked.
+		*	@exception throws an exception if the passed memoryType matches with the Datum's memory type.
+		*/
+		void CheckForTheMemoryType(const DatumMemoryType memoryType) const;
+		
+		/** Checks if the passed index is in bounds of the size of the Datum
+		*	@param index The index which has to be checked for bounds
+		*	@exception throws an exception if the index is out of bounds/range.
+		*/
+		void CheckForBounds(const std::uint32_t index) const;
+
+		/** This helper function checks if the passed datumType is the same type as that of the Datum object.
+		*	@param datumType The datum type which has to be checked.
+		*	@exception throws an exception if the specified datumType is not the same type as that of the Datum object.
+		*/
+		void CheckForDatumType(const DatumType datumType) const;
+
+		/** This helper function checks if the passed datumType is the same type as that of the Datum object and it also checks the bounds of the Datum.
+		*	Note: This function internally calls the functions CheckForBounds() and CheckForDatumType();
+		*	@param datumType The datum type which has to be checked.
+		*	@param index The index which has to be checked for bounds
+		*	@exception throws an exception if the index is out of bounds/range.
+		*	@exception throws an exception if the specified datumType is not the same type as that of the Datum object.
+		*/
+		void CheckForBoundsAndDatumType(const DatumType datumType, const std::uint32_t index) const;
+
+		/** Reserves memory for the Datum object.
+		*	Reserves the memory for the param "capacity" number of objects in the Datum Object.
+		*	Note: For the actual reserve to happen, the specified capacity has to be greater than the existing capacity.
+		*	@param capacity The new capacity of the Datum object. This should be greater than the current capacity.
+		*/
+		void Reserve(const std::uint32_t capacity);
+
+		/** This functions assigns all the function pointers to the function pointer array.
+		*/
+		void AssignFunctionalityForEachType();
+
+		/** The Reserve Strategy for reserving new capacity.
+		*	@param capacity The existing capacity of the Datum object.
+		*	@returns Returns the new capacity for the Reserve.
+		*/
+		std::uint32_t ReserveStrategy(const std::uint32_t capacity) const;
+
+		/** Templated function which checks for the equality of the contents of the two passed pointers.
+		*	@param lhs The left hand side pointer pointing to the data.
+		*	@param rhs The right hand side pointer pointing to the data.
+		*	@returns Returns true if both the pointers contain the same data.
+		*/
 		template<typename T>
-		bool PerformDeepSearch(T *lhs, T *rhs, std::uint32_t size) const;
+		bool PerformDeepSearch(const T* const lhs, const T* const rhs) const;
 
 #pragma region Search based on each data type(Declarations)
-		bool PerformVoidSearch(void* lhs, void* rhs, std::uint32_t size) const;
-		bool PerformIntSearch(void* lhs, void* rhs, std::uint32_t size) const;
-		bool PerformFloatSearch(void* lhs, void* rhs, std::uint32_t size) const;
-		bool PerformStringSearch(void* lhs, void* rhs, std::uint32_t size) const;
-		bool PerformVec4Search(void* lhs, void* rhs, std::uint32_t size) const;
-		bool PerformMat4x4Search(void* lhs, void* rhs, std::uint32_t size) const;
-		bool PerformRTTIPointerSearch(void* lhs, void* rhs, std::uint32_t size) const;
+		/** This function will be called when two Datums of type UNASSIGNED are compared.
+		*	This function will always return true.
+		*	@param lhs The left hand side pointer pointing to the data which has to be compared.
+		*	@param rhs The right hand side pointer pointing to the data which has to be compared.
+		*	@returns Always return true.
+		*/
+		bool PerformVoidSearch(const void* const lhs, const void* const rhs) const;
+
+		/** This function will be called when two Datums of type INT32_T are compared.
+		*	This function will internally call the templated PerformDeepSearch();
+		*	@param lhs The left hand side pointer pointing to the data which has to be compared.
+		*	@param rhs The right hand side pointer pointing to the data which has to be compared.
+		*	@returns Returns true if both the pointers contain the same data.
+		*/
+		bool PerformIntSearch(const void* const lhs, const void* const rhs) const;
+
+		/** This function will be called when two Datums of type FLOAT are compared.
+		*	This function will internally call the templated PerformDeepSearch();
+		*	@param lhs The left hand side pointer pointing to the data which has to be compared.
+		*	@param rhs The right hand side pointer pointing to the data which has to be compared.
+		*	@returns Returns true if both the pointers contain the same data.
+		*/
+		bool PerformFloatSearch(const void* const lhs, const void* const rhs) const;
+
+		/** This function will be called when two Datums of type STRING are compared.
+		*	This function will internally call the templated PerformDeepSearch();
+		*	@param lhs The left hand side pointer pointing to the data which has to be compared.
+		*	@param rhs The right hand side pointer pointing to the data which has to be compared.
+		*	@returns Returns true if both the pointers contain the same data.
+		*/
+		bool PerformStringSearch(const void* const lhs, const void* const rhs) const;
+
+		/** This function will be called when two Datums of type GLM_VECTOR4 are compared.
+		*	This function will internally call the templated PerformDeepSearch();
+		*	@param lhs The left hand side pointer pointing to the data which has to be compared.
+		*	@param rhs The right hand side pointer pointing to the data which has to be compared.
+		*	@returns Returns true if both the pointers contain the same data.
+		*/
+		bool PerformVec4Search(const void* const lhs, const void* const rhs) const;
+
+		/** This function will be called when two Datums of type GLM_MATRIX4X4 are compared.
+		*	This function will internally call the templated PerformDeepSearch();
+		*	@param lhs The left hand side pointer pointing to the data which has to be compared.
+		*	@param rhs The right hand side pointer pointing to the data which has to be compared.
+		*	@returns Returns true if both the pointers contain the same data.
+		*/
+		bool PerformMat4x4Search(const void* const lhs, const void* const rhs) const;
+
+		/** This function will be called when two Datums of type POINTER are compared.
+		*	This function will internally call the .Equals() of the RTTI class.
+		*	@param lhs The left hand side pointer pointing to the data which has to be compared.
+		*	@param rhs The right hand side pointer pointing to the data which has to be compared.
+		*	@returns Returns true if both the pointers contain the same data.
+		*/
+		bool PerformRTTIPointerSearch(const void* const lhs, const void* const rhs) const;
 #pragma endregion
 
 #pragma region Pushbacking based on each data type (Declarations)
-		void PushBackIntData(std::uint32_t startIndex, std::uint32_t endIndex);
-		void PushBackFloatData(std::uint32_t startIndex, std::uint32_t endIndex);
-		void PushBackStringData(std::uint32_t startIndex, std::uint32_t endIndex);
-		void PushBackVec4Data(std::uint32_t startIndex, std::uint32_t endIndex);
-		void PushBackMat4x4Data(std::uint32_t startIndex, std::uint32_t endIndex);
-		void PushBackRTTIPointer(std::uint32_t startIndex, std::uint32_t endIndex);
+		/** This function appends the default std::int32_t() to the Datum object.
+		*	Note: The function push backs endIndex - startIndex times. It is named that way to keep consistency with the Destructor functions.
+		*	@param startIndex The lower hand value.
+		*	@param endIndex The higher hand value.
+		*/
+		void PushBackIntData(const std::uint32_t startIndex, const std::uint32_t endIndex);
+
+		/** This function appends the default std::float_t() to the Datum object.
+		*	Note: The function push backs endIndex - startIndex times. It is named that way to keep consistency with the Destructor functions.
+		*	@param startIndex The lower hand value.
+		*	@param endIndex The higher hand value.
+		*/
+		void PushBackFloatData(const std::uint32_t startIndex, const std::uint32_t endIndex);
+
+		/** This function appends the default std::string() to the Datum object.
+		*	Note: The function push backs endIndex - startIndex times. It is named that way to keep consistency with the Destructor functions.
+		*	@param startIndex The lower hand value.
+		*	@param endIndex The higher hand value.
+		*/
+		void PushBackStringData(const std::uint32_t startIndex, const std::uint32_t endIndex);
+
+		/** This function appends the default glm::vec4() to the Datum object.
+		*	Note: The function push backs endIndex - startIndex times. It is named that way to keep consistency with the Destructor functions.
+		*	@param startIndex The lower hand value.
+		*	@param endIndex The higher hand value.
+		*/
+		void PushBackVec4Data(const std::uint32_t startIndex, const std::uint32_t endIndex);
+
+		/** This function appends the default glm::mat4x4() to the Datum object.
+		*	Note: The function push backs endIndex - startIndex times. It is named that way to keep consistency with the Destructor functions.
+		*	@param startIndex The lower hand value.
+		*	@param endIndex The higher hand value.
+		*/
+		void PushBackMat4x4Data(const std::uint32_t startIndex, const std::uint32_t endIndex);
+
+		/** This function appends the default nullpointer to the Datum object.
+		*	Note: The function push backs endIndex - startIndex times. It is named that way to keep consistency with the Destructor functions.
+		*	@param startIndex The lower hand value.
+		*	@param endIndex The higher hand value.
+		*/
+		void PushBackRTTIPointer(const std::uint32_t startIndex, const std::uint32_t endIndex);
 #pragma endregion
 
-#pragma region Destructing based on each data type (Declarations)	
-		void DestructIntData(std::uint32_t startIndex, std::uint32_t endIndex);
-		void DestructFloatData(std::uint32_t startIndex, std::uint32_t endIndex);
-		void DestructStringData(std::uint32_t startIndex, std::uint32_t endIndex);
-		void DestructVec4Data(std::uint32_t startIndex, std::uint32_t endIndex);
-		void DestructMat4x4Data(std::uint32_t startIndex, std::uint32_t endIndex);
+#pragma region Destructing based on each data type (Declarations)
+		/** This function calls the destructor for the type std::int32_t from startIndex to endIndex.
+		*	@param startIndex The starting index from where the destructor will be called.
+		*	@param endIndex The ending index(exclusive) until which the destructor will be called.
+		*/
+		void DestructIntData(const std::uint32_t startIndex, const std::uint32_t endIndex);
+
+		/** This function calls the destructor for the type std::float_t from startIndex to endIndex.
+		*	@param startIndex The starting index from where the destructor will be called.
+		*	@param endIndex The ending index(exclusive) until which the destructor will be called.
+		*/
+		void DestructFloatData(const std::uint32_t startIndex, const std::uint32_t endIndex);
+
+		/** This function calls the destructor for the type std::string from startIndex to endIndex.
+		*	@param startIndex The starting index from where the destructor will be called.
+		*	@param endIndex The ending index(exclusive) until which the destructor will be called.
+		*/
+		void DestructStringData(const std::uint32_t startIndex, const std::uint32_t endIndex);
+
+		/** This function calls the destructor for the type glm::Vec4 from startIndex to endIndex.
+		*	@param startIndex The starting index from where the destructor will be called.
+		*	@param endIndex The ending index(exclusive) until which the destructor will be called.
+		*/
+		void DestructVec4Data(const std::uint32_t startIndex, const std::uint32_t endIndex);
+
+		/** This function calls the destructor for the type glm::mat4x4 from startIndex to endIndex.
+		*	@param startIndex The starting index from where the destructor will be called.
+		*	@param endIndex The ending index(exclusive) until which the destructor will be called.
+		*/
+		void DestructMat4x4Data(const std::uint32_t startIndex, const std::uint32_t endIndex);
 #pragma endregion
 
 #pragma region Converting each data type to std::string(Declarations)
-		std::string ToStringUnassigned(std::uint32_t index) const;
-		std::string ToStringInt(std::uint32_t index) const;
-		std::string ToStringFloat(std::uint32_t index) const;
-		std::string ToStringString(std::uint32_t index) const;
-		std::string ToStringVec4(std::uint32_t index) const;
-		std::string ToStringMat4x4(std::uint32_t index) const;
-		std::string ToStringRTTIPointer(std::uint32_t index) const;
+		/** This function is called from ToString() when the DatumType is UNASSIGNED.
+		*	This function throws an exception whenever it is called.
+		*	@param index The index of the data inside the Datum object which has to be converted to std::string.
+		*/
+		void ToStringUnassigned(const std::uint32_t index, std::string& convertedString) const;
+
+		/** This function converts the data(std::int32_t) present at the specified index to std::string and returns it.
+		*   This function is called from ToString() when the DatumType is INT32_T.
+		*	@param index The index of the data inside the Datum object which has to be converted to std::string.
+		*	@returns Returns the string representation of the int32_t value.
+		*/
+		void ToStringInt(const std::uint32_t index, std::string& convertedString) const;
+
+		/** This function converts the data(std::float_t) present at the specified index to std::string and returns it.
+		*   This function is called from ToString() when the DatumType is FLOAT.
+		*	@param index The index of the data inside the Datum object which has to be converted to std::string.
+		*	@returns Returns the string representation of the float_t value.
+		*/
+		void ToStringFloat(const std::uint32_t index, std::string& convertedString) const;
+
+		/** This function returns the std::string data present at the specified index.
+		*   This function is called from ToString() when the DatumType is STRING.
+		*	@param index The index of the data inside the Datum object which has to be returned.
+		*	@returns Returns the std::string data present at the specified index.
+		*/
+		void ToStringString(const std::uint32_t index, std::string& convertedString) const;
+
+		/** This function converts the data(glm::vec4) present at the specified index to std::string and returns it.
+		*   This function is called from ToString() when the DatumType is GLM_VECTOR4.
+		*	@param index The index of the data inside the Datum object which has to be converted to std::string.
+		*	@returns Returns the string representation of the glm::vec4 value.
+		*/
+		void ToStringVec4(const std::uint32_t index, std::string& convertedString) const;
+
+		/** This function converts the data(glm::mat4x4) present at the specified index to std::string and returns it.
+		*   This function is called from ToString() when the DatumType is GLM_MATRIX4X4.
+		*	@param index The index of the data inside the Datum object which has to be converted to std::string.
+		*	@returns Returns the string representation of the glm::mat4x4 value.
+		*/
+		void ToStringMat4x4(const std::uint32_t index, std::string& convertedString) const;
+
+		/** This function converts the data present at the specified index to std::string and returns it. It internally calls the ToString() of RTTI class.
+		*   This function is called from ToString() when the DatumType is POINTER.
+		*	@param index The index of the data inside the Datum object which has to be converted to std::string.
+		*	@returns Returns the string representation of the content of the pointer.
+		*/
+		void ToStringRTTIPointer(const std::uint32_t index, std::string& convertedString) const;
 #pragma endregion
-		
+
+#pragma region Set from std::string to specific data type Declarations
+		/** Throws an exception when trying to set from string to an UNASSIGNED Datum.
+		*	Note: This function gets called from SetFromString()
+		*	@param inputString The input string which has to be converted.
+		*	@param index The index where the data has to be set in the Datum.
+		*/
+		void SetFromStringUnassigned(const std::string& inputString, const std::uint32_t index);
+
+		/** Converts std::string to std::int32_t and sets it at the specified index.
+		*	Note: This function gets called from SetFromString()
+		*	@param inputString The input string which has to be converted.
+		*	@param index The index where the date has to be set in the Datum.
+		*/
+		void SetFromStringInt(const std::string& inputString, const std::uint32_t index);
+
+		/** Converts std::string to std::float_t and sets it at the specified index.
+		*	Note: This function gets called from SetFromString()
+		*	@param inputString The input string which has to be converted.
+		*	@param index The index where the date has to be set in the Datum.
+		*/
+		void SetFromStringFloat(const std::string& inputString, const std::uint32_t index);
+
+		/** Sets the inputString at the specified index.
+		*	Note: This function gets called from SetFromString()
+		*	@param inputString The input string which has to be set.
+		*	@param index The index where the date has to be set in the Datum.
+		*/
+		void SetFromStringString(const std::string& inputString, const std::uint32_t index);
+
+		/** Converts std::string to glm::vec4 and sets it at the specified index.
+		*	Note: This function gets called from SetFromString()
+		*	@param inputString The input string which has to be converted.
+		*	@param index The index where the date has to be set in the Datum.
+		*/
+		void SetFromStringVec4(const std::string& inputString, const std::uint32_t index);
+
+		/** Converts std::string to glm::mat4x4 and sets it at the specified index.
+		*	Note: This function gets called from SetFromString()
+		*	@param inputString The input string which has to be converted.
+		*	@param index The index where the date has to be set in the Datum.
+		*/
+		void SetFromStringMat4x4(const std::string& inputString, const std::uint32_t index);
+
+		/** Throws an exception when trying to set from string to a POINTER Datum.
+		*	Note: This function gets called from SetFromString()
+		*	@param inputString The input string which has to be converted.
+		*	@param index The index where the date has to be set in the Datum.
+		*/
+		void SetFromStringRTTIPointer(const std::string& inputString, const std::uint32_t index);
+#pragma endregion		
+
+		/** The Union which holds the pointers to various supported data types.
+		*/
 		union DatumValues
 		{
 			void* voidPointer;
@@ -173,28 +725,61 @@ namespace GameEngineLibrary
 			RTTI** rttiPointer;
 		};
 
+		/** The size of the Datum object.
+		*/
 		std::uint32_t mSize;
+
+		/** The capacity of the Datum object.
+		*/
 		std::uint32_t mCapacity;
+
+		/** The type of the Datum object.
+		*/
 		DatumType mDatumType;
+
+		/** The memory type of the Datum object.
+		*/
 		DatumMemoryType mMemoryType;
+
+		/** The instance of the union which holds the pointers to various supported data types.
+		*/
 		DatumValues mDatumValues;
 
-		typedef void (Datum::*DestructorsForDataType)(std::uint32_t startIndex, std::uint32_t endIndex);
-		typedef void (Datum::*PushBackForDataType)(std::uint32_t startIndex, std::uint32_t endIndex);
-		typedef bool (Datum::*PerformSearchForDataType)(void* lhs, void* rhs, std::uint32_t size) const;
-		typedef std::string(Datum::*ToStringForDataType)(std::uint32_t index) const;
+		typedef void (Datum::*DestructorsForDataType)(const std::uint32_t startIndex, const std::uint32_t endIndex);
+		typedef void (Datum::*PushBackForDataType)(const std::uint32_t startIndex, const std::uint32_t endIndex);
+		typedef bool (Datum::*PerformSearchForDataType)(const void* const lhs, const void* const rhs) const;
+		typedef void (Datum::*ToStringForDataType)(const std::uint32_t index, std::string& convertedString) const;
+		typedef void (Datum::*SetFromStringForDataType)(const std::string& inputString, const std::uint32_t index);
 
+		/** An unsigned integer array containing the sizes of the various supported data types.
+		*/
 		uint32_t mDataTypeSizes[7];
+
+		/** Function pointer array containing pointers to the destructor functions of each supported data type.
+		*/
 		DestructorsForDataType mDestructors[7];
+
+		/** Function pointer array containing pointers to the push back functions of each supported data type.
+		*/
 		PushBackForDataType mPushBacks[7];
+
+		/** Function pointer array containing pointers to the search functions of each supported data type.
+		*/
 		PerformSearchForDataType mPerformSearch[7];
+
+		/** Function pointer array containing pointers to the ToString functions of each supported data type.
+		*/
 		ToStringForDataType mToString[7];
+
+		/** Function pointer array containing pointers to the Set from string functions which convert each specific data to std::string.
+		*/
+		SetFromStringForDataType mSetFromString[7];
 	};
 
 	template<typename T>
-	bool Datum::PerformDeepSearch(T* lhs, T* rhs, std::uint32_t size) const
+	bool Datum::PerformDeepSearch(const T* const lhs, const T* const rhs) const
 	{
-		for (std::uint32_t i = 0; i < size; ++i)
+		for (std::uint32_t i = 0; i < mSize; ++i)
 		{
 			if (*(lhs + i) != *(rhs + i))
 			{

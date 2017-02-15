@@ -22,10 +22,17 @@ namespace GameEngineLibrary
 	Datum::Datum(const Datum& rhs)
 		: mMemoryType(rhs.mMemoryType), mSize(rhs.mSize), mCapacity(rhs.mCapacity), mDatumType(rhs.mDatumType)
 	{
-		mDatumValues.voidPointer = nullptr;
 		AssignFunctionalityForEachType();
-		Reserve(mCapacity);
-		memmove(mDatumValues.voidPointer, rhs.mDatumValues.voidPointer, mDataTypeSizes[static_cast<uint32_t>(mDatumType)]);
+		if (rhs.mMemoryType == DatumMemoryType::INTERNAL)
+		{
+			mDatumValues.voidPointer = nullptr;
+			Reserve(mCapacity);
+			memmove(mDatumValues.voidPointer, rhs.mDatumValues.voidPointer, mDataTypeSizes[static_cast<uint32_t>(mDatumType)] * mSize);
+		}
+		else
+		{
+			mDatumValues.voidPointer = rhs.mDatumValues.voidPointer;
+		}
 	}
 
 #pragma region Overloaded Assignment Operator Implementations
@@ -42,7 +49,7 @@ namespace GameEngineLibrary
 
 					mCapacity = 0;
 					mSize = rhs.mSize;
-					mDatumType = rhs.mDatumType;					
+					mDatumType = rhs.mDatumType;
 					mDatumValues.voidPointer = nullptr;
 
 					Reserve(rhs.mCapacity);
@@ -73,8 +80,8 @@ namespace GameEngineLibrary
 			{
 				if (rhs.mMemoryType == DatumMemoryType::INTERNAL)
 				{
-					mCapacity = 0;					
-					mSize = rhs.mSize;	
+					mCapacity = 0;
+					mSize = rhs.mSize;
 					mDatumType = rhs.mDatumType;
 					mMemoryType = DatumMemoryType::INTERNAL;
 					mDatumValues.voidPointer = nullptr;
@@ -103,7 +110,7 @@ namespace GameEngineLibrary
 				if (rhs.mMemoryType == DatumMemoryType::INTERNAL)
 				{
 					mCapacity = 0;
-					mSize = rhs.mSize;					
+					mSize = rhs.mSize;
 					mDatumType = rhs.mDatumType;
 					mMemoryType = DatumMemoryType::INTERNAL;
 					mDatumValues.voidPointer = nullptr;
@@ -218,16 +225,21 @@ namespace GameEngineLibrary
 
 #pragma region Public Methods
 
-	void Datum::SetType(DatumType datumType)
+	void Datum::SetType(const DatumType datumType)
 	{
+		if (datumType == DatumType::UNASSIGNED)
+		{
+			throw exception("void Datum::SetType(DatumType datumType): Cannot assign an UNASSIGNED datum");
+		}
 		if (mDatumType != datumType && mDatumType != DatumType::UNASSIGNED)
 		{
 			throw exception("void Datum::SetType(DatumType datumType): Trying to assign a different datatype type to an already assigned datum.");
 		}
+
 		mDatumType = datumType;
 	}
-	
-	void Datum::SetSize(uint32_t size)
+
+	void Datum::SetSize(const uint32_t size)
 	{
 		if (mDatumType == DatumType::UNASSIGNED)
 		{
@@ -247,7 +259,7 @@ namespace GameEngineLibrary
 
 		if (size < mSize)
 		{
-			(this->*mDestructors[static_cast<uint32_t>(mDatumType)])(size, mSize);		
+			(this->*mDestructors[static_cast<uint32_t>(mDatumType)])(size, mSize);
 		}
 		mSize = size;
 	}
@@ -269,106 +281,70 @@ namespace GameEngineLibrary
 			(this->*mDestructors[static_cast<uint32_t>(mDatumType)])(0, mSize);
 			mSize = 0;
 		}
-	}		
+	}
 
 #pragma region SetStorage Implementations
-	void Datum::SetStorage(int32_t* pointerToData, uint32_t size)
+	void Datum::SetStorage(const int32_t* const pointerToData, const uint32_t size)
 	{
-		if (mMemoryType == DatumMemoryType::INTERNAL)
-		{
-			throw exception("void Datum::SetStorage(int32_t* pointerToData, uint32_t size): The datum you are trying to assign contains internal data.");
-		}
-		if (mDatumType != DatumType::INT32_T)
-		{
-			throw exception("void Datum::SetStorage(int32_t* pointerToData, uint32_t size): Datum type is not set to std::int32_t.");
-		}
+		CheckForTheMemoryType(DatumMemoryType::INTERNAL);
+		CheckForDatumType(DatumType::INT32_T);
 
-		mDatumValues.intPointer = pointerToData;
+		mDatumValues.intPointer = const_cast<int32_t*>(pointerToData);
 		mSize = size;
 		mMemoryType = DatumMemoryType::EXTERNAL;
 		assert(mCapacity == 0);
 	}
 
-	void Datum::SetStorage(std::float_t* pointerToData, uint32_t size)
+	void Datum::SetStorage(const std::float_t* const pointerToData, const uint32_t size)
 	{
-		if (mMemoryType == DatumMemoryType::INTERNAL)
-		{
-			throw exception("void Datum::SetStorage(std::float_t* pointerToData, uint32_t size): The datum you are trying to assign contains internal data. Please call Clear() before assigning external data.");
-		}
-		if (mDatumType != DatumType::FLOAT)
-		{
-			throw exception("void Datum::SetStorage(std::float_t* pointerToData, uint32_t size): Datum type is not set to std:float.");
-		}
+		CheckForTheMemoryType(DatumMemoryType::INTERNAL);
+		CheckForDatumType(DatumType::FLOAT);
 
-		mDatumValues.floatPointer = pointerToData;
+		mDatumValues.floatPointer = const_cast<std::float_t*>(pointerToData);
 		mSize = size;
 		mMemoryType = DatumMemoryType::EXTERNAL;
 		assert(mCapacity == 0);
 	}
 
-	void Datum::SetStorage(string* pointerToData, uint32_t size)
+	void Datum::SetStorage(const string* const pointerToData, const uint32_t size)
 	{
-		if (mMemoryType == DatumMemoryType::INTERNAL)
-		{
-			throw exception("void Datum::SetStorage(string* pointerToData, uint32_t size): The datum you are trying to assign contains internal data. Please call Clear() before assigning external data.");
-		}
-		if (mDatumType != DatumType::STRING)
-		{
-			throw exception("void Datum::SetStorage(string* pointerToData, uint32_t size): Datum type is not set to std::string.");
-		}
+		CheckForTheMemoryType(DatumMemoryType::INTERNAL);
+		CheckForDatumType(DatumType::STRING);
 
-		mDatumValues.stringPointer = pointerToData;
+		mDatumValues.stringPointer = const_cast<string*>(pointerToData);
 		mSize = size;
 		mMemoryType = DatumMemoryType::EXTERNAL;
 		assert(mCapacity == 0);
 	}
 
-	void Datum::SetStorage(vec4* pointerToData, uint32_t size)
+	void Datum::SetStorage(const vec4* const pointerToData, const uint32_t size)
 	{
-		if (mMemoryType == DatumMemoryType::INTERNAL)
-		{
-			throw exception("void Datum::SetStorage(vec4* pointerToData, uint32_t size): The datum you are trying to assign contains internal data. Please call Clear() before assigning external data.");
-		}
-		if (mDatumType != DatumType::GLM_VECTOR4)
-		{
-			throw exception("void Datum::SetStorage(vec4* pointerToData, uint32_t size): Datum type is not set to glm::vec4.");
-		}
+		CheckForTheMemoryType(DatumMemoryType::INTERNAL);
+		CheckForDatumType(DatumType::GLM_VECTOR4);
 
-		mDatumValues.vector4Pointer = pointerToData;
+		mDatumValues.vector4Pointer = const_cast<vec4*>(pointerToData);
 		mSize = size;
 		mMemoryType = DatumMemoryType::EXTERNAL;
 		assert(mCapacity == 0);
 	}
 
-	void Datum::SetStorage(mat4x4* pointerToData, uint32_t size)
+	void Datum::SetStorage(const mat4x4* const pointerToData, const uint32_t size)
 	{
-		if (mMemoryType == DatumMemoryType::INTERNAL)
-		{
-			throw exception("void Datum::SetStorage(mat4x4* pointerToData, uint32_t size): The datum you are trying to assign contains internal data.");
-		}
-		if (mDatumType != DatumType::GLM_MATRIX4X4)
-		{
-			throw exception("void Datum::SetStorage(mat4x4* pointerToData, uint32_t size): Datum type is not set to glm::mat4x4.");
-		}
+		CheckForTheMemoryType(DatumMemoryType::INTERNAL);
+		CheckForDatumType(DatumType::GLM_MATRIX4X4);
 
-		mDatumValues.mat4x4Pointer = pointerToData;
+		mDatumValues.mat4x4Pointer = const_cast<mat4x4*>(pointerToData);
 		mSize = size;
 		mMemoryType = DatumMemoryType::EXTERNAL;
 		assert(mCapacity == 0);
 	}
 
-	void Datum::SetStorage(RTTI** pointerToData, std::uint32_t size)
+	void Datum::SetStorage(const RTTI** const pointerToData, const std::uint32_t size)
 	{
-		if (mMemoryType == DatumMemoryType::INTERNAL)
-		{
-			throw exception("void Datum::SetStorage(RTTI ** pointerToData, std::uint32_t size): The datum you are trying to assign contains internal data.");
-		}
-		if (mDatumType != DatumType::POINTER)
-		{
-			throw exception("void Datum::SetStorage(RTTI ** pointerToData, std::uint32_t size): Datum type is not set to the type POINTER.");
-		}
+		CheckForTheMemoryType(DatumMemoryType::INTERNAL);
+		CheckForDatumType(DatumType::POINTER);
 
-		mDatumValues.rttiPointer = pointerToData;
+		mDatumValues.rttiPointer = const_cast<RTTI**>(pointerToData);
 		mSize = size;
 		mMemoryType = DatumMemoryType::EXTERNAL;
 		assert(mCapacity == 0);
@@ -379,14 +355,8 @@ namespace GameEngineLibrary
 #pragma region PushBack Implementations
 	void Datum::PushBack(const int32_t& value)
 	{
-		if (mMemoryType == DatumMemoryType::EXTERNAL)
-		{
-			throw exception("void Datum::PushBack(int32_t& value): The datum you are trying to assign contains external data.");
-		}
-		if (mDatumType != DatumType::INT32_T)
-		{
-			throw exception("void Datum::PushBack(int32_t& value): Datum type is not set to std::int32_t.");
-		}
+		CheckForTheMemoryType(DatumMemoryType::EXTERNAL);
+		CheckForDatumType(DatumType::INT32_T);
 		if (mSize == mCapacity)
 		{
 			uint32_t capacity = ReserveStrategy(mCapacity);
@@ -400,14 +370,8 @@ namespace GameEngineLibrary
 
 	void Datum::PushBack(const std::float_t& value)
 	{
-		if (mMemoryType == DatumMemoryType::EXTERNAL)
-		{
-			throw exception("void Datum::PushBack(std::float& value): The datum you are trying to assign contains external data.");
-		}
-		if (mDatumType != DatumType::FLOAT)
-		{
-			throw exception("void Datum::PushBack(std::float& value): Datum type is not set to std:float.");
-		}
+		CheckForTheMemoryType(DatumMemoryType::EXTERNAL);
+		CheckForDatumType(DatumType::FLOAT);
 		if (mSize == mCapacity)
 		{
 			uint32_t capacity = ReserveStrategy(mCapacity);
@@ -421,14 +385,8 @@ namespace GameEngineLibrary
 
 	void Datum::PushBack(const string& value)
 	{
-		if (mMemoryType == DatumMemoryType::EXTERNAL)
-		{
-			throw exception("void Datum::PushBack(string& value): The datum you are trying to assign contains external data.");
-		}
-		if (mDatumType != DatumType::STRING)
-		{
-			throw exception("void Datum::PushBack(string& value): Datum type is not set to std::string.");
-		}
+		CheckForTheMemoryType(DatumMemoryType::EXTERNAL);
+		CheckForDatumType(DatumType::STRING);
 		if (mSize == mCapacity)
 		{
 			uint32_t capacity = ReserveStrategy(mCapacity);
@@ -442,14 +400,8 @@ namespace GameEngineLibrary
 
 	void Datum::PushBack(const vec4& value)
 	{
-		if (mMemoryType == DatumMemoryType::EXTERNAL)
-		{
-			throw exception("void Datum::PushBack(vec4& value): The datum you are trying to assign contains external data.");
-		}
-		if (mDatumType != DatumType::GLM_VECTOR4)
-		{
-			throw exception("void Datum::PushBack(vec4& value): Datum type is not set to glm::vec4.");
-		}
+		CheckForTheMemoryType(DatumMemoryType::EXTERNAL);
+		CheckForDatumType(DatumType::GLM_VECTOR4);
 		if (mSize == mCapacity)
 		{
 			uint32_t capacity = ReserveStrategy(mCapacity);
@@ -463,14 +415,8 @@ namespace GameEngineLibrary
 
 	void Datum::PushBack(const mat4x4& value)
 	{
-		if (mMemoryType == DatumMemoryType::EXTERNAL)
-		{
-			throw exception("void Datum::PushBack(mat4x4& value): The datum you are trying to assign contains external data.");
-		}
-		if (mDatumType != DatumType::GLM_MATRIX4X4)
-		{
-			throw exception("void Datum::PushBack(mat4x4& value): Datum type is not set to glm::mat4x4.");
-		}
+		CheckForTheMemoryType(DatumMemoryType::EXTERNAL);
+		CheckForDatumType(DatumType::GLM_MATRIX4X4);
 		if (mSize == mCapacity)
 		{
 			uint32_t capacity = ReserveStrategy(mCapacity);
@@ -482,16 +428,10 @@ namespace GameEngineLibrary
 		mSize++;
 	}
 
-	void Datum::PushBack(const RTTI* value)
+	void Datum::PushBack(const RTTI* const value)
 	{
-		if (mMemoryType == DatumMemoryType::EXTERNAL)
-		{
-			throw exception("void Datum::PushBack(const RTTI** value): The datum you are trying to assign contains external data.");
-		}
-		if (mDatumType != DatumType::POINTER)
-		{
-			throw exception("void Datum::PushBack(const RTTI** value): Datum type is not set to the type POINTER.");
-		}
+		CheckForTheMemoryType(DatumMemoryType::EXTERNAL);
+		CheckForDatumType(DatumType::POINTER);
 		if (mSize == mCapacity)
 		{
 			uint32_t capacity = ReserveStrategy(mCapacity);
@@ -512,28 +452,7 @@ namespace GameEngineLibrary
 			return false;
 		}
 
-		return (this->*mPerformSearch[static_cast<uint32_t>(mDatumType)])(mDatumValues.voidPointer, rhs.mDatumValues.voidPointer, mSize);
-
-		/*switch (mDatumType)
-		{
-		case DatumType::INT32_T:
-			return PerformDeepSearch(mDatumValues.intPointer, rhs.mDatumValues.intPointer, mSize);
-			break;
-		case DatumType::FLOAT:
-			return PerformDeepSearch(mDatumValues.floatPointer, rhs.mDatumValues.floatPointer, mSize);
-			break;
-		case DatumType::STRING:
-			return PerformDeepSearch(mDatumValues.stringPointer, rhs.mDatumValues.stringPointer, mSize);
-			break;
-		case DatumType::GLM_VECTOR4:
-			return PerformDeepSearch(mDatumValues.vector4Pointer, rhs.mDatumValues.vector4Pointer, mSize);
-			break;
-		case DatumType::GLM_MATRIX4X4:
-			return PerformDeepSearch(mDatumValues.mat4x4Pointer, rhs.mDatumValues.mat4x4Pointer, mSize);
-			break;
-		default:
-			return false;
-		}*/
+		return (this->*mPerformSearch[static_cast<uint32_t>(mDatumType)])(mDatumValues.voidPointer, rhs.mDatumValues.voidPointer);
 	}
 
 	bool Datum::operator==(const int32_t& intValue) const
@@ -561,7 +480,7 @@ namespace GameEngineLibrary
 		return (mDatumType == DatumType::GLM_MATRIX4X4 && mSize == 1 && *(mDatumValues.mat4x4Pointer) == matrix4x4Value);
 	}
 
-	bool Datum::operator==(const RTTI* rttiPointer) const
+	bool Datum::operator==(const RTTI* const rttiPointer) const
 	{
 		return (mDatumType == DatumType::POINTER && mSize == 1 && (**mDatumValues.rttiPointer).Equals(rttiPointer));
 	}
@@ -599,192 +518,104 @@ namespace GameEngineLibrary
 		return !(operator==(matrix4x4Value));
 	}
 
-	bool Datum::operator!=(const RTTI* rttiPointer) const
+	bool Datum::operator!=(const RTTI* const rttiPointer) const
 	{
 		return !(operator==(rttiPointer));
 	}
 #pragma endregion
 
 #pragma region Set Method Definitions
-	void Datum::Set(const int32_t& value, uint32_t index)
+
+	void Datum::Set(const int32_t& value, const uint32_t index)
 	{
-		if (mDatumType != DatumType::INT32_T)
-		{
-			throw exception("void Datum::Set(int32_t value, uint32_t index): Datum type is not set to std::int32_t.");
-		}
-		if (index >= mSize)
-		{
-			throw out_of_range("void Datum::Set(int32_t value, uint32_t index): The specified 'index' is out of range.");
-		}
+		CheckForBoundsAndDatumType(DatumType::INT32_T, index);
 		*(mDatumValues.intPointer + index) = value;
 	}
 
-	void Datum::Set(const std::float_t& value, uint32_t index)
+	void Datum::Set(const std::float_t& value, const uint32_t index)
 	{
-		if (mDatumType != DatumType::FLOAT)
-		{
-			throw exception("void Datum::Set(std::float_t value, uint32_t index): Datum type is not set to std::float.");
-		}
-		if (index >= mSize)
-		{
-			throw out_of_range("void Datum::Set(std::float_t value, uint32_t index): The specified 'index' is out of range.");
-		}
+		CheckForBoundsAndDatumType(DatumType::FLOAT, index);
 		*(mDatumValues.floatPointer + index) = value;
 	}
 
-	void Datum::Set(const string& value, uint32_t index)
+	void Datum::Set(const string& value, const uint32_t index)
 	{
-		if (mDatumType != DatumType::STRING)
-		{
-			throw exception("void Datum::Set(string value, uint32_t index): Datum type is not set to std::string.");
-		}
-		if (index >= mSize)
-		{
-			throw out_of_range("void Datum::Set(string value, uint32_t index): The specified 'index' is out of range.");
-		}
+		CheckForBoundsAndDatumType(DatumType::STRING, index);
 		*(mDatumValues.stringPointer + index) = value;
 	}
 
-	void Datum::Set(const vec4& value, uint32_t index)
+	void Datum::Set(const vec4& value, const uint32_t index)
 	{
-		if (mDatumType != DatumType::GLM_VECTOR4)
-		{
-			throw exception("void Datum::Set(vec4& value, uint32_t index): Datum type is not set to glm::vec4.");
-		}
-		if (index >= mSize)
-		{
-			throw out_of_range("void Datum::Set(vec4& value, uint32_t index): The specified 'index' is out of range.");
-		}
+		CheckForBoundsAndDatumType(DatumType::GLM_VECTOR4, index);
 		*(mDatumValues.vector4Pointer + index) = value;
 	}
 
-	void Datum::Set(const mat4x4& value, uint32_t index)
+	void Datum::Set(const mat4x4& value, const uint32_t index)
 	{
-		if (mDatumType != DatumType::GLM_MATRIX4X4)
-		{
-			throw exception("void Datum::Set(mat4x4& value, uint32_t index): Datum type is not set to glm::mat4x4.");
-		}
-		if (index >= mSize)
-		{
-			throw out_of_range("void Datum::Set(mat4x4& value, uint32_t index): The specified 'index' is out of range.");
-		}
+		CheckForBoundsAndDatumType(DatumType::GLM_MATRIX4X4, index);
 		*(mDatumValues.mat4x4Pointer + index) = value;
 	}
 
-	void Datum::Set(const RTTI* value, uint32_t index)
+	void Datum::Set(const RTTI* const value, const uint32_t index)
 	{
-		if (mDatumType != DatumType::POINTER)
-		{
-			throw exception("void Datum::Set(const RTTI* value, uint32_t index): Datum type is not set to POINTER.");
-		}
-		if (index >= mSize)
-		{
-			throw out_of_range("void Datum::Set(const RTTI* value, uint32_t index): The specified 'index' is out of range.");
-		}
+		CheckForBoundsAndDatumType(DatumType::POINTER, index);
 		*(mDatumValues.rttiPointer + index) = const_cast<RTTI*>(value);
 	}
 
 #pragma endregion
-	
+
 #pragma region Get Method Implementations
 
 #pragma region Non Const Get Method Implementations
 	template<>
-	int32_t& Datum::Get<int32_t>(uint32_t index)
+	int32_t& Datum::Get<int32_t>(const uint32_t index)
 	{
-		if (mDatumType != DatumType::INT32_T)
-		{
-			throw exception("const int32_t& Datum::Get<int32_t>(uint32_t index) const: Datum type is not set to std::int32_t.");
-		}
-		if (index >= mSize)
-		{
-			throw out_of_range("const int32_t& Datum::Get<int32_t>(uint32_t index) const: The specified 'index' is out of range.");
-		}
-
+		CheckForBoundsAndDatumType(DatumType::INT32_T, index);
 		return *(mDatumValues.intPointer + index);
 	}
 
 	template<>
-	std::float_t& Datum::Get<std::float_t>(uint32_t index)
+	std::float_t& Datum::Get<std::float_t>(const uint32_t index)
 	{
-		if (mDatumType != DatumType::FLOAT)
-		{
-			throw exception("const std::float& Datum::Get<std::float>(uint32_t index) const: Datum type is not set to std::float.");
-		}
-		if (index >= mSize)
-		{
-			throw out_of_range("const std::float& Datum::Get<std::float>(uint32_t index) const: The specified 'index' is out of range.");
-		}
-
+		CheckForBoundsAndDatumType(DatumType::FLOAT, index);
 		return *(mDatumValues.floatPointer + index);
 	}
 
 	template<>
-	string& Datum::Get<string>(uint32_t index)
+	string& Datum::Get<string>(const uint32_t index)
 	{
-		if (mDatumType != DatumType::STRING)
-		{
-			throw exception("const string& Datum::Get<string>(uint32_t index) const: Datum type is not set to std::string.");
-		}
-		if (index >= mSize)
-		{
-			throw out_of_range("const string& Datum::Get<string>(uint32_t index) const: The specified 'index' is out of range.");
-		}
-
+		CheckForBoundsAndDatumType(DatumType::STRING, index);
 		return *(mDatumValues.stringPointer + index);
 	}
 
 	template<>
-	vec4& Datum::Get<vec4>(uint32_t index)
+	vec4& Datum::Get<vec4>(const uint32_t index)
 	{
-		if (mDatumType != DatumType::GLM_VECTOR4)
-		{
-			throw exception("const vec4& Datum::Get<vec4>(uint32_t index) const: Datum type is not set to glm::vec4.");
-		}
-		if (index >= mSize)
-		{
-			throw out_of_range("const vec4& Datum::Get<vec4>(uint32_t index) const: The specified 'index' is out of range.");
-		}
-
+		CheckForBoundsAndDatumType(DatumType::GLM_VECTOR4, index);
 		return *(mDatumValues.vector4Pointer + index);
 	}
 
 	template<>
-	mat4x4& Datum::Get<mat4x4>(uint32_t index)
+	mat4x4& Datum::Get<mat4x4>(const uint32_t index)
 	{
-		if (mDatumType != DatumType::GLM_MATRIX4X4)
-		{
-			throw exception("const mat4x4& Datum::Get<mat4x4>(uint32_t index) const: Datum type is not set to glm::mat4x4.");
-		}
-		if (index >= mSize)
-		{
-			throw out_of_range("const mat4x4& Datum::Get<mat4x4>(uint32_t index) const: The specified 'index' is out of range.");
-		}
-
+		CheckForBoundsAndDatumType(DatumType::GLM_MATRIX4X4, index);
 		return *(mDatumValues.mat4x4Pointer + index);
 	}
 
-	/*template<>
-	RTTI*& Datum::Get<RTTI*>(uint32_t index)
+	template<>
+	RTTI*& Datum::Get<RTTI*>(const uint32_t index)
 	{
-		if (mDatumType != DatumType::POINTER)
-		{
-			throw exception("RTTI* Datum::Get<RTTI>(uint32_t index): Datum type is not set to POINTER.");
-		}
-		if (index >= mSize)
-		{
-			throw out_of_range("RTTI* Datum::Get<RTTI>(uint32_t index): The specified 'index' is out of range.");
-		}
-
+		CheckForBoundsAndDatumType(DatumType::POINTER, index);
 		return *(mDatumValues.rttiPointer + index);
-	}*/
+	}
 #pragma endregion
 
 #pragma region Const Get Method Implementations.
 	template<>
-	const int32_t& Datum::Get<int32_t>(uint32_t index) const
+	const int32_t& Datum::Get<int32_t>(const uint32_t index) const
 	{
-		if (mDatumType != DatumType::INT32_T)
+		return const_cast<const int32_t&>(const_cast<Datum*>(this)->Get<int32_t>(index));
+		/*if (mDatumType != DatumType::INT32_T)
 		{
 			throw exception("const int32_t& Datum::Get<int32_t>(uint32_t index) const: Datum type is not set to std::int32_t.");
 		}
@@ -793,13 +624,14 @@ namespace GameEngineLibrary
 			throw out_of_range("const int32_t& Datum::Get<int32_t>(uint32_t index) const: The specified 'index' is out of range.");
 		}
 
-		return *(mDatumValues.intPointer + index);
+		return *(mDatumValues.intPointer + index);*/
 	}
 
 	template<>
-	const std::float_t& Datum::Get<std::float_t>(uint32_t index) const
+	const std::float_t& Datum::Get<std::float_t>(const uint32_t index) const
 	{
-		if (mDatumType != DatumType::FLOAT)
+		return const_cast<const float_t&>(const_cast<Datum*>(this)->Get<float_t>(index));
+		/*if (mDatumType != DatumType::FLOAT)
 		{
 			throw exception("const std::float& Datum::Get<std::float>(uint32_t index) const: Datum type is not set to std::float.");
 		}
@@ -808,11 +640,11 @@ namespace GameEngineLibrary
 			throw out_of_range("const std::float& Datum::Get<std::float>(uint32_t index) const: The specified 'index' is out of range.");
 		}
 
-		return *(mDatumValues.floatPointer + index);
+		return *(mDatumValues.floatPointer + index);*/
 	}
 
 	template<>
-	const string& Datum::Get<string>(uint32_t index) const
+	const string& Datum::Get<string>(const uint32_t index) const
 	{
 		if (mDatumType != DatumType::STRING)
 		{
@@ -827,7 +659,7 @@ namespace GameEngineLibrary
 	}
 
 	template<>
-	const vec4& Datum::Get<vec4>(uint32_t index) const
+	const vec4& Datum::Get<vec4>(const uint32_t index) const
 	{
 		if (mDatumType != DatumType::GLM_VECTOR4)
 		{
@@ -842,7 +674,7 @@ namespace GameEngineLibrary
 	}
 
 	template<>
-	const mat4x4& Datum::Get<mat4x4>(uint32_t index) const
+	const mat4x4& Datum::Get<mat4x4>(const uint32_t index) const
 	{
 		if (mDatumType != DatumType::GLM_MATRIX4X4)
 		{
@@ -856,103 +688,35 @@ namespace GameEngineLibrary
 		return *(mDatumValues.mat4x4Pointer + index);
 	}
 
-	/*template<>
-	const RTTI*& Datum::Get<RTTI*>(uint32_t index) const
+	template<>
+	RTTI*const& Datum::Get<RTTI*>(const uint32_t index) const
 	{
 		if (mDatumType != DatumType::POINTER)
 		{
-			throw exception("const RTTI* Datum::Get<RTTI>(uint32_t index) const: Datum type is not set to POINTER.");
+			throw exception("RTTI*const& Datum::Get<RTTI*>(uint32_t index) const: Datum type is not set to POINTER.");
 		}
 		if (index >= mSize)
 		{
-			throw out_of_range("const RTTI* Datum::Get<RTTI>(uint32_t index) const: The specified 'index' is out of range.");
+			throw out_of_range("RTTI*const& Datum::Get<RTTI*>(uint32_t index) const: The specified 'index' is out of range.");
 		}
-
 		return *(mDatumValues.rttiPointer + index);
-	}*/
-
+	}
 #pragma endregion
 
 #pragma endregion
-	
-	string Datum::ToString(uint32_t index) const
+
+	string Datum::ToString(const uint32_t index) const
 	{
-		if (index >= mSize)
-		{
-			throw out_of_range("string Datum::ToString(uint32_t index) const: The specified 'index' is out of range.");
-		}
-
-		return (this->*mToString[static_cast<uint32_t>(mDatumType)])(index);
-
-		//switch (mDatumType)
-		//{
-		//case GameEngineLibrary::DatumType::UNASSIGNED:
-		//	throw exception("string Datum::ToString(uint32_t index) const: Cannot convert unassigned Datum to std::string.");
-		//	break;
-		//case GameEngineLibrary::DatumType::INT32_T:
-		//	return std::to_string(*(mDatumValues.intPointer + index));
-		//	break;
-		//case GameEngineLibrary::DatumType::FLOAT:
-		//	return std::to_string(*(mDatumValues.floatPointer + index));
-		//	break;
-		//case GameEngineLibrary::DatumType::STRING:
-		//	return *(mDatumValues.stringPointer + index);
-		//	break;
-		//case GameEngineLibrary::DatumType::GLM_VECTOR4:
-		//	return glm::to_string(*(mDatumValues.vector4Pointer + index));
-		//	break;
-		//case GameEngineLibrary::DatumType::GLM_MATRIX4X4:
-		//	return glm::to_string(*(mDatumValues.mat4x4Pointer + index));
-		//	break;
-		//case GameEngineLibrary::DatumType::POINTER:
-		//	return (*(*(mDatumValues.rttiPointer + index))).ToString();
-		//	break;
-		//default:
-		//	break;
-		//}
-
-		//// TODO remove the empty return statement
-		//return "";
+		CheckForBounds(index);
+		string convertedString;
+		(this->*mToString[static_cast<uint32_t>(mDatumType)])(index, convertedString);
+		return convertedString;
 	}
 
-	void Datum::SetFromString(string& inputString, uint32_t index)
+	void Datum::SetFromString(const string& inputString, const uint32_t index)
 	{
-		/*if (index >= mSize)
-		{
-			throw out_of_range("void Datum::SetFromString(string& inputString, uint32_t index): The specified 'index' is out of range.");
-		}*/
-
-		switch (mDatumType)
-		{
-		case GameEngineLibrary::DatumType::UNASSIGNED:
-			throw exception("exception");
-			break;
-		case GameEngineLibrary::DatumType::INT32_T:
-			int32_t readIntValue;
-			sscanf_s(inputString.c_str(), "%d", &readIntValue);
-			Set(readIntValue, index);
-			break;
-		case GameEngineLibrary::DatumType::FLOAT:
-			float readFloatValue;
-			sscanf_s(inputString.c_str(), "%f", &readFloatValue);
-			Set(readFloatValue, index);
-			break;
-		case GameEngineLibrary::DatumType::STRING:
-			Set(inputString, index);
-			break;
-		case GameEngineLibrary::DatumType::GLM_VECTOR4:
-
-			break;
-		case GameEngineLibrary::DatumType::GLM_MATRIX4X4:
-			break;
-		case GameEngineLibrary::DatumType::POINTER:
-			throw exception("exception");
-			break;
-		default:
-			break;
-		}
-		inputString;
-		index;
+		CheckForBounds(index);
+		(this->*mSetFromString[static_cast<uint32_t>(mDatumType)])(inputString, index);
 	}
 
 	void Datum::ShrinkToFit()
@@ -967,7 +731,40 @@ namespace GameEngineLibrary
 #pragma endregion
 
 #pragma region Private Methods
-	void Datum::Reserve(uint32_t capacity)
+
+#pragma region Helper Check Methods
+	void Datum::CheckForTheMemoryType(const DatumMemoryType memoryType) const
+	{
+		if (mMemoryType == memoryType)
+		{
+			throw exception("The datum you are trying to assign contains invalid external data. You are either trying to assign External storage to an Internal storage type Datum or trying to Append data to an External storage type Datum.");
+		}
+	}
+
+	void Datum::CheckForBounds(const uint32_t index) const
+	{
+		if (index >= mSize)
+		{
+			throw out_of_range("The specified 'index' is out of range.");
+		}
+	}
+
+	void Datum::CheckForDatumType(const DatumType datumType) const
+	{
+		if (mDatumType != datumType)
+		{
+			throw exception("Datum type is invalid.");
+		}
+	}
+
+	void Datum::CheckForBoundsAndDatumType(const DatumType datumType, const uint32_t index) const
+	{
+		CheckForDatumType(datumType);
+		CheckForBounds(index);
+	}
+#pragma endregion
+
+	void Datum::Reserve(const uint32_t capacity)
 	{
 		if (capacity > mCapacity)
 		{
@@ -1018,53 +815,60 @@ namespace GameEngineLibrary
 		mToString[static_cast<uint32_t>(DatumType::GLM_VECTOR4)] = &Datum::ToStringVec4;
 		mToString[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = &Datum::ToStringMat4x4;
 		mToString[static_cast<uint32_t>(DatumType::POINTER)] = &Datum::ToStringRTTIPointer;
+
+		mSetFromString[static_cast<uint32_t>(DatumType::UNASSIGNED)] = &Datum::SetFromStringUnassigned;
+		mSetFromString[static_cast<uint32_t>(DatumType::INT32_T)] = &Datum::SetFromStringInt;
+		mSetFromString[static_cast<uint32_t>(DatumType::FLOAT)] = &Datum::SetFromStringFloat;
+		mSetFromString[static_cast<uint32_t>(DatumType::STRING)] = &Datum::SetFromStringString;
+		mSetFromString[static_cast<uint32_t>(DatumType::GLM_VECTOR4)] = &Datum::SetFromStringVec4;
+		mSetFromString[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = &Datum::SetFromStringMat4x4;
+		mSetFromString[static_cast<uint32_t>(DatumType::POINTER)] = &Datum::SetFromStringRTTIPointer;
 	}
 
-	uint32_t Datum::ReserveStrategy(uint32_t capacity)
+	uint32_t Datum::ReserveStrategy(const uint32_t capacity) const
 	{
 		return std::max<uint32_t>(1U, capacity + capacity);
 	}
 
 #pragma region Search based on each data type(Declarations)
-	bool Datum::PerformVoidSearch(void * lhs, void * rhs, std::uint32_t size) const
+	bool Datum::PerformVoidSearch(const void* const lhs, const void* const rhs) const
 	{
 		return true;
 		lhs;
 		rhs;
-		size;
 	}
 
-	bool Datum::PerformIntSearch(void* lhs, void* rhs, uint32_t size) const
+	bool Datum::PerformIntSearch(const void* const lhs, const void* const rhs) const
 	{
-		return PerformDeepSearch(static_cast<int32_t*>(lhs), static_cast<int32_t*>(rhs), size);
+		return PerformDeepSearch(static_cast<int32_t*>(const_cast<void*>(lhs)), static_cast<int32_t*>(const_cast<void*>(rhs)));
 	}
 
-	bool Datum::PerformFloatSearch(void* lhs, void* rhs, uint32_t size) const
+	bool Datum::PerformFloatSearch(const void* const lhs, const void* const rhs) const
 	{
-		return PerformDeepSearch(static_cast<std::float_t*>(lhs), static_cast<std::float_t*>(rhs), size);
+		return PerformDeepSearch(static_cast<std::float_t*>(const_cast<void*>(lhs)), static_cast<std::float_t*>(const_cast<void*>(rhs)));
 	}
 
-	bool Datum::PerformStringSearch(void* lhs, void* rhs, uint32_t size) const
+	bool Datum::PerformStringSearch(const void* const lhs, const void* const rhs) const
 	{
-		return PerformDeepSearch(static_cast<string*>(lhs), static_cast<string*>(rhs), size);
+		return PerformDeepSearch(static_cast<string*>(const_cast<void*>(lhs)), static_cast<string*>(const_cast<void*>(rhs)));
 	}
 
-	bool Datum::PerformVec4Search(void* lhs, void* rhs, uint32_t size) const
+	bool Datum::PerformVec4Search(const void* const lhs, const void* const rhs) const
 	{
-		return PerformDeepSearch(static_cast<vec4*>(lhs), static_cast<vec4*>(rhs), size);
+		return PerformDeepSearch(static_cast<vec4*>(const_cast<void*>(lhs)), static_cast<vec4*>(const_cast<void*>(rhs)));
 	}
 
-	bool Datum::PerformMat4x4Search(void* lhs, void* rhs, uint32_t size) const
+	bool Datum::PerformMat4x4Search(const void* const lhs, const void* const rhs) const
 	{
-		return PerformDeepSearch(static_cast<mat4x4*>(lhs), static_cast<mat4x4*>(rhs), size);
+		return PerformDeepSearch(static_cast<mat4x4*>(const_cast<void*>(lhs)), static_cast<mat4x4*>(const_cast<void*>(rhs)));
 	}
 
-	bool Datum::PerformRTTIPointerSearch(void* lhs, void* rhs, uint32_t size) const
+	bool Datum::PerformRTTIPointerSearch(const void* const lhs, const void* const rhs) const
 	{
-		RTTI** lhsRTTI = static_cast<RTTI**>(lhs);
-		RTTI** rhsRTTI = static_cast<RTTI**>(rhs);
+		RTTI** lhsRTTI = static_cast<RTTI**>(const_cast<void*>(lhs));
+		RTTI** rhsRTTI = static_cast<RTTI**>(const_cast<void*>(rhs));
 
-		for (uint32_t i = 0; i < size; ++i)
+		for (uint32_t i = 0; i < mSize; ++i)
 		{
 			if (!((**(lhsRTTI + i)).Equals(*(rhsRTTI + i))))
 			{
@@ -1076,7 +880,7 @@ namespace GameEngineLibrary
 #pragma endregion
 
 #pragma region Pushbacking based on each data type	
-	void Datum::PushBackIntData(uint32_t startIndex, uint32_t endIndex)
+	void Datum::PushBackIntData(const uint32_t startIndex, const uint32_t endIndex)
 	{
 		for (uint32_t i = startIndex; i < endIndex; ++i)
 		{
@@ -1084,7 +888,7 @@ namespace GameEngineLibrary
 		}
 	}
 
-	void Datum::PushBackFloatData(uint32_t startIndex, uint32_t endIndex)
+	void Datum::PushBackFloatData(const uint32_t startIndex, const uint32_t endIndex)
 	{
 		for (uint32_t i = startIndex; i < endIndex; ++i)
 		{
@@ -1092,7 +896,7 @@ namespace GameEngineLibrary
 		}
 	}
 
-	void Datum::PushBackStringData(uint32_t startIndex, uint32_t endIndex)
+	void Datum::PushBackStringData(const uint32_t startIndex, const uint32_t endIndex)
 	{
 		for (uint32_t i = startIndex; i < endIndex; ++i)
 		{
@@ -1100,7 +904,7 @@ namespace GameEngineLibrary
 		}
 	}
 
-	void Datum::PushBackVec4Data(uint32_t startIndex, uint32_t endIndex)
+	void Datum::PushBackVec4Data(const uint32_t startIndex, const uint32_t endIndex)
 	{
 		for (uint32_t i = startIndex; i < endIndex; ++i)
 		{
@@ -1108,7 +912,7 @@ namespace GameEngineLibrary
 		}
 	}
 
-	void Datum::PushBackMat4x4Data(uint32_t startIndex, uint32_t endIndex)
+	void Datum::PushBackMat4x4Data(const uint32_t startIndex, const uint32_t endIndex)
 	{
 		for (uint32_t i = startIndex; i < endIndex; ++i)
 		{
@@ -1116,7 +920,7 @@ namespace GameEngineLibrary
 		}
 	}
 
-	void Datum::PushBackRTTIPointer(uint32_t startIndex, uint32_t endIndex)
+	void Datum::PushBackRTTIPointer(const uint32_t startIndex, const uint32_t endIndex)
 	{
 		for (uint32_t i = startIndex; i < endIndex; ++i)
 		{
@@ -1126,7 +930,7 @@ namespace GameEngineLibrary
 #pragma endregion
 
 #pragma region Destructing for each data type
-	void Datum::DestructIntData(uint32_t startIndex, uint32_t endIndex)
+	void Datum::DestructIntData(const uint32_t startIndex, const uint32_t endIndex)
 	{
 		for (uint32_t i = startIndex; i < endIndex; ++i)
 		{
@@ -1134,7 +938,7 @@ namespace GameEngineLibrary
 		}
 	}
 
-	void Datum::DestructFloatData(uint32_t startIndex, uint32_t endIndex)
+	void Datum::DestructFloatData(const uint32_t startIndex, const uint32_t endIndex)
 	{
 		typedef std::float_t float_std;
 		for (uint32_t i = startIndex; i < endIndex; ++i)
@@ -1143,7 +947,7 @@ namespace GameEngineLibrary
 		}
 	}
 
-	void Datum::DestructStringData(uint32_t startIndex, uint32_t endIndex)
+	void Datum::DestructStringData(const uint32_t startIndex, const uint32_t endIndex)
 	{
 		for (uint32_t i = startIndex; i < endIndex; ++i)
 		{
@@ -1151,7 +955,7 @@ namespace GameEngineLibrary
 		}
 	}
 
-	void Datum::DestructVec4Data(uint32_t startIndex, uint32_t endIndex)
+	void Datum::DestructVec4Data(const uint32_t startIndex, const uint32_t endIndex)
 	{
 		for (uint32_t i = startIndex; i < endIndex; ++i)
 		{
@@ -1159,7 +963,7 @@ namespace GameEngineLibrary
 		}
 	}
 
-	void Datum::DestructMat4x4Data(uint32_t startIndex, uint32_t endIndex)
+	void Datum::DestructMat4x4Data(const uint32_t startIndex, const uint32_t endIndex)
 	{
 		for (uint32_t i = startIndex; i < endIndex; ++i)
 		{
@@ -1169,40 +973,95 @@ namespace GameEngineLibrary
 #pragma endregion
 
 #pragma region Converting each data type to std::string Implementations
-	std::string Datum::ToStringUnassigned(uint32_t index) const
+	void Datum::ToStringUnassigned(const uint32_t index, std::string& convertedString) const
 	{
-		throw exception("std::string Datum::ToStringUnassigned() const: Cannot convert unassigned Datum to std::string.");
+		throw exception("std::string Datum::ToStringUnassigned() const: Cannot convert UNASSIGNED Datum to std::string.");
+		index;
+		convertedString;
+	}
+
+	void Datum::ToStringInt(const uint32_t index, std::string& convertedString) const
+	{
+		convertedString = std::to_string(*(mDatumValues.intPointer + index));
+	}
+
+	void Datum::ToStringFloat(const uint32_t index, std::string& convertedString) const
+	{
+		convertedString = std::to_string(*(mDatumValues.floatPointer + index));
+	}
+
+	void Datum::ToStringString(const uint32_t index, std::string& convertedString) const
+	{
+		convertedString = *(mDatumValues.stringPointer + index);
+	}
+
+	void Datum::ToStringVec4(const uint32_t index, std::string& convertedString) const
+	{
+		convertedString = glm::to_string(*(mDatumValues.vector4Pointer + index));
+	}
+
+	void Datum::ToStringMat4x4(const uint32_t index, std::string& convertedString) const
+	{
+		convertedString = glm::to_string(*(mDatumValues.mat4x4Pointer + index));
+	}
+
+	void Datum::ToStringRTTIPointer(const uint32_t index, std::string& convertedString) const
+	{
+		convertedString = (*(*(mDatumValues.rttiPointer + index))).ToString();
+	}
+
+#pragma endregion
+
+#pragma region Set from std::string to specific data type Implementations
+	void Datum::SetFromStringUnassigned(const std::string& inputString, const std::uint32_t index)
+	{
+		throw exception("void Datum::SetFromStringUnassigned(std::string & inputString, const std::uint32_t index): Cannot set data to an UNASSIGNED Datum object.");
+		inputString;
 		index;
 	}
 
-	std::string Datum::ToStringInt(uint32_t index) const
+	void Datum::SetFromStringInt(const string& inputString, const uint32_t index)
 	{
-		return std::to_string(*(mDatumValues.intPointer + index));
+		int32_t intValue;
+		sscanf_s(inputString.c_str(), "%d", &intValue);
+		Set(intValue, index);
 	}
 
-	std::string Datum::ToStringFloat(uint32_t index) const
+	void Datum::SetFromStringFloat(const std::string& inputString, const uint32_t index)
 	{
-		return std::to_string(*(mDatumValues.floatPointer + index));
+		float floatValue;
+		sscanf_s(inputString.c_str(), "%f", &floatValue);
+		Set(floatValue, index);
 	}
 
-	std::string Datum::ToStringString(uint32_t index) const
+	void Datum::SetFromStringString(const std::string& inputString, const uint32_t index)
 	{
-		return *(mDatumValues.stringPointer + index);
+		Set(inputString, index);
 	}
 
-	std::string Datum::ToStringVec4(uint32_t index) const
+	void Datum::SetFromStringVec4(const std::string& inputString, const uint32_t index)
 	{
-		return glm::to_string(*(mDatumValues.vector4Pointer + index));
+		vec4 vec4Value;
+		sscanf_s(inputString.c_str(), "vec4(%f, %f, %f, %f)", &vec4Value[0], &vec4Value[1], &vec4Value[2], &vec4Value[3]);
+		Set(vec4Value, index);
 	}
 
-	std::string Datum::ToStringMat4x4(uint32_t index) const
+	void Datum::SetFromStringMat4x4(const std::string& inputString, const uint32_t index)
 	{
-		return glm::to_string(*(mDatumValues.mat4x4Pointer + index));
+		mat4x4 mat4x4Value;
+		sscanf_s(inputString.c_str(), "mat4x4((%f, %f, %f, %f), (%f, %f, %f, %f), (%f, %f, %f, %f), (%f, %f, %f, %f))",
+			&mat4x4Value[0][0], &mat4x4Value[0][1], &mat4x4Value[0][2], &mat4x4Value[0][3],
+			&mat4x4Value[1][0], &mat4x4Value[1][1], &mat4x4Value[1][2], &mat4x4Value[1][3],
+			&mat4x4Value[2][0], &mat4x4Value[2][1], &mat4x4Value[2][2], &mat4x4Value[2][3],
+			&mat4x4Value[3][0], &mat4x4Value[3][1], &mat4x4Value[3][2], &mat4x4Value[3][3]);
+		Set(mat4x4Value, index);
 	}
 
-	std::string Datum::ToStringRTTIPointer(uint32_t index) const
+	void Datum::SetFromStringRTTIPointer(const std::string& inputString, const std::uint32_t index)
 	{
-		return (*(*(mDatumValues.rttiPointer + index))).ToString();
+		throw exception("void Datum::SetFromStringRTTIPointer(std::string & inputString, const std::uint32_t index): Cannot set a pointer from string.");
+		inputString;
+		index;
 	}
 #pragma endregion
 

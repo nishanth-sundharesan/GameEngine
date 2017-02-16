@@ -20,6 +20,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Hashmap.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Pch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RTTI.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Scope.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Vector.h" />
   </ItemGroup>
@@ -29,6 +30,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Scope.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)DefaultHashFunctor.inl" />

@@ -2,12 +2,17 @@
 #include "Vector.h"
 #include "Hashmap.h"
 #include "Datum.h"
+#include "RTTI.h"
 
 namespace GameEngineLibrary
 {
-	class Scope
+	class Scope : public RTTI
 	{
 		typedef std::pair<std::string, Datum> PairType;
+
+		typedef Hashmap<std::string, Datum> Hashmap;
+
+		typedef Hashmap::Iterator HashmapIterator;
 
 	public:
 		Scope(const std::uint32_t size = 1);
@@ -16,11 +21,15 @@ namespace GameEngineLibrary
 
 		Scope& operator=(const Scope& rhs);
 
-		~Scope();
+		virtual ~Scope();
 
 		Datum* Find(const std::string& name);
 
 		const Datum* Find(const std::string& name) const;
+
+		Datum* Find(const std::string& name, const Scope* scope);
+
+		const Datum* Find(const std::string& name, const Scope* scope) const;
 
 		Datum* Search(const std::string& name, Scope** scope = nullptr);
 
@@ -30,9 +39,9 @@ namespace GameEngineLibrary
 
 		Scope& AppendScope(const std::string& name);
 
-		void Adopt(Scope& childScope, const std::string& name, const std::uint32_t index);
+		void Adopt(Scope& childScope, const std::string& name);
 
-		Scope* GetParent(); 
+		Scope* GetParent();
 
 		const Scope* GetParent() const;
 
@@ -52,18 +61,24 @@ namespace GameEngineLibrary
 
 		void Clear();
 
+		virtual std::string ToString() const override;
+
 	private:
-		Vector<PairType*> vectorArray;
+		//Helper Functions
+		Scope& AppendScope(const string& name, Scope* scope);
 
-		Hashmap<std::string, Datum> hashmap;
+		void Orphan(Scope& childScope, const std::string& name);
 
-		Hashmap<std::string, Datum>::Iterator hashmapIterator;
+		virtual bool Equals(const RTTI* rhs) const override;
 
-		Scope* parentScope;
+		Vector<PairType*> mVectorArray;
 
-		void Orphan();
+		Hashmap mHashmap;
 
-		//TODO - remove later
-		Datum tempDatum;
+		mutable HashmapIterator mHashmapIterator;
+
+		Scope* mParentScope;		
+
+		RTTI_DECLARATIONS(Scope, RTTI);
 	};
 }

@@ -3,138 +3,352 @@
 
 using namespace std;
 
+RTTI_DEFINITIONS(GameEngineLibrary::Scope);
+
 namespace GameEngineLibrary
 {
 	Scope::Scope(const uint32_t size) :
-		vectorArray(1U), hashmap(1U), parentScope(nullptr)
+		mHashmap(max<uint32_t>(1U, size)), mVectorArray(max<uint32_t>(1U, size)), mParentScope(nullptr)
 	{
-		size;
+
 	}
 
 	Scope::Scope(const Scope& rhs)
 	{
-		rhs;
+		mParentScope = rhs.mParentScope;
+		PairType pair;
+
+		for (uint32_t i = 0; i < rhs.mVectorArray.Size(); ++i)
+		{
+			pair = *(rhs.mVectorArray[i]);
+			if (pair.second.Type() == DatumType::TABLE)
+			{
+				if (pair.second.Size() == 0)
+				{
+					Datum& datum = Append(pair.first);
+					datum = pair.second;
+				}
+				else
+				{
+					for (uint32_t j = 0; j < pair.second.Size(); ++j)
+					{
+						Scope& tempScope = AppendScope(pair.first);
+						tempScope.operator=(pair.second[j]);
+					}
+				}
+			}
+			else
+			{
+				Datum& datum = Append(pair.first);
+				datum = pair.second;
+			}			
+		}
 	}
 
 	Scope& Scope::operator=(const Scope& rhs)
 	{
-		rhs;
+		if (this != &rhs)
+		{
+			Clear();
+
+			mParentScope = nullptr;
+			PairType pair;
+
+			for (uint32_t i = 0; i < rhs.mVectorArray.Size(); ++i)
+			{
+				pair = *(rhs.mVectorArray[i]);
+				if (pair.second.Type() == DatumType::TABLE)
+				{
+					if (pair.second.Size() == 0)
+					{
+						Datum& datum = Append(pair.first);
+						datum = pair.second;
+					}
+					else
+					{
+						for (uint32_t j = 0; j < pair.second.Size(); ++j)
+						{
+							Scope& tempScope = AppendScope(pair.first);
+							tempScope = pair.second[j];
+						}
+					}
+				}
+				else
+				{
+					Datum& datum = Append(pair.first);
+					datum = pair.second;
+				}
+			}
+		}
 		return *this;
 	}
 
 	Scope::~Scope()
 	{
-
+		Clear();
 	}
-	Datum* Scope::Find(const std::string& name)
+
+	Datum* Scope::Find(const string& name)
 	{
 		return const_cast<Datum*>(const_cast<const Scope*>(this)->Find(name));
 	}
 
-	const Datum* Scope::Find(const std::string& name) const
+	const Datum* Scope::Find(const string& name) const
 	{
-		return &tempDatum;
-		name;
+		return Find(name, this);
 	}
 
-	Datum* Scope::Search(const std::string& name, Scope** scope)
+	Datum* Scope::Find(const string& name, const Scope* scope)
+	{
+		return const_cast<Datum*>(const_cast<const Scope*>(this)->Find(name, scope));
+	}
+
+	const Datum* Scope::Find(const string& name, const Scope* scope) const
+	{
+		if (scope == nullptr)
+		{
+			return nullptr;
+		}
+
+		mHashmapIterator = (scope->mHashmap.Find(name));
+		if (mHashmapIterator == scope->mHashmap.end())
+		{
+			return nullptr;
+		}
+		else
+		{
+			return &(mHashmapIterator->second);
+		}
+	}
+
+	Datum* Scope::Search(const string& name, Scope** scope)
 	{
 		return const_cast<Datum*>(const_cast<const Scope*>(this)->Search(name, scope));
 	}
 
-	const Datum* Scope::Search(const std::string& name, Scope** scope) const
+	const Datum* Scope::Search(const string& name, Scope** scope) const
 	{
-		return &tempDatum;
-		name;
-		scope;
+		if (scope == nullptr)
+		{
+			const Scope *scopeToSearch = this;
+			const Datum *foundDatum = Find(name, scopeToSearch);
+
+			while (foundDatum == nullptr && scopeToSearch != nullptr)
+			{
+				scopeToSearch = scopeToSearch->GetParent();
+				foundDatum = Find(name, scopeToSearch);
+			}
+
+			return foundDatum;
+		}
+		else
+		{
+			return (*scope)->Find(name);
+		}
 	}
 
-	Datum& Scope::Append(const std::string& name)
+	Datum& Scope::Append(const string& name)
 	{
 		bool isNewValueInserted = false;
-		PairType pair = make_pair(name, Datum());
-		hashmapIterator = hashmap.Insert(pair, isNewValueInserted);
+		mHashmapIterator = mHashmap.Insert(make_pair(name, Datum()), isNewValueInserted);
 
 		if (isNewValueInserted)
 		{
-			vectorArray.PushBack(&pair);
+			mVectorArray.PushBack(&(*mHashmapIterator));
 		}
-		return (hashmapIterator->second);
+		return (mHashmapIterator->second);
 	}
 
-	Scope& Scope::AppendScope(const std::string& name)
+	Scope& Scope::AppendScope(const string& name)
 	{
-		return *this;
-		name;
+		return AppendScope(name, new Scope());
 	}
-	void Scope::Adopt(Scope& childScope, const std::string& name, const std::uint32_t index)
+
+	Scope& Scope::AppendScope(const string& name, Scope* newlyInsertedScope)
 	{
-		//Adopt calls oprhan();
-		childScope;
-		name;
-		index;
+		bool isNewValueInserted = false;
+
+		mHashmapIterator = mHashmap.Insert(make_pair(name, Datum()), isNewValueInserted);
+		if (isNewValueInserted)
+		{
+			mVectorArray.PushBack(&(*mHashmapIterator));
+			mHashmapIterator->second.SetType(DatumType::TABLE);
+
+			newlyInsertedScope->mParentScope = this;
+			mHashmapIterator->second.PushBack(newlyInsertedScope);
+
+			return *newlyInsertedScope;
+		}
+		else
+		{
+			if ((mHashmapIterator->second).Type() != DatumType::TABLE)
+			{
+				throw exception("Scope& Scope::AppendScope(const std::string& name): A Datum record already exists with the same name and is not of the type  DatumType::TABLE.");
+			}
+			else
+			{
+				newlyInsertedScope->mParentScope = this;
+				mHashmapIterator->second.PushBack(newlyInsertedScope);
+
+				return *newlyInsertedScope;
+			}
+		}
+	}
+
+	void Scope::Adopt(Scope& childScope, const string& name)
+	{
+		Orphan(childScope, name);
+		childScope.mParentScope = this;
+		AppendScope(name, &childScope);
 	}
 
 	Scope* Scope::GetParent()
 	{
-		return nullptr;
+		return const_cast<Scope*>(const_cast<const Scope*>(this)->GetParent());
 	}
 
 	const Scope* Scope::GetParent() const
 	{
-		return nullptr;
+		return mParentScope;
 	}
 
-	Datum& Scope::operator[](const std::string& name)
+	Datum& Scope::operator[](const string& name)
 	{
-		return tempDatum;
-		name;
+		return Append(name);
 	}
 
-	const Datum& Scope::operator[](const std::string& name) const
+	const Datum& Scope::operator[](const string& name) const
 	{
-		//This function throws exception if it doesn't find the Datum
-		return tempDatum;
-		name;
+		return mHashmap[name];
 	}
 
-	Datum& Scope::operator[](const std::uint32_t index)
+	Datum& Scope::operator[](const uint32_t index)
 	{
-		return tempDatum;
-		index;
+		return const_cast<Datum&>(const_cast<const Scope*>(this)->operator[](index));
 	}
 
-	const Datum& Scope::operator[](const std::uint32_t index) const
+	const Datum& Scope::operator[](const uint32_t index) const
 	{
-		return tempDatum;
-		index;
+		if (index >= mVectorArray.Size())
+		{
+			throw out_of_range("const Datum& Scope::operator[](const std::uint32_t index) const: The specified index is out of range.");
+		}
+		return *(Find((*mVectorArray[index]).first));
 	}
 
 	bool Scope::operator==(const Scope& rhsScope) const
 	{
-		return false;
-		rhsScope;
+		if (this == &rhsScope)
+		{
+			return true;
+		}
+		if (mVectorArray.Size() != rhsScope.mVectorArray.Size())
+		{
+			return false;
+		}
+		for (uint32_t i = 0; i < mVectorArray.Size(); ++i)
+		{
+			if (*mVectorArray[i] != *rhsScope.mVectorArray[i])
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
-	bool Scope::operator!=(const Scope & rhsScope) const
+	bool Scope::operator!=(const Scope& rhsScope) const
 	{
-		return false;
-		rhsScope;
+		return !(operator==(rhsScope));
 	}
 
-	std::string Scope::FindName(const Scope* scope) const
+	string Scope::FindName(const Scope* scope) const
 	{
-		return std::string();
-		scope;
+		for (uint32_t i = 0; i < mVectorArray.Size(); ++i)
+		{
+			if ((*mVectorArray[i]).second.Type() == DatumType::TABLE)
+			{
+				Datum tableDatum = (*mVectorArray[i]).second;
+				for (uint32_t j = 0; j < tableDatum.Size(); ++j)
+				{
+					if (&tableDatum[j] == scope)
+					{
+						return (*mVectorArray[i]).first;
+					}
+				}
+			}
+		}
+		return string();
 	}
 
 	void Scope::Clear()
 	{
-
+		for (uint32_t i = 0; i < mVectorArray.Size(); ++i)
+		{
+			if ((*mVectorArray[i]).second.Type() == DatumType::TABLE)
+			{
+				Datum datumContainingScope = (*mVectorArray[i]).second;
+				Scope *scopeToDelete;
+				for (uint32_t j = 0; j < datumContainingScope.Size(); ++j)
+				{
+					scopeToDelete = datumContainingScope.Get<Scope*>(j);
+					if (scopeToDelete != nullptr)
+					{
+						scopeToDelete->mParentScope = nullptr;
+						delete scopeToDelete;
+					}
+				}
+			}
+			else
+			{
+				((*mVectorArray[i]).second).~Datum();
+			}
+		}
+		mHashmap.Clear();
+		mVectorArray.Clear();
 	}
 
-	void Scope::Orphan()
+	std::string Scope::ToString() const
+	{
+		//DatumType type;
+		string scopeString;
+		for (uint32_t i = 0; i < mVectorArray.Size() - 1; ++i)
+		{
+			scopeString += std::to_string((*mVectorArray[i]).second.Size()) + ", ";
+		}
+		scopeString += std::to_string((*mVectorArray[mVectorArray.Size() - 1]).second.Size());
+
+		return scopeString;
+	}
+
+	bool Scope::Equals(const RTTI* rhs) const
+	{
+		if (rhs == nullptr)
+		{
+			return false;
+		}
+		if (this == rhs)
+		{
+			return true;
+		}
+		Scope* rhsScope = rhs->As<Scope>();
+		return rhsScope == nullptr ? false : *this == *rhsScope;
+	}
+
+	void Scope::Orphan(Scope& childScope, const string& name)
 	{
 		//detach the scope from it's parent scope.
+		Scope* parentScope = childScope.mParentScope;
+		if (parentScope == nullptr)
+		{
+			throw exception("void Scope::Orphan(Scope& childScope): Cannot adopt the root scope.");
+		}
+
+		mHashmapIterator = parentScope->mHashmap.Find(name);
+		if (mHashmapIterator == parentScope->mHashmap.end())
+		{
+			throw exception("void Scope::Orphan(Scope& childScope, const std::string& name): Cannot find the passed childScope.");
+		}
+		parentScope->mVectorArray.Remove(&(*mHashmapIterator));
+		parentScope->mHashmap.Remove(name);
 	}
 }

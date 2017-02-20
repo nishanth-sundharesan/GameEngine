@@ -134,12 +134,12 @@ namespace detail
 		// -- Data --
 
 #		if GLM_HAS_ANONYMOUS_UNION && GLM_NOT_BUGGY_VC32BITS
+
 			union
 			{
 				struct { T x, y, z, w;};
 				struct { T r, g, b, a; };
 				struct { T s, t, p, q; };
-
 				typename detail::simd_data<T, P>::type data;
 
 #				ifdef GLM_SWIZZLE

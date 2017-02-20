@@ -10,75 +10,23 @@ namespace GameEngineLibrary
 	Scope::Scope(const uint32_t size) :
 		mHashmap(max<uint32_t>(1U, size)), mVectorArray(max<uint32_t>(1U, size)), mParentScope(nullptr)
 	{
-
+		AssignEnumToString();
 	}
 
-	Scope::Scope(const Scope& rhs)
+	Scope::Scope(const Scope& rhsScope)
+		:mParentScope(nullptr)
 	{
-		mParentScope = rhs.mParentScope;
-		PairType pair;
-
-		for (uint32_t i = 0; i < rhs.mVectorArray.Size(); ++i)
-		{
-			pair = *(rhs.mVectorArray[i]);
-			if (pair.second.Type() == DatumType::TABLE)
-			{
-				if (pair.second.Size() == 0)
-				{
-					Datum& datum = Append(pair.first);
-					datum = pair.second;
-				}
-				else
-				{
-					for (uint32_t j = 0; j < pair.second.Size(); ++j)
-					{
-						Scope& tempScope = AppendScope(pair.first);
-						tempScope.operator=(pair.second[j]);
-					}
-				}
-			}
-			else
-			{
-				Datum& datum = Append(pair.first);
-				datum = pair.second;
-			}			
-		}
+		AssignEnumToString();
+		PerformDeepCopy(rhsScope);
 	}
 
-	Scope& Scope::operator=(const Scope& rhs)
+	Scope& Scope::operator=(const Scope& rhsScope)
 	{
-		if (this != &rhs)
+		if (this != &rhsScope)
 		{
 			Clear();
-
 			mParentScope = nullptr;
-			PairType pair;
-
-			for (uint32_t i = 0; i < rhs.mVectorArray.Size(); ++i)
-			{
-				pair = *(rhs.mVectorArray[i]);
-				if (pair.second.Type() == DatumType::TABLE)
-				{
-					if (pair.second.Size() == 0)
-					{
-						Datum& datum = Append(pair.first);
-						datum = pair.second;
-					}
-					else
-					{
-						for (uint32_t j = 0; j < pair.second.Size(); ++j)
-						{
-							Scope& tempScope = AppendScope(pair.first);
-							tempScope = pair.second[j];
-						}
-					}
-				}
-				else
-				{
-					Datum& datum = Append(pair.first);
-					datum = pair.second;
-				}
-			}
+			PerformDeepCopy(rhsScope);
 		}
 		return *this;
 	}
@@ -195,6 +143,18 @@ namespace GameEngineLibrary
 		}
 	}
 
+	void Scope::AssignEnumToString()
+	{
+		mEnumNames[static_cast<uint32_t>(DatumType::UNASSIGNED)] = "UNASSIGNED";
+		mEnumNames[static_cast<uint32_t>(DatumType::INT32_T)] = "INT32_T";
+		mEnumNames[static_cast<uint32_t>(DatumType::FLOAT)] = "FLOAT";
+		mEnumNames[static_cast<uint32_t>(DatumType::STRING)] = "STRING";
+		mEnumNames[static_cast<uint32_t>(DatumType::GLM_VECTOR4)] = "GLM_VECTOR4";
+		mEnumNames[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = "GLM_MATRIX4X4";
+		mEnumNames[static_cast<uint32_t>(DatumType::POINTER)] = "POINTER";
+		mEnumNames[static_cast<uint32_t>(DatumType::TABLE)] = "TABLE";
+	}
+
 	void Scope::Adopt(Scope& childScope, const string& name)
 	{
 		Orphan(childScope, name);
@@ -307,16 +267,18 @@ namespace GameEngineLibrary
 		mVectorArray.Clear();
 	}
 
-	std::string Scope::ToString() const
+	string Scope::ToString() const
 	{
-		//DatumType type;
-		string scopeString;
-		for (uint32_t i = 0; i < mVectorArray.Size() - 1; ++i)
+		string scopeString;		
+		for (uint32_t i = 0; i < mVectorArray.Size(); ++i)
 		{
-			scopeString += std::to_string((*mVectorArray[i]).second.Size()) + ", ";
+			PairType *pair = mVectorArray[i];
+			scopeString += mEnumNames[static_cast<uint32_t>(pair->second.Type())] + ": " + std::to_string(pair->second.Size()) + ", ";
 		}
-		scopeString += std::to_string((*mVectorArray[mVectorArray.Size() - 1]).second.Size());
-
+		if (scopeString.length() > 0)
+		{
+			scopeString.erase(scopeString.length() - 2);
+		}
 		return scopeString;
 	}
 
@@ -350,5 +312,35 @@ namespace GameEngineLibrary
 		}
 		parentScope->mVectorArray.Remove(&(*mHashmapIterator));
 		parentScope->mHashmap.Remove(name);
+	}
+
+	void Scope::PerformDeepCopy(const Scope& rhsScope)
+	{
+		PairType pair;
+		for (uint32_t i = 0; i < rhsScope.mVectorArray.Size(); ++i)
+		{
+			pair = *(rhsScope.mVectorArray[i]);
+			if (pair.second.Type() == DatumType::TABLE)
+			{
+				if (pair.second.Size() == 0)
+				{
+					Datum& datum = Append(pair.first);
+					datum = pair.second;
+				}
+				else
+				{
+					for (uint32_t j = 0; j < pair.second.Size(); ++j)
+					{
+						Scope& tempScope = AppendScope(pair.first);
+						tempScope.PerformDeepCopy(pair.second[j]);
+					}
+				}
+			}
+			else
+			{
+				Datum& datum = Append(pair.first);
+				datum = pair.second;
+			}
+		}
 	}
 }

@@ -17,9 +17,9 @@ namespace GameEngineLibrary
 	public:
 		Scope(const std::uint32_t size = 1);
 
-		Scope(const Scope& rhs);
+		Scope(const Scope& rhsScope);
 
-		Scope& operator=(const Scope& rhs);
+		Scope& operator=(const Scope& rhsScope);
 
 		virtual ~Scope();
 
@@ -62,12 +62,16 @@ namespace GameEngineLibrary
 		void Clear();
 
 		virtual std::string ToString() const override;
-
+		
 	private:
 		//Helper Functions
 		Scope& AppendScope(const string& name, Scope* scope);
 
+		void AssignEnumToString();
+
 		void Orphan(Scope& childScope, const std::string& name);
+
+		void PerformDeepCopy(const Scope& rhsScope);
 
 		virtual bool Equals(const RTTI* rhs) const override;
 
@@ -78,6 +82,8 @@ namespace GameEngineLibrary
 		mutable HashmapIterator mHashmapIterator;
 
 		Scope* mParentScope;		
+
+		std::string mEnumNames[8];
 
 		RTTI_DECLARATIONS(Scope, RTTI);
 	};

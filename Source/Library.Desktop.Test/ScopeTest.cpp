@@ -51,17 +51,16 @@ namespace LibraryDesktopTest
 
 			Assert::IsTrue(scope.Find(nameThree) == nullptr);
 
-			//Appending third datum
 			scope.Append(nameThree);
-			Assert::IsTrue(scope.Find(nameThree, nullptr) == nullptr);
+			Assert::IsTrue(scope.Find(nameThree) != nullptr);
 			scope.Append(nameThree).SetType(DatumType::INT32_T);
 			scope.Append(nameThree).PushBack(tempInt);
 
-			datum = *scope.Find(nameThree, &scope);
+			datum = *scope.Find(nameThree);
 			Assert::IsTrue(datum.Type() == DatumType::INT32_T);
 			Assert::IsTrue(datum.Get<int32_t>() == tempInt);
 
-			Assert::IsTrue(*(scope.Find(nameOne, &scope)) == savedNameOneDatum);
+			Assert::IsTrue(*(scope.Find(nameOne)) == savedNameOneDatum);
 		}
 
 		TEST_METHOD(ScopeTestSearch)
@@ -163,6 +162,24 @@ namespace LibraryDesktopTest
 			Assert::IsTrue(scope.Search(nameOne, &scopePointer)->Type() == DatumType::INT32_T);
 			Assert::IsTrue(scope.Search(nameTwo, &scopePointer)->Type() == DatumType::FLOAT);
 			Assert::IsTrue(scope.Search(nameThree, &scopePointer)->Type() == DatumType::STRING);
+
+			//Checking for pointers
+			scopePointer = &nestedChildScope;
+			Assert::IsTrue(nestedChildScope.Search(nameOne, &scopePointer)->Type() == DatumType::INT32_T);
+			Assert::IsTrue(scopePointer == &scope);
+			Assert::IsTrue(nestedChildScope.Search(nameTwo, &scopePointer)->Type() == DatumType::FLOAT);
+			Assert::IsTrue(scopePointer == &scope);
+			Assert::IsTrue(nestedChildScope.Search(nameThree, &scopePointer)->Type() == DatumType::STRING);
+			Assert::IsTrue(scopePointer == &scope);
+
+			//Checking for pointers
+			scopePointer = &nestedChildScope;
+			Assert::IsTrue(nestedChildScope.Search(nameOneChildOne, &scopePointer)->Type() == DatumType::GLM_VECTOR4);
+			Assert::IsTrue(scopePointer == &childScope);
+			Assert::IsTrue(nestedChildScope.Search(nameTwoChildOne, &scopePointer)->Type() == DatumType::GLM_MATRIX4X4);
+			Assert::IsTrue(scopePointer == &childScope);
+			Assert::IsTrue(nestedChildScope.Search(nameThreeChildOne, &scopePointer)->Type() == DatumType::TABLE);
+			Assert::IsTrue(scopePointer == &childScope);
 		}
 
 		TEST_METHOD(ScopeTestAppend)
@@ -236,32 +253,27 @@ namespace LibraryDesktopTest
 			Scope scope;
 			Scope parentOfChildScope;
 
-			string childScopeString = "childScopeString";
+			string childScopeLevelOneString = "childScopeLevelOneString";
 			string tempString = "tempString";
 
-			Assert::ExpectException<exception>([&] {scope.Adopt(parentOfChildScope, childScopeString); });
+			Assert::ExpectException<exception>([&] {scope.Adopt(parentOfChildScope, childScopeLevelOneString); });
+			Assert::ExpectException<exception>([&] {parentOfChildScope.Adopt(scope, childScopeLevelOneString); });
 
-			Scope& childScope = parentOfChildScope.AppendScope(childScopeString);
-			Assert::IsFalse(parentOfChildScope.Find(childScopeString) == nullptr);
-			Assert::IsTrue(childScope.GetParent() == &parentOfChildScope);
+			Scope& childScopeLevelOne = scope.AppendScope(childScopeLevelOneString);
+			string childScopeLevelTwoString = "childScopeLevelOneString";
+			Scope& childScopeLevelTwo = childScopeLevelOne.AppendScope(childScopeLevelTwoString);
+			childScopeLevelTwo;
 
-			Assert::ExpectException<exception>([&] {scope.Adopt(childScope, tempString); });
+			Assert::IsTrue(childScopeLevelTwo.GetParent() == &childScopeLevelOne);
+			scope.Adopt(childScopeLevelTwo, tempString);
+			Assert::IsTrue(childScopeLevelTwo.GetParent() == &scope);			
 
-			string childScopeData = "childScopeData";
-			Datum& childScopeDatum = childScope.Append(childScopeData);
-			childScopeDatum.SetType(DatumType::STRING);
-			childScopeDatum.PushBack(tempString);
+			scope.Adopt(childScopeLevelTwo, tempString);
+			Assert::IsTrue(childScopeLevelTwo.GetParent() == &scope);
 
-			scope.Adopt(childScope, childScopeString);
-			Datum datum = *scope.Find(childScopeString);
-
-			Assert::IsTrue(datum.Type() == DatumType::TABLE);
-			Assert::IsTrue(*(datum.Get<Scope*>()) == childScope);
-
-			Assert::IsTrue(parentOfChildScope.Find(childScopeString) == nullptr);
-			Assert::IsFalse(childScope.GetParent() == &parentOfChildScope);
-
-			Assert::IsTrue(childScope.GetParent() == &scope);
+			Datum* removedScope = childScopeLevelOne.Find(childScopeLevelTwoString);
+			Assert::IsTrue(removedScope->Size() == 0);
+			Assert::IsTrue(removedScope->Type() == DatumType::TABLE);
 		}
 
 		TEST_METHOD(ScopeTestGetParent)
@@ -691,6 +703,23 @@ namespace LibraryDesktopTest
 			Assert::IsTrue(testScopeThree.GetParent() == nullptr);
 			secondAppendLevelTwo.Set("something");
 			Assert::IsFalse(testScopeThree == childScopeLevelTwo);
+		}
+
+		TEST_METHOD(ScopeTestIsAsAndQueryInterface)
+		{
+			RTTI* rttiScopePointer = new Scope();
+			Assert::IsFalse(rttiScopePointer->Is("Something"));
+			Assert::IsFalse(rttiScopePointer->Is("RTTI"));
+			Assert::IsTrue(rttiScopePointer->Is("Scope"));
+
+			Assert::IsTrue(rttiScopePointer->Is(Scope::TypeIdClass()));
+			Assert::IsTrue(rttiScopePointer->Is(Scope::TypeName()));
+
+			Scope* scopePointer = rttiScopePointer->As<Scope>();
+			Assert::IsTrue(scopePointer != nullptr);
+
+			RTTI* rttiPointer = rttiScopePointer->QueryInterface(Scope::TypeIdClass());
+			Assert::IsTrue(rttiPointer != nullptr);
 		}
 	};
 }

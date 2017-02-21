@@ -46,11 +46,6 @@ namespace GameEngineLibrary
 		return Find(name, this);
 	}
 
-	Datum* Scope::Find(const string& name, const Scope* scope)
-	{
-		return const_cast<Datum*>(const_cast<const Scope*>(this)->Find(name, scope));
-	}
-
 	const Datum* Scope::Find(const string& name, const Scope* scope) const
 	{
 		if (scope == nullptr)
@@ -76,23 +71,21 @@ namespace GameEngineLibrary
 
 	const Datum* Scope::Search(const string& name, Scope** scope) const
 	{
-		if (scope == nullptr)
-		{
-			const Scope *scopeToSearch = this;
-			const Datum *foundDatum = Find(name, scopeToSearch);
+		const Scope *scopeToSearch = scope == nullptr ? this : *scope;
+		const Datum *foundDatum = Find(name, scopeToSearch);
 
-			while (foundDatum == nullptr && scopeToSearch != nullptr)
-			{
-				scopeToSearch = scopeToSearch->GetParent();
-				foundDatum = Find(name, scopeToSearch);
-			}
-
-			return foundDatum;
-		}
-		else
+		while (foundDatum == nullptr && scopeToSearch != nullptr)
 		{
-			return (*scope)->Find(name);
+			scopeToSearch = scopeToSearch->GetParent();
+			foundDatum = Find(name, scopeToSearch);
 		}
+
+		if (foundDatum != nullptr && scope != nullptr)
+		{
+			*scope = const_cast<Scope*>(scopeToSearch);
+		}
+
+		return foundDatum;
 	}
 
 	Datum& Scope::Append(const string& name)
@@ -102,6 +95,7 @@ namespace GameEngineLibrary
 
 		if (isNewValueInserted)
 		{
+			//Push back to the order vector as we are creating a new record
 			mVectorArray.PushBack(&(*mHashmapIterator));
 		}
 		return (mHashmapIterator->second);
@@ -119,6 +113,7 @@ namespace GameEngineLibrary
 		mHashmapIterator = mHashmap.Insert(make_pair(name, Datum()), isNewValueInserted);
 		if (isNewValueInserted)
 		{
+			//Push back to the order vector as we are creating a new record
 			mVectorArray.PushBack(&(*mHashmapIterator));
 			mHashmapIterator->second.SetType(DatumType::TABLE);
 
@@ -131,13 +126,13 @@ namespace GameEngineLibrary
 		{
 			if ((mHashmapIterator->second).Type() != DatumType::TABLE)
 			{
-				throw exception("Scope& Scope::AppendScope(const std::string& name): A Datum record already exists with the same name and is not of the type  DatumType::TABLE.");
+				throw exception("Scope& Scope::AppendScope(const string& name, Scope* newlyInsertedScope): A Datum record already exists with the same name and is not of the type DatumType::TABLE.");
 			}
 			else
 			{
+				//If a record of the same name is already present and it is of the type TABLE, then simply append a new Scope() inside the Datum. The order vector remains same.
 				newlyInsertedScope->mParentScope = this;
 				mHashmapIterator->second.PushBack(newlyInsertedScope);
-
 				return *newlyInsertedScope;
 			}
 		}
@@ -157,7 +152,7 @@ namespace GameEngineLibrary
 
 	void Scope::Adopt(Scope& childScope, const string& name)
 	{
-		Orphan(childScope, name);
+		Orphan(&childScope);
 		childScope.mParentScope = this;
 		AppendScope(name, &childScope);
 	}
@@ -227,7 +222,7 @@ namespace GameEngineLibrary
 		{
 			if ((*mVectorArray[i]).second.Type() == DatumType::TABLE)
 			{
-				Datum tableDatum = (*mVectorArray[i]).second;
+				Datum& tableDatum = (*mVectorArray[i]).second;
 				for (uint32_t j = 0; j < tableDatum.Size(); ++j)
 				{
 					if (&tableDatum[j] == scope)
@@ -246,21 +241,16 @@ namespace GameEngineLibrary
 		{
 			if ((*mVectorArray[i]).second.Type() == DatumType::TABLE)
 			{
-				Datum datumContainingScope = (*mVectorArray[i]).second;
-				Scope *scopeToDelete;
+				Datum& datumContainingScope = (*mVectorArray[i]).second;
 				for (uint32_t j = 0; j < datumContainingScope.Size(); ++j)
 				{
-					scopeToDelete = datumContainingScope.Get<Scope*>(j);
+					Scope *scopeToDelete = datumContainingScope.Get<Scope*>(j);
 					if (scopeToDelete != nullptr)
 					{
 						scopeToDelete->mParentScope = nullptr;
 						delete scopeToDelete;
 					}
 				}
-			}
-			else
-			{
-				((*mVectorArray[i]).second).~Datum();
 			}
 		}
 		mHashmap.Clear();
@@ -269,7 +259,7 @@ namespace GameEngineLibrary
 
 	string Scope::ToString() const
 	{
-		string scopeString;		
+		string scopeString;
 		for (uint32_t i = 0; i < mVectorArray.Size(); ++i)
 		{
 			PairType *pair = mVectorArray[i];
@@ -296,50 +286,53 @@ namespace GameEngineLibrary
 		return rhsScope == nullptr ? false : *this == *rhsScope;
 	}
 
-	void Scope::Orphan(Scope& childScope, const string& name)
+	void Scope::Orphan(Scope* childScope)
 	{
-		//detach the scope from it's parent scope.
-		Scope* parentScope = childScope.mParentScope;
+		Scope* parentScope = childScope->mParentScope;
 		if (parentScope == nullptr)
 		{
-			throw exception("void Scope::Orphan(Scope& childScope): Cannot adopt the root scope.");
+			throw exception("void Scope::Orphan(Scope* childScope): Cannot adopt the root scope.");
 		}
 
-		mHashmapIterator = parentScope->mHashmap.Find(name);
-		if (mHashmapIterator == parentScope->mHashmap.end())
+		for (uint32_t i = 0; i < parentScope->mVectorArray.Size(); ++i)
 		{
-			throw exception("void Scope::Orphan(Scope& childScope, const std::string& name): Cannot find the passed childScope.");
+			if (parentScope->mVectorArray[i]->second.Type() == DatumType::TABLE)
+			{
+				if (parentScope->mVectorArray[i]->second.Remove(childScope))
+				{
+					return;
+				}
+			}
 		}
-		parentScope->mVectorArray.Remove(&(*mHashmapIterator));
-		parentScope->mHashmap.Remove(name);
+		assert("The passed scope could not be found.");		
 	}
 
 	void Scope::PerformDeepCopy(const Scope& rhsScope)
 	{
-		PairType pair;
 		for (uint32_t i = 0; i < rhsScope.mVectorArray.Size(); ++i)
 		{
-			pair = *(rhsScope.mVectorArray[i]);
-			if (pair.second.Type() == DatumType::TABLE)
-			{
-				if (pair.second.Size() == 0)
+			PairType *pair = rhsScope.mVectorArray[i];
+			if (pair->second.Type() == DatumType::TABLE)						//This condition could have been. if (pair->second.Type() == DatumType::TABLE && pair->second.Size() != 0)
+			{																	//But for understanding purposes and for future enhancements, it is better to have the implemented way
+				if (pair->second.Size() == 0)
 				{
-					Datum& datum = Append(pair.first);
-					datum = pair.second;
+					//Perform a shallow if the Datum is set to Type TABLE but is empty.
+					Datum& datum = Append(pair->first);
+					datum = pair->second;
 				}
 				else
 				{
-					for (uint32_t j = 0; j < pair.second.Size(); ++j)
+					for (uint32_t j = 0; j < pair->second.Size(); ++j)
 					{
-						Scope& tempScope = AppendScope(pair.first);
-						tempScope.PerformDeepCopy(pair.second[j]);
+						Scope& newScope = AppendScope(pair->first);
+						newScope.PerformDeepCopy(pair->second[j]);
 					}
 				}
 			}
 			else
 			{
-				Datum& datum = Append(pair.first);
-				datum = pair.second;
+				Datum& datum = Append(pair->first);
+				datum = pair->second;
 			}
 		}
 	}

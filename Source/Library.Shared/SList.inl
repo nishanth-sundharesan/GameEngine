@@ -16,7 +16,7 @@ namespace GameEngineLibrary
 	{
 
 	}
-
+	
 	template <class T>
 	SList<T>::SList(const SList<T>& rhs) :
 		mBack(nullptr), mFront(nullptr), mSize(0)
@@ -29,7 +29,7 @@ namespace GameEngineLibrary
 	{
 		if (this != &rhs)
 		{
-			Clear();													//Clear the entire list before assigning new data
+			Clear();													//Clearing the entire list before assigning new data
 			for (const auto& value : rhs)
 			{
 				PushBack(value);
@@ -305,32 +305,38 @@ namespace GameEngineLibrary
 	inline bool SList<T>::Remove(const Iterator& iterator)
 	{
 		bool isSuccessfullyRemoved = false;
-		if (iterator != end())
+		if (iterator.mCurrentNode == nullptr || iterator.mOwner == nullptr)
 		{
-			if (iterator == begin())
+			return isSuccessfullyRemoved;
+		}
+		if (iterator == end())
+		{
+			return isSuccessfullyRemoved;
+		}
+
+		if (iterator == begin())
+		{
+			PopFront();
+			isSuccessfullyRemoved = true;
+		}
+		else
+		{
+			Iterator prevIterator = begin();
+			while (prevIterator.mCurrentNode->mNext != iterator.mCurrentNode)
 			{
-				PopFront();
-				isSuccessfullyRemoved = true;
+				++prevIterator;
 			}
-			else
+
+			prevIterator.mCurrentNode->mNext = iterator.mCurrentNode->mNext;
+			if (mBack == iterator.mCurrentNode)
 			{
-				Iterator prevIterator = begin();
-				while (prevIterator.mCurrentNode->mNext != iterator.mCurrentNode)
-				{
-					++prevIterator;
-				}
-
-				prevIterator.mCurrentNode->mNext = iterator.mCurrentNode->mNext;
-				if (mBack == iterator.mCurrentNode)
-				{
-					mBack = prevIterator.mCurrentNode;
-				}
-
-				delete iterator.mCurrentNode;
-				--mSize;
-
-				isSuccessfullyRemoved = true;
+				mBack = prevIterator.mCurrentNode;
 			}
+
+			delete iterator.mCurrentNode;
+			--mSize;
+
+			isSuccessfullyRemoved = true;
 		}
 		return isSuccessfullyRemoved;
 	}

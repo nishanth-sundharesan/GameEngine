@@ -24,7 +24,7 @@ namespace GameEngineLibrary
 		/** Constructor: Initializes the private members of the class.
 		*	@param size The size of the Scope(Table) if it is known in advance. Defaulted to 17
 		*/
-		Scope(const std::uint32_t size = 17);
+		explicit Scope(const std::uint32_t size = 17);
 
 		/** Copy constructor: Performs deep copy of the scope.
 		*	Note: After deep copying the scope, the parent of the deep copied scope is set to nullptr.
@@ -169,14 +169,6 @@ namespace GameEngineLibrary
 		virtual std::string ToString() const override;
 
 	private:		
-		/** This function takes in the name(key) of the Datum object and a pointer to a Scope where the Datum object has to be searched.
-		*	It returns the pointer to the associated Datum object. It returns nullptr if the Datum object was not found.
-		*	@param name The name associated with the Datum object.
-		*	@param scope The pointer to the Scope inside which the name has to be searched.
-		*	@return Returns the pointer to the Datum object which is associated with the name.
-		*/
-		const Datum* Find(const std::string& name, const Scope* scope) const;
-
 		/** Appends the passed scope to the current scope.
 		*	Appends a new record inside the Scope/Table with the associated name. It then inserts the passed "scope" into the newly created Datum object of the newly created record.
 		*	If a record of the same name was already present and it was of the type TABLE, then it inserts the passed "scope" inside that Datum and returns a reference to that newly created scope.
@@ -212,7 +204,7 @@ namespace GameEngineLibrary
 
 		/** The order vector containing the address of the records appended/inserted.
 		*/
-		Vector<PairType*> mVectorArray;
+		Vector<PairType*> mOrderVector;
 
 		/** The Hashmap containing the appended/inserted records.
 		*/

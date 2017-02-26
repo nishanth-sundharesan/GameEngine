@@ -8,7 +8,7 @@ RTTI_DEFINITIONS(GameEngineLibrary::Scope);
 namespace GameEngineLibrary
 {
 	Scope::Scope(const uint32_t size) :
-		mHashmap(max<uint32_t>(1U, size)), mVectorArray(max<uint32_t>(1U, size)), mParentScope(nullptr)
+		mHashmap(max<uint32_t>(1U, size)), mOrderVector(max<uint32_t>(1U, size)), mParentScope(nullptr)
 	{
 		AssignEnumToString();
 	}
@@ -43,18 +43,8 @@ namespace GameEngineLibrary
 
 	const Datum* Scope::Find(const string& name) const
 	{
-		return Find(name, this);
-	}
-
-	const Datum* Scope::Find(const string& name, const Scope* scope) const
-	{
-		if (scope == nullptr)
-		{
-			return nullptr;
-		}
-
-		mHashmapIterator = (scope->mHashmap.Find(name));
-		if (mHashmapIterator == scope->mHashmap.end())
+		mHashmapIterator = (mHashmap.Find(name));
+		if (mHashmapIterator == mHashmap.end())
 		{
 			return nullptr;
 		}
@@ -72,12 +62,12 @@ namespace GameEngineLibrary
 	const Datum* Scope::Search(const string& name, Scope** scope) const
 	{
 		const Scope *scopeToSearch = scope == nullptr ? this : *scope;
-		const Datum *foundDatum = Find(name, scopeToSearch);
+		const Datum *foundDatum = scopeToSearch->Find(name);
 
-		while (foundDatum == nullptr && scopeToSearch != nullptr)
+		while (foundDatum == nullptr && scopeToSearch->GetParent() != nullptr)
 		{
 			scopeToSearch = scopeToSearch->GetParent();
-			foundDatum = Find(name, scopeToSearch);
+			foundDatum = scopeToSearch->Find(name);
 		}
 
 		if (foundDatum != nullptr && scope != nullptr)
@@ -89,14 +79,19 @@ namespace GameEngineLibrary
 	}
 
 	Datum& Scope::Append(const string& name)
-	{
+	{		
+		if (name == "")
+		{
+			throw exception("Datum& Scope::Append(const string& name): The name of the scope to adopt is empty.");
+		}
+
 		bool isNewValueInserted = false;
 		mHashmapIterator = mHashmap.Insert(make_pair(name, Datum()), isNewValueInserted);
 
 		if (isNewValueInserted)
 		{
 			//Push back to the order vector as we are creating a new record
-			mVectorArray.PushBack(&(*mHashmapIterator));
+			mOrderVector.PushBack(&(*mHashmapIterator));
 		}
 		return (mHashmapIterator->second);
 	}
@@ -108,13 +103,17 @@ namespace GameEngineLibrary
 
 	Scope& Scope::AppendScope(const string& name, Scope* newlyInsertedScope)
 	{
-		bool isNewValueInserted = false;
+		if (name == "")
+		{
+			throw exception("Scope& Scope::AppendScope(const string& name, Scope* newlyInsertedScope): The name of the scope to append is empty.");
+		}
 
+		bool isNewValueInserted = false;
 		mHashmapIterator = mHashmap.Insert(make_pair(name, Datum()), isNewValueInserted);
 		if (isNewValueInserted)
 		{
 			//Push back to the order vector as we are creating a new record
-			mVectorArray.PushBack(&(*mHashmapIterator));
+			mOrderVector.PushBack(&(*mHashmapIterator));
 			mHashmapIterator->second.SetType(DatumType::TABLE);
 
 			newlyInsertedScope->mParentScope = this;
@@ -152,6 +151,16 @@ namespace GameEngineLibrary
 
 	void Scope::Adopt(Scope& childScope, const string& name)
 	{
+		if (name == "")
+		{
+			throw exception("void Scope::Adopt(Scope& childScope, const string& name): The name of the scope to adopt is empty.");
+		}
+		
+		if (this == &childScope)
+		{
+			throw exception("void Scope::Adopt(Scope& childScope, const string& name): Cannot adopt itself.");
+		}
+
 		Orphan(&childScope);
 		childScope.mParentScope = this;
 		AppendScope(name, &childScope);
@@ -184,11 +193,11 @@ namespace GameEngineLibrary
 
 	const Datum& Scope::operator[](const uint32_t index) const
 	{
-		if (index >= mVectorArray.Size())
+		if (index >= mOrderVector.Size())
 		{
 			throw out_of_range("const Datum& Scope::operator[](const std::uint32_t index) const: The specified index is out of range.");
 		}
-		return *(Find((*mVectorArray[index]).first));
+		return mOrderVector[index]->second;
 	}
 
 	bool Scope::operator==(const Scope& rhsScope) const
@@ -197,13 +206,13 @@ namespace GameEngineLibrary
 		{
 			return true;
 		}
-		if (mVectorArray.Size() != rhsScope.mVectorArray.Size())
+		if (mOrderVector.Size() != rhsScope.mOrderVector.Size())
 		{
 			return false;
 		}
-		for (uint32_t i = 0; i < mVectorArray.Size(); ++i)
+		for (uint32_t i = 0; i < mOrderVector.Size(); ++i)
 		{
-			if (*mVectorArray[i] != *rhsScope.mVectorArray[i])
+			if (*mOrderVector[i] != *rhsScope.mOrderVector[i])
 			{
 				return false;
 			}
@@ -218,16 +227,16 @@ namespace GameEngineLibrary
 
 	string Scope::FindName(const Scope* scope) const
 	{
-		for (uint32_t i = 0; i < mVectorArray.Size(); ++i)
+		for (uint32_t i = 0; i < mOrderVector.Size(); ++i)
 		{
-			if ((*mVectorArray[i]).second.Type() == DatumType::TABLE)
+			if ((*mOrderVector[i]).second.Type() == DatumType::TABLE)
 			{
-				Datum& tableDatum = (*mVectorArray[i]).second;
+				Datum& tableDatum = (*mOrderVector[i]).second;
 				for (uint32_t j = 0; j < tableDatum.Size(); ++j)
 				{
 					if (&tableDatum[j] == scope)
 					{
-						return (*mVectorArray[i]).first;
+						return (*mOrderVector[i]).first;
 					}
 				}
 			}
@@ -237,11 +246,11 @@ namespace GameEngineLibrary
 
 	void Scope::Clear()
 	{
-		for (uint32_t i = 0; i < mVectorArray.Size(); ++i)
+		for (uint32_t i = 0; i < mOrderVector.Size(); ++i)
 		{
-			if ((*mVectorArray[i]).second.Type() == DatumType::TABLE)
+			if ((*mOrderVector[i]).second.Type() == DatumType::TABLE)
 			{
-				Datum& datumContainingScope = (*mVectorArray[i]).second;
+				Datum& datumContainingScope = (*mOrderVector[i]).second;
 				for (uint32_t j = 0; j < datumContainingScope.Size(); ++j)
 				{
 					Scope *scopeToDelete = datumContainingScope.Get<Scope*>(j);
@@ -254,15 +263,15 @@ namespace GameEngineLibrary
 			}
 		}
 		mHashmap.Clear();
-		mVectorArray.Clear();
+		mOrderVector.Clear();
 	}
 
 	string Scope::ToString() const
 	{
 		string scopeString;
-		for (uint32_t i = 0; i < mVectorArray.Size(); ++i)
+		for (uint32_t i = 0; i < mOrderVector.Size(); ++i)
 		{
-			PairType *pair = mVectorArray[i];
+			PairType *pair = mOrderVector[i];
 			scopeString += mEnumNames[static_cast<uint32_t>(pair->second.Type())] + ": " + std::to_string(pair->second.Size()) + ", ";
 		}
 		if (scopeString.length() > 0)
@@ -294,24 +303,26 @@ namespace GameEngineLibrary
 			throw exception("void Scope::Orphan(Scope* childScope): Cannot adopt the root scope.");
 		}
 
-		for (uint32_t i = 0; i < parentScope->mVectorArray.Size(); ++i)
+		for (uint32_t i = 0; i < parentScope->mOrderVector.Size(); ++i)
 		{
-			if (parentScope->mVectorArray[i]->second.Type() == DatumType::TABLE)
+			if (parentScope->mOrderVector[i]->second.Type() == DatumType::TABLE)
 			{
-				if (parentScope->mVectorArray[i]->second.Remove(childScope))
+				if (parentScope->mOrderVector[i]->second.Remove(childScope))
 				{
 					return;
 				}
 			}
 		}
-		assert("The passed scope could not be found.");		
+		assert("The passed scope could not be found.");
 	}
 
 	void Scope::PerformDeepCopy(const Scope& rhsScope)
 	{
-		for (uint32_t i = 0; i < rhsScope.mVectorArray.Size(); ++i)
+		mOrderVector.Reserve(rhsScope.mOrderVector.Size());
+
+		for (uint32_t i = 0; i < rhsScope.mOrderVector.Size(); ++i)
 		{
-			PairType *pair = rhsScope.mVectorArray[i];
+			PairType *pair = rhsScope.mOrderVector[i];
 			if (pair->second.Type() == DatumType::TABLE)						//This condition could have been. if (pair->second.Type() == DatumType::TABLE && pair->second.Size() != 0)
 			{																	//But for understanding purposes and for future enhancements, it is better to have the implemented way
 				if (pair->second.Size() == 0)

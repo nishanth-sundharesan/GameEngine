@@ -193,6 +193,8 @@ namespace LibraryDesktopTest
 			string firstPushedString = "Hello";
 			Scope *firstPushedScope = new Scope();
 
+			Assert::ExpectException<exception>([&] {scope.Append(string()); });			 
+
 			Datum& firstAppend = scope.Append(nameOne);
 			firstAppend.SetType(DatumType::INT32_T);
 			firstAppend.PushBack(firstPushedInt);
@@ -223,6 +225,8 @@ namespace LibraryDesktopTest
 			string nameThree = "Now";
 
 			string nameOneChildOne = "nameOneChildOne";
+
+			Assert::ExpectException<exception>([&] {scope.AppendScope(""); });
 
 			Scope& firstAppendedScope = scope.AppendScope(nameOne);
 			Scope firstAppendedScopeCopy = firstAppendedScope;
@@ -265,8 +269,11 @@ namespace LibraryDesktopTest
 			childScopeLevelTwo;
 
 			Assert::IsTrue(childScopeLevelTwo.GetParent() == &childScopeLevelOne);
+			Assert::ExpectException<exception>([&] {scope.Adopt(childScopeLevelTwo, string()); });
+			Assert::ExpectException<exception>([&] {scope.Adopt(childScopeLevelTwo, ""); });
+			Assert::ExpectException<exception>([&] {scope.Adopt(scope, tempString); });
 			scope.Adopt(childScopeLevelTwo, tempString);
-			Assert::IsTrue(childScopeLevelTwo.GetParent() == &scope);			
+			Assert::IsTrue(childScopeLevelTwo.GetParent() == &scope);
 
 			scope.Adopt(childScopeLevelTwo, tempString);
 			Assert::IsTrue(childScopeLevelTwo.GetParent() == &scope);

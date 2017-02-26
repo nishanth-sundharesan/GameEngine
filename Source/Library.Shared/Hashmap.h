@@ -12,8 +12,21 @@ namespace GameEngineLibrary
 	template <class TKey, class TValue, typename HashFunctor = DefaultHashFunctor<TKey>>
 	class Hashmap
 	{
+		/** Each entry inside the Hashmap will be of type std::pair
+		*/
 		typedef std::pair<TKey, TValue> PairType;
+
+	private:		
+		/** The chain for each bucket element inside the Hashmap.(The data will be chained whenever a collision happens)
+		*/
 		typedef SList<PairType> ChainType;
+
+		/** The iterator for the chain.
+		*/
+		typedef typename ChainType::Iterator ChainIterator;
+
+		/** The bucket type for the Hashmap .
+		*/
 		typedef Vector<ChainType> BucketType;
 	public:
 		/** An Iterator class for the Hashmap class.
@@ -50,7 +63,7 @@ namespace GameEngineLibrary
 			bool operator==(const Iterator& rhs) const;
 
 			/** Overloaded inequality operator.
-			*	Checks if both the Iterators are not equal or both the Iterators do not point to the same data.
+			*	Checks if both the Iterators are not equal or if both the Iterators do not point to the same data.
 			*	Note: The function will return false when two uninitialized Iterators are compared.
 			*	@returns Returns true when both the Iterators do not point to the same data, false otherwise.
 			*	@param rhs The right hand side Iterator to be compared with.
@@ -60,7 +73,7 @@ namespace GameEngineLibrary
 			/** Overloaded ++ - Prefix Increment operator.
 			*	Increments the iterator and points to the next consequent data.
 			*	@returns Returns the current Iterator reference after incrementing.
-			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the Hashmap or is pointing to an invalid data.
+			*	@exception Throws an exception if the Iterator is uninitialized or is pointing to the end of the Hashmap or is pointing to an invalid data.
 			*/
 			Iterator& operator++();
 
@@ -68,35 +81,35 @@ namespace GameEngineLibrary
 			*	Makes a copy of the called iterator and returns it. It then later increments the called iterator and points to the next consequent data.
 			*	For gaining performance, use the ++ - Prefix Increment operator
 			*	@returns Returns a copy of the called iterator. It then later increments the called iterator.
-			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the Hashmap or is pointing to an invalid data.
+			*	@exception Throws an exception if the Iterator is uninitialized or is pointing to the end of the Hashmap or is pointing to an invalid data.
 			*/
 			Iterator operator++(int);
 
 			/** Overloaded * (content of) operator.
 			*	Returns the content of which the iterator was pointing to.
 			*	@returns Returns the content of which the iterator was pointing to.
-			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the Hashmap or is pointing to an invalid data
+			*	@exception Throws an exception if the Iterator is uninitialized or is pointing to the end of the Hashmap or is pointing to an invalid data
 			*/
 			PairType& operator*();
 
 			/** Overloaded * (content of) operator.
 			*	Returns the content of which the iterator was pointing to.
 			*	@returns Returns the content of which the iterator was pointing to.
-			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the Hashmap or is pointing to an invalid data
+			*	@exception Throws an exception if the Iterator is uninitialized or is pointing to the end of the Hashmap or is pointing to an invalid data
 			*/
 			const PairType& operator*() const;
 
 			/** Overloaded -> arrow operator.
 			*	Returns the pointer to the content of which the iterator was pointing to.
 			*	@returns Returns the pointer to the content of which the iterator was pointing to.
-			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the Hashmap or is pointing to an invalid data
+			*	@exception Throws an exception if the Iterator is uninitialized or is pointing to the end of the Hashmap or is pointing to an invalid data
 			*/
 			PairType* operator->();
 
 			/** Overloaded -> arrow operator.
 			*	Returns the pointer to the content of which the iterator was pointing to.
 			*	@returns Returns the pointer to the content of which the iterator was pointing to.
-			*	@throws Throws an exception if the Iterator is uninitialized or is pointing to the end of the Hashmap or is pointing to an invalid data
+			*	@exception Throws an exception if the Iterator is uninitialized or is pointing to the end of the Hashmap or is pointing to an invalid data
 			*/
 			const PairType* operator->() const;
 		private:
@@ -120,7 +133,7 @@ namespace GameEngineLibrary
 		/** Parameterized constructor.
 		*	@param size The size for the Hashmap.
 		*/
-		explicit Hashmap(std::uint32_t size = 20);
+		explicit Hashmap(const std::uint32_t size = 20);
 
 		/** Use the default copy constructor to perform member wise copy.
 		*/
@@ -140,9 +153,16 @@ namespace GameEngineLibrary
 		*/
 		Iterator Insert(const PairType& pair);
 
+		/** Inserts the pair in the Hashmap based on the key of the pair.
+		*	@param pair The pair to be inserted in the Hashmap.
+		*	@param isInserted Sets the variable to true if a new pair was inserted, false if the existing pair was returned.
+		*	@returns Returns the Iterator pointing to the the newly inserted pair.
+		*/
+		Iterator Insert(const PairType& pair, bool& isInserted);
+
 		/** Finds the iterator for the specified key in the Hashmap.
 		*	@param key The key to the pair for which the Iterator should be found.
-		*	@throws Throws an exception if the specified key is not present in the Hashmap.
+		*	@exception Throws an exception if the specified key is not present in the Hashmap.
 		*	@returns Returns an iterator for the matched key. If no matches were found then the function throws an exception.
 		*/
 		Iterator Find(const TKey& key) const;
@@ -165,14 +185,14 @@ namespace GameEngineLibrary
 
 		/** Returns the Value of the pair based on the specified Key.
 		*	@param key The key to the pair for which the TValue should be returned.
-		*	@throws Throws an exception if the specified key is not present in the Hashmap.
+		*	@exception Throws an exception if the specified key is not present in the Hashmap.
 		*	@returns Returns the Value of the pair based on the specified Key. An exception is thrown if the key was not found.
 		*/
 		TValue& At(const TKey& key);
 
 		/** Returns the Value of the pair based on the specified Key.
 		*	@param key The key to the pair for which the TValue should be returned.
-		*	@throws Throws an exception if the specified key is not present in the Hashmap.
+		*	@exception Throws an exception if the specified key is not present in the Hashmap.
 		*	@returns Returns the Value of the pair based on the specified Key. An exception is thrown if the key was not found.
 		*/
 		const TValue& At(const TKey& key) const;

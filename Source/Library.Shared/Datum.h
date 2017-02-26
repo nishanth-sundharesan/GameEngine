@@ -18,8 +18,13 @@ namespace GameEngineLibrary
 		STRING = 3,
 		GLM_VECTOR4 = 4,
 		GLM_MATRIX4X4 = 5,
-		POINTER = 6
+		POINTER = 6,
+		TABLE = 7
 	};
+
+	/** Forward declaring the class Scope.
+	*/
+	class Scope;
 
 	class Datum final
 	{
@@ -83,6 +88,13 @@ namespace GameEngineLibrary
 		*	@return Returns the Datum object after Push back or after Set.
 		*/
 		Datum& operator=(const RTTI* const rhs);
+
+		/** Overloaded assignment operator.
+		*	Push backs the rhs pointer and sets the DatumType to TABLE if the DatumType is UNASSIGNED or else replaces the first element of the Datum Object.
+		*	@param rhs It is the right hand side pointer which will be Pushed back or Set at the 0th index of the Datum object.
+		*	@return Returns the Datum object after Push back or after Set.
+		*/
+		Datum& operator=(const Scope* const rhs);
 #pragma endregion
 		/** Clears the entire Datum object.
 		*/
@@ -212,12 +224,27 @@ namespace GameEngineLibrary
 		*/
 		void PushBack(const glm::mat4x4& value);
 
-		/** Appends/Push backs the data to the Datum object.
+		/** Appends/Push backs the pointer to the Datum object.
 		*	Note: PushBacks work only for the INTERNAL Datum types.
-		*	@param value The data to be appended to the Datum object.
+		*	@param value The pointer to be appended to the Datum object.
 		*	@exception throws an exception if the Datum object holds external data or if the DatumType is invalid.
 		*/
-		void PushBack(const RTTI* value);
+		void PushBack(const RTTI* const value);
+
+		/** Appends/Push backs the pointer to the Datum object.
+		*	Note: PushBacks work only for the INTERNAL Datum types.
+		*	@param value The pointer to be appended to the Datum object.
+		*	@exception throws an exception if the Datum object holds external data or if the DatumType is invalid.
+		*/
+		void PushBack(const Scope* const value);
+#pragma endregion
+
+#pragma region Remove
+		/** Removes the passed scope pointer from the Datum object.
+		*	@param value The scope pointer that has to be removed from the Datum object.
+		*	@return Returns true of the Remove() was successful, false otherwise.
+		*/
+		bool Remove(const Scope* const value);
 #pragma endregion
 
 #pragma region Overloaded Equality Operators
@@ -373,6 +400,14 @@ namespace GameEngineLibrary
 		*	@exception throws an exception if the index is out of range or if the DatumType is invalid.
 		*/
 		void Set(const RTTI* const value, const uint32_t index = 0);
+
+		/** Sets the corresponding pointer at the corresponding index.
+		*	Note: This function doesn't resize the Datum. It only replaces the values.
+		*	@param value The pointer to the data which has to be stored.
+		*	@param index The index for the pointer.
+		*	@exception throws an exception if the index is out of range or if the DatumType is invalid.
+		*/
+		void Set(const Scope* const value, const uint32_t index = 0);
 #pragma endregion
 
 #pragma region Get Method Declarations
@@ -413,6 +448,22 @@ namespace GameEngineLibrary
 		*	Note: This function doesn't affect the size of the Datum object.
 		*/
 		void ShrinkToFit();
+
+		/** Returns the Scope reference from the Datum object at the specified index.
+		*	Note: This function internally calls the Get<Scope*>().
+		*	@param index The index of the data to be returned.
+		*	@returns Returns the Scope reference from the Datum object at the specified index.
+		*	@exception throws an exception if the index is out of range or if the DatumType is invalid.
+		*/
+		Scope& operator[](const std::uint32_t index);
+
+		/** Returns the Scope reference from the Datum object at the specified index.
+		*	Note: This function internally calls the Get<Scope*>().
+		*	@param index The index of the data to be returned.
+		*	@returns Returns the Scope reference from the Datum object at the specified index.
+		*	@exception throws an exception if the index is out of range or if the DatumType is invalid.
+		*/
+		const Scope& operator[](const std::uint32_t index) const;
 
 	private:
 		/** A union to represent the memory type if the Datum.
@@ -474,7 +525,7 @@ namespace GameEngineLibrary
 		*	@returns Returns true if both the pointers contain the same data.
 		*/
 		template<typename T>
-		bool PerformDeepSearch(const T* const lhs, const T* const rhs) const;
+		bool PerformDeepCompare(const T* const lhs, const T* const rhs) const;
 
 #pragma region Pushbacking based on each data type (Declarations)
 		/** This function appends the default std::int32_t() to the Datum object.
@@ -518,6 +569,13 @@ namespace GameEngineLibrary
 		*	@param endIndex The higher hand value.
 		*/
 		void PushBackRTTIPointer(const std::uint32_t startIndex, const std::uint32_t endIndex);
+
+		/** This function appends the default null pointer to the Datum object.
+		*	Note: The function push backs endIndex - startIndex times. It is named that way to keep consistency with the Destructor functions.
+		*	@param startIndex The lower hand value.
+		*	@param endIndex The higher hand value.
+		*/
+		void PushBackScopePointer(const std::uint32_t startIndex, const std::uint32_t endIndex);
 #pragma endregion
 
 #pragma region Destructing based on each data type (Declarations)
@@ -526,12 +584,12 @@ namespace GameEngineLibrary
 		*	@param endIndex The ending index(exclusive) until which the destructor will be called.
 		*/
 		void DestructPrimitiveTypes(const std::uint32_t startIndex, const std::uint32_t endIndex);
-	
+
 		/** This function calls the destructor for the type std::string from startIndex to endIndex.
 		*	@param startIndex The starting index from where the destructor will be called.
 		*	@param endIndex The ending index(exclusive) until which the destructor will be called.
 		*/
-		void DestructStringData(const std::uint32_t startIndex, const std::uint32_t endIndex);	
+		void DestructStringData(const std::uint32_t startIndex, const std::uint32_t endIndex);
 #pragma endregion
 
 #pragma region Converting each data type to std::string(Declarations)
@@ -646,6 +704,7 @@ namespace GameEngineLibrary
 			std::string* stringPointer;
 			glm::vec4* vector4Pointer;
 			glm::mat4x4* mat4x4Pointer;
+			Scope** tablePointer;
 			RTTI** rttiPointer;
 		};
 
@@ -658,35 +717,35 @@ namespace GameEngineLibrary
 		bool PerformVoidDeepCompare(const DatumValues& rhsDatumValues) const;
 
 		/** This function will be called when two Datums of type INT32_T are compared.
-		*	This function will internally call the templated PerformDeepSearch();
+		*	This function will internally call the templated PerformDeepCompare();
 		*	@param rhsDatumValues The right hand side DatumValue which will be compared and checked for equality.
 		*	@returns Returns true if both the pointers contain the same data.
 		*/
 		bool PerformIntDeepCompare(const DatumValues& rhsDatumValues) const;
 
 		/** This function will be called when two Datums of type FLOAT are compared.
-		*	This function will internally call the templated PerformDeepSearch();
-		*	@param rhsDatumValues The right hand side DatumValue which will be compared and checked for equality.		
+		*	This function will internally call the templated PerformDeepCompare();
+		*	@param rhsDatumValues The right hand side DatumValue which will be compared and checked for equality.
 		*	@returns Returns true if both the pointers contain the same data.
 		*/
 		bool PerformFloatDeepCompare(const DatumValues& rhsDatumValues) const;
 
 		/** This function will be called when two Datums of type STRING are compared.
-		*	This function will internally call the templated PerformDeepSearch();
+		*	This function will internally call the templated PerformDeepCompare();
 		*	@param rhsDatumValues The right hand side DatumValue which will be compared and checked for equality.
 		*	@returns Returns true if both the pointers contain the same data.
 		*/
 		bool PerformStringDeepCompare(const DatumValues& rhsDatumValues) const;
 
 		/** This function will be called when two Datums of type GLM_VECTOR4 are compared.
-		*	This function will internally call the templated PerformDeepSearch();
+		*	This function will internally call the templated PerformDeepCompare();
 		*	@param rhsDatumValues The right hand side DatumValue which will be compared and checked for equality.
 		*	@returns Returns true if both the pointers contain the same data.
 		*/
 		bool PerformVec4DeepCompare(const DatumValues& rhsDatumValues) const;
 
 		/** This function will be called when two Datums of type GLM_MATRIX4X4 are compared.
-		*	This function will internally call the templated PerformDeepSearch();
+		*	This function will internally call the templated PerformDeepCompare();
 		*	@param rhsDatumValues The right hand side DatumValue which will be compared and checked for equality.
 		*	@returns Returns true if both the pointers contain the same data.
 		*/
@@ -708,7 +767,7 @@ namespace GameEngineLibrary
 		void PerformDeepCopyUnassigned(const DatumValues& rhsDatumValues, const std::uint32_t size);
 
 		/** Performs deep copy for the std::int32_t type.
-		*	@param rhsDatumValues The right hand side DatumValue which will be copied.		
+		*	@param rhsDatumValues The right hand side DatumValue which will be copied.
 		*	@param mSize The length of the data which has to be copied
 		*/
 		void PerformDeepCopyInt(const DatumValues& rhsDatumValues, const std::uint32_t size);
@@ -771,37 +830,42 @@ namespace GameEngineLibrary
 		typedef void (Datum::*SetFromStringForDataType)(const std::string& inputString, const std::uint32_t index);
 		typedef void (Datum::*PerformDeepCopyForDataType)(const DatumValues& rhsDatumValues, const std::uint32_t mSize);
 
+		enum class NumberOfDatumTypes
+		{
+			SIZE = 8
+		};
+
 		/** An unsigned integer array containing the sizes of the various supported data types.
 		*/
-		uint32_t mDataTypeSizes[7];
+		uint32_t mDataTypeSizes[static_cast<uint32_t>(NumberOfDatumTypes::SIZE)];
 
 		/** Function pointer array containing pointers to the destructor functions of each supported data type.
 		*/
-		DestructorsForDataType mDestructors[7];
+		DestructorsForDataType mDestructors[static_cast<uint32_t>(NumberOfDatumTypes::SIZE)];
 
 		/** Function pointer array containing pointers to the push back functions of each supported data type.
 		*/
-		PushBackForDataType mPushBacks[7];
+		PushBackForDataType mPushBacks[static_cast<uint32_t>(NumberOfDatumTypes::SIZE)];
 
 		/** Function pointer array containing pointers to the search functions of each supported data type.
 		*/
-		PerformDeepCompareForDataType mPerformDeepCompare[7];
+		PerformDeepCompareForDataType mPerformDeepCompare[static_cast<uint32_t>(NumberOfDatumTypes::SIZE)];
 
 		/** Function pointer array containing pointers to the ToString functions of each supported data type.
 		*/
-		ToStringForDataType mToString[7];
+		ToStringForDataType mToString[static_cast<uint32_t>(NumberOfDatumTypes::SIZE)];
 
 		/** Function pointer array containing pointers to the Set from string functions which convert each specific data to std::string.
 		*/
-		SetFromStringForDataType mSetFromString[7];
+		SetFromStringForDataType mSetFromString[static_cast<uint32_t>(NumberOfDatumTypes::SIZE)];
 
 		/** Function pointer array containing pointers to functions which perform deep copy based on their specific type.
 		*/
-		PerformDeepCopyForDataType mPerformDeepCopy[7];
+		PerformDeepCopyForDataType mPerformDeepCopy[static_cast<uint32_t>(NumberOfDatumTypes::SIZE)];
 	};
 
 	template<typename T>
-	bool Datum::PerformDeepSearch(const T* const lhs, const T* const rhs) const
+	bool Datum::PerformDeepCompare(const T* const lhs, const T* const rhs) const
 	{
 		for (std::uint32_t i = 0; i < mSize; ++i)
 		{

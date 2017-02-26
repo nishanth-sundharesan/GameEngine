@@ -1,6 +1,5 @@
 #include "Pch.h"
 #include "Datum.h"
-#include <algorithm>
 #include <cassert>
 
 #pragma warning ( push )
@@ -203,7 +202,7 @@ namespace GameEngineLibrary
 		return *this;
 	}
 
-	Datum& Datum::operator=(const RTTI* rhs)
+	Datum& Datum::operator=(const RTTI* const rhs)
 	{
 		if (mDatumType == DatumType::UNASSIGNED)
 		{
@@ -217,6 +216,19 @@ namespace GameEngineLibrary
 		return *this;
 	}
 
+	Datum& Datum::operator=(const Scope* const rhs)
+	{
+		if (mDatumType == DatumType::UNASSIGNED)
+		{
+			mDatumType = DatumType::TABLE;
+			PushBack(rhs);
+		}
+		else
+		{
+			Set(rhs);
+		}
+		return *this;
+	}
 #pragma endregion
 
 	Datum::~Datum()
@@ -236,8 +248,7 @@ namespace GameEngineLibrary
 		if (mDatumType != datumType && mDatumType != DatumType::UNASSIGNED)
 		{
 			throw exception("void Datum::SetType(DatumType datumType): Trying to assign a different datatype type to an already assigned datum.");
-		}
-
+		}	
 		mDatumType = datumType;
 	}
 
@@ -444,6 +455,44 @@ namespace GameEngineLibrary
 		mDatumValues.rttiPointer[mSize] = const_cast<RTTI*>(value);
 		mSize++;
 	}
+
+	void Datum::PushBack(const Scope* const value)
+	{
+		CheckForTheMemoryType(DatumMemoryType::EXTERNAL);
+		CheckForDatumType(DatumType::TABLE);
+		if (mSize == mCapacity)
+		{
+			uint32_t capacity = ReserveStrategy(mCapacity);
+			Reserve(capacity);
+		}
+
+		mMemoryType = DatumMemoryType::INTERNAL;
+		mDatumValues.tablePointer[mSize] = const_cast<Scope*>(value);
+		mSize++;
+	}
+
+#pragma endregion
+
+#pragma region Remove Implementations
+	bool Datum::Remove(const Scope* const value)
+	{
+		CheckForTheMemoryType(DatumMemoryType::EXTERNAL);
+		CheckForDatumType(DatumType::TABLE);
+		for (uint32_t i = 0; i < mSize; ++i)
+		{
+			if (mDatumValues.tablePointer[i] == value)
+			{
+				mDatumValues.tablePointer[i] = nullptr;
+				--mSize;
+				if (i != mSize)
+				{
+					memmove(mDatumValues.tablePointer[i], mDatumValues.tablePointer[i + 1], mDataTypeSizes[static_cast<uint32_t>(mDatumType)] * (mSize - i));
+				}
+				return true;
+			}
+		}
+		return false;
+	}
 #pragma endregion
 
 #pragma region Overloaded Equality Operator Implementations
@@ -564,6 +613,12 @@ namespace GameEngineLibrary
 		*(mDatumValues.rttiPointer + index) = const_cast<RTTI*>(value);
 	}
 
+	void Datum::Set(const Scope* const value, const uint32_t index)
+	{
+		CheckForBoundsAndDatumType(DatumType::TABLE, index);
+		*(mDatumValues.tablePointer + index) = const_cast<Scope*>(value);
+	}
+
 #pragma endregion
 
 #pragma region Get Method Implementations
@@ -610,6 +665,13 @@ namespace GameEngineLibrary
 		CheckForBoundsAndDatumType(DatumType::POINTER, index);
 		return *(mDatumValues.rttiPointer + index);
 	}
+
+	template<>
+	Scope*& Datum::Get<Scope*>(const uint32_t index)
+	{
+		CheckForBoundsAndDatumType(DatumType::TABLE, index);
+		return *(mDatumValues.tablePointer + index);
+	}
 #pragma endregion
 
 #pragma region Const Get Method Implementations.
@@ -648,6 +710,12 @@ namespace GameEngineLibrary
 	{
 		return const_cast<RTTI*const&>(const_cast<Datum*>(this)->Get<RTTI*>(index));
 	}
+
+	template<>
+	Scope*const& Datum::Get<Scope*>(const uint32_t index) const
+	{
+		return const_cast<Scope*const&>(const_cast<Datum*>(this)->Get<Scope*>(index));
+	}
 #pragma endregion
 
 #pragma endregion
@@ -673,6 +741,16 @@ namespace GameEngineLibrary
 			mDatumValues.voidPointer = realloc(mDatumValues.voidPointer, mDataTypeSizes[static_cast<uint32_t>(mDatumType)] * mSize);
 			mCapacity = mSize;
 		}
+	}
+
+	Scope& Datum::operator[](const std::uint32_t index)
+	{
+		return const_cast<Scope&>(const_cast<const Datum*>(this)->operator[](index));
+	}
+
+	const Scope& Datum::operator[](const std::uint32_t index) const
+	{
+		return *Get<Scope*>(index);
 	}
 
 #pragma endregion
@@ -730,6 +808,7 @@ namespace GameEngineLibrary
 		mDataTypeSizes[static_cast<uint32_t>(DatumType::GLM_VECTOR4)] = sizeof(vec4);
 		mDataTypeSizes[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = sizeof(mat4x4);
 		mDataTypeSizes[static_cast<uint32_t>(DatumType::POINTER)] = sizeof(RTTI**);
+		mDataTypeSizes[static_cast<uint32_t>(DatumType::TABLE)] = sizeof(Scope**);
 
 		mDestructors[static_cast<uint32_t>(DatumType::UNASSIGNED)] = nullptr;
 		mDestructors[static_cast<uint32_t>(DatumType::INT32_T)] = &Datum::DestructPrimitiveTypes;
@@ -737,7 +816,8 @@ namespace GameEngineLibrary
 		mDestructors[static_cast<uint32_t>(DatumType::STRING)] = &Datum::DestructStringData;
 		mDestructors[static_cast<uint32_t>(DatumType::GLM_VECTOR4)] = &Datum::DestructPrimitiveTypes;
 		mDestructors[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = &Datum::DestructPrimitiveTypes;
-		mDestructors[static_cast<uint32_t>(DatumType::POINTER)] = nullptr;
+		mDestructors[static_cast<uint32_t>(DatumType::POINTER)] = &Datum::DestructPrimitiveTypes;
+		mDestructors[static_cast<uint32_t>(DatumType::TABLE)] = &Datum::DestructPrimitiveTypes;
 
 		mPushBacks[static_cast<uint32_t>(DatumType::UNASSIGNED)] = nullptr;
 		mPushBacks[static_cast<uint32_t>(DatumType::INT32_T)] = &Datum::PushBackIntData;
@@ -746,6 +826,7 @@ namespace GameEngineLibrary
 		mPushBacks[static_cast<uint32_t>(DatumType::GLM_VECTOR4)] = &Datum::PushBackVec4Data;
 		mPushBacks[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = &Datum::PushBackMat4x4Data;
 		mPushBacks[static_cast<uint32_t>(DatumType::POINTER)] = &Datum::PushBackRTTIPointer;
+		mPushBacks[static_cast<uint32_t>(DatumType::TABLE)] = &Datum::PushBackScopePointer;
 
 		mPerformDeepCompare[static_cast<uint32_t>(DatumType::UNASSIGNED)] = &Datum::PerformVoidDeepCompare;
 		mPerformDeepCompare[static_cast<uint32_t>(DatumType::INT32_T)] = &Datum::PerformIntDeepCompare;
@@ -754,6 +835,7 @@ namespace GameEngineLibrary
 		mPerformDeepCompare[static_cast<uint32_t>(DatumType::GLM_VECTOR4)] = &Datum::PerformVec4DeepCompare;
 		mPerformDeepCompare[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = &Datum::PerformMat4x4DeepCompare;
 		mPerformDeepCompare[static_cast<uint32_t>(DatumType::POINTER)] = &Datum::PerformRTTIPointerDeepCompare;
+		mPerformDeepCompare[static_cast<uint32_t>(DatumType::TABLE)] = &Datum::PerformRTTIPointerDeepCompare;
 
 		mToString[static_cast<uint32_t>(DatumType::UNASSIGNED)] = &Datum::ToStringUnassigned;
 		mToString[static_cast<uint32_t>(DatumType::INT32_T)] = &Datum::ToStringInt;
@@ -762,6 +844,7 @@ namespace GameEngineLibrary
 		mToString[static_cast<uint32_t>(DatumType::GLM_VECTOR4)] = &Datum::ToStringVec4;
 		mToString[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = &Datum::ToStringMat4x4;
 		mToString[static_cast<uint32_t>(DatumType::POINTER)] = &Datum::ToStringRTTIPointer;
+		mToString[static_cast<uint32_t>(DatumType::TABLE)] = &Datum::ToStringRTTIPointer;
 
 		mSetFromString[static_cast<uint32_t>(DatumType::UNASSIGNED)] = &Datum::SetFromStringUnassigned;
 		mSetFromString[static_cast<uint32_t>(DatumType::INT32_T)] = &Datum::SetFromStringInt;
@@ -770,6 +853,7 @@ namespace GameEngineLibrary
 		mSetFromString[static_cast<uint32_t>(DatumType::GLM_VECTOR4)] = &Datum::SetFromStringVec4;
 		mSetFromString[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = &Datum::SetFromStringMat4x4;
 		mSetFromString[static_cast<uint32_t>(DatumType::POINTER)] = &Datum::SetFromStringRTTIPointer;
+		mSetFromString[static_cast<uint32_t>(DatumType::TABLE)] = &Datum::SetFromStringRTTIPointer;
 
 		mPerformDeepCopy[static_cast<uint32_t>(DatumType::UNASSIGNED)] = &Datum::PerformDeepCopyUnassigned;
 		mPerformDeepCopy[static_cast<uint32_t>(DatumType::INT32_T)] = &Datum::PerformDeepCopyInt;
@@ -778,6 +862,7 @@ namespace GameEngineLibrary
 		mPerformDeepCopy[static_cast<uint32_t>(DatumType::GLM_VECTOR4)] = &Datum::PerformDeepCopyVec4;
 		mPerformDeepCopy[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = &Datum::PerformDeepCopyMat4x4;
 		mPerformDeepCopy[static_cast<uint32_t>(DatumType::POINTER)] = &Datum::PerformDeepCopyRTTIPointer;
+		mPerformDeepCopy[static_cast<uint32_t>(DatumType::TABLE)] = &Datum::PerformDeepCopyRTTIPointer;
 	}
 
 	uint32_t Datum::ReserveStrategy(const uint32_t capacity) const
@@ -794,34 +879,34 @@ namespace GameEngineLibrary
 
 	bool Datum::PerformIntDeepCompare(const DatumValues& rhsDatumValues) const
 	{
-		return PerformDeepSearch(mDatumValues.intPointer, rhsDatumValues.intPointer);
+		return PerformDeepCompare(mDatumValues.intPointer, rhsDatumValues.intPointer);
 	}
 
 	bool Datum::PerformFloatDeepCompare(const DatumValues& rhsDatumValues) const
 	{
-		return PerformDeepSearch(mDatumValues.floatPointer, rhsDatumValues.floatPointer);
+		return PerformDeepCompare(mDatumValues.floatPointer, rhsDatumValues.floatPointer);
 	}
 
 	bool Datum::PerformStringDeepCompare(const DatumValues& rhsDatumValues) const
 	{
-		return PerformDeepSearch(mDatumValues.stringPointer, rhsDatumValues.stringPointer);
+		return PerformDeepCompare(mDatumValues.stringPointer, rhsDatumValues.stringPointer);
 	}
 
 	bool Datum::PerformVec4DeepCompare(const DatumValues& rhsDatumValues) const
 	{
-		return PerformDeepSearch(mDatumValues.vector4Pointer, rhsDatumValues.vector4Pointer);
+		return PerformDeepCompare(mDatumValues.vector4Pointer, rhsDatumValues.vector4Pointer);
 	}
 
 	bool Datum::PerformMat4x4DeepCompare(const DatumValues& rhsDatumValues) const
 	{
-		return PerformDeepSearch(mDatumValues.mat4x4Pointer, rhsDatumValues.mat4x4Pointer);
+		return PerformDeepCompare(mDatumValues.mat4x4Pointer, rhsDatumValues.mat4x4Pointer);
 	}
 
 	bool Datum::PerformRTTIPointerDeepCompare(const DatumValues& rhsDatumValues) const
 	{
 		for (uint32_t i = 0; i < mSize; ++i)
 		{
-			if (!((**(mDatumValues.rttiPointer + i)).Equals(*(rhsDatumValues.rttiPointer + i))))
+			if (!(mDatumValues.rttiPointer[i]->Equals(rhsDatumValues.rttiPointer[i])))
 			{
 				return false;
 			}
@@ -875,7 +960,15 @@ namespace GameEngineLibrary
 	{
 		for (uint32_t i = startIndex; i < endIndex; ++i)
 		{
-			PushBack(nullptr);
+			PushBack(static_cast<RTTI*>(nullptr));
+		}
+	}
+
+	void Datum::PushBackScopePointer(const uint32_t startIndex, const uint32_t endIndex)
+	{
+		for (uint32_t i = startIndex; i < endIndex; ++i)
+		{
+			PushBack(static_cast<Scope*>(nullptr));
 		}
 	}
 #pragma endregion
@@ -1000,12 +1093,12 @@ namespace GameEngineLibrary
 
 	void Datum::PerformDeepCopyInt(const DatumValues& rhsDatumValues, const uint32_t size)
 	{
-		memcpy(mDatumValues.intPointer, rhsDatumValues.intPointer, mDataTypeSizes[static_cast<uint32_t>(mDatumType)] * size);		
+		memcpy(mDatumValues.intPointer, rhsDatumValues.intPointer, mDataTypeSizes[static_cast<uint32_t>(mDatumType)] * size);
 	}
 
 	void Datum::PerformDeepCopyFloat(const DatumValues& rhsDatumValues, const uint32_t size)
 	{
-		memcpy(mDatumValues.floatPointer, rhsDatumValues.floatPointer, mDataTypeSizes[static_cast<uint32_t>(mDatumType)] * size);		
+		memcpy(mDatumValues.floatPointer, rhsDatumValues.floatPointer, mDataTypeSizes[static_cast<uint32_t>(mDatumType)] * size);
 	}
 
 	void Datum::PerformDeepCopyString(const DatumValues& rhsDatumValues, const uint32_t size)

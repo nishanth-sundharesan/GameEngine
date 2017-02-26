@@ -809,7 +809,7 @@ namespace LibraryDesktopTest
 				else
 				{
 					Assert::AreEqual(*iterator, thirdPushedVariable);
-				}				
+				}
 			}
 			Assert::AreEqual(firstList.Front(), firstPushedVariable);
 			Assert::AreEqual(firstList.Back(), thirdPushedVariable);
@@ -860,7 +860,7 @@ namespace LibraryDesktopTest
 				else
 				{
 					Assert::AreEqual(*(*iterator), thirdPushedVariable);
-				}				
+				}
 			}
 			Assert::AreEqual(*firstList.Front(), firstPushedVariable);
 			Assert::AreEqual(*firstList.Back(), thirdPushedVariable);
@@ -911,7 +911,7 @@ namespace LibraryDesktopTest
 				else
 				{
 					Assert::AreEqual(*iterator, thirdPushedVariable);
-				}				
+				}
 			}
 			Assert::AreEqual(firstList.Front(), firstPushedVariable);
 			Assert::AreEqual(firstList.Back(), thirdPushedVariable);
@@ -1179,6 +1179,153 @@ namespace LibraryDesktopTest
 			Assert::ExpectException<exception>([&list] {list.Back(); });
 			Assert::ExpectException<exception>([&list] {list.PopFront(); });
 			Assert::ExpectException<exception>([&list] {Foo temp; list.PopFront(temp); });
+		}
+
+		TEST_METHOD(SListIntRemoveIterator)
+		{
+			SList<int32_t> list;
+
+			SList<int32_t>::Iterator iterator;
+			Assert::IsFalse(list.Remove(iterator));
+
+			iterator = list.begin();
+			Assert::IsFalse(list.Remove(iterator));
+
+			iterator = list.end();
+			Assert::IsFalse(list.Remove(iterator));
+
+			int32_t firstPushedVariable = 10;
+			int32_t secondPushedVariable = 10;
+			int32_t thirdPushedVariable = 10;
+			uint32_t currentSize = 0;
+
+			list.PushBack(firstPushedVariable);
+			++currentSize;
+			list.PushBack(secondPushedVariable);
+			++currentSize;
+			list.PushBack(thirdPushedVariable);
+			++currentSize;
+
+			Assert::AreEqual(list.Size(), currentSize);
+
+			iterator = list.begin();
+			list.Remove(iterator);
+			--currentSize;
+			Assert::AreEqual(list.Size(), currentSize);
+
+			iterator = list.begin();
+			++iterator;
+			list.Remove(iterator);
+			--currentSize;
+			Assert::AreEqual(list.Size(), currentSize);
+
+			iterator = list.begin();
+			list.Remove(iterator);
+			--currentSize;
+			Assert::AreEqual(list.Size(), currentSize);
+
+			Assert::ExpectException<out_of_range>([&] { list.PopFront(); });
+			Assert::ExpectException<out_of_range>([&] { list.Front(); });
+			Assert::ExpectException<out_of_range>([&] { list.Back(); });
+			Assert::IsTrue(list.IsEmpty());
+		}
+
+		TEST_METHOD(SListIntPointerRemoveIterator)
+		{
+			SList<int32_t*> list;
+
+			SList<int32_t*>::Iterator iterator;
+			Assert::IsFalse(list.Remove(iterator));
+
+			iterator = list.begin();
+			Assert::IsFalse(list.Remove(iterator));
+
+			iterator = list.end();
+			Assert::IsFalse(list.Remove(iterator));
+
+			int32_t firstPushedVariable = 10;
+			int32_t secondPushedVariable = 10;
+			int32_t thirdPushedVariable = 10;
+			uint32_t currentSize = 0;
+
+			list.PushBack(&firstPushedVariable);
+			++currentSize;
+			list.PushBack(&secondPushedVariable);
+			++currentSize;
+			list.PushBack(&thirdPushedVariable);
+			++currentSize;
+
+			Assert::AreEqual(list.Size(), currentSize);
+
+			iterator = list.begin();
+			list.Remove(iterator);
+			--currentSize;
+			Assert::AreEqual(list.Size(), currentSize);
+
+			iterator = list.begin();
+			++iterator;
+			list.Remove(iterator);
+			--currentSize;
+			Assert::AreEqual(list.Size(), currentSize);
+
+			iterator = list.begin();
+			list.Remove(iterator);
+			--currentSize;
+			Assert::AreEqual(list.Size(), currentSize);
+
+			Assert::ExpectException<out_of_range>([&] { list.PopFront(); });
+			Assert::ExpectException<out_of_range>([&] { list.Front(); });
+			Assert::ExpectException<out_of_range>([&] { list.Back(); });
+			Assert::IsTrue(list.IsEmpty());
+		}
+
+		TEST_METHOD(SListUserDefinedTypeRemoveIterator)
+		{
+			SList<Foo> list;
+
+			SList<Foo>::Iterator iterator;
+			Assert::IsFalse(list.Remove(iterator));
+
+			iterator = list.begin();
+			Assert::IsFalse(list.Remove(iterator));
+
+			iterator = list.end();
+			Assert::IsFalse(list.Remove(iterator));
+
+			Foo firstPushedVariable = 10;
+			Foo secondPushedVariable = 10;
+			Foo thirdPushedVariable = 10;
+			uint32_t currentSize = 0;
+
+			list.PushBack(firstPushedVariable);
+			++currentSize;
+			list.PushBack(secondPushedVariable);
+			++currentSize;
+			list.PushBack(thirdPushedVariable);
+			++currentSize;
+
+			Assert::AreEqual(list.Size(), currentSize);
+
+			iterator = list.begin();
+			list.Remove(iterator);
+			--currentSize;
+			Assert::AreEqual(list.Size(), currentSize);
+
+			iterator = list.begin();
+			++iterator;
+			list.Remove(iterator);
+			--currentSize;
+			Assert::AreEqual(list.Size(), currentSize);
+
+			iterator = list.begin();
+			list.Remove(iterator);
+			--currentSize;
+			Assert::AreEqual(list.Size(), currentSize);
+
+			Assert::ExpectException<out_of_range>([&] { list.PopFront(); });
+			Assert::ExpectException<out_of_range>([&] { list.Front(); });
+			Assert::ExpectException<out_of_range>([&] { list.Back(); });
+			Assert::IsTrue(list.IsEmpty());
 		}
 		/*----------------------------------------------------------------------*/
 		/* END																	*/

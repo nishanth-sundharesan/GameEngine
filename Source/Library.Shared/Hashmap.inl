@@ -12,10 +12,14 @@ namespace GameEngineLibrary
 	/* BEGIN	-Hashmap class-		Constructors & Functions.				*/
 	/************************************************************************/
 	template <class TKey, class TValue, class HashFunctor>
-	inline Hashmap<TKey, TValue, HashFunctor>::Hashmap(uint32_t size) :
+	inline Hashmap<TKey, TValue, HashFunctor>::Hashmap(const uint32_t size) :
 		mSize(0)
 	{
-		mBuckets.Reserve(size);																			//Reserving the memory for all the buckets.
+		if (size == 0)
+		{
+			throw exception("Hashmap<TKey, TValue, HashFunctor>::Hashmap(const uint32_t size): Cannot set hashmap size to 0");
+		}
+
 		ChainType defaultChain;
 		for (uint32_t i = 0; i < size; ++i)
 		{
@@ -26,7 +30,7 @@ namespace GameEngineLibrary
 	template <class TKey, class TValue, class HashFunctor>
 	inline typename Hashmap<TKey, TValue, HashFunctor>::Iterator Hashmap<TKey, TValue, HashFunctor>::Insert(const PairType& pair)
 	{
-		uint32_t index = (hashFunctor(pair.first)) % (mBuckets.Capacity());
+		uint32_t index = (hashFunctor(pair.first)) % (mBuckets.Size());
 
 		Iterator iterator = SearchBasedOnIndex(index, pair.first);
 		if (iterator == end())
@@ -34,6 +38,22 @@ namespace GameEngineLibrary
 			++mSize;
 			return Iterator(this, index, mBuckets[index].PushBack(pair));								//If the key of the pair is not present in the Hashmap, then insert the pair.
 		}
+		return iterator;																				//Or else, return an iterator that points to the already present pair.
+	}
+
+	template <class TKey, class TValue, class HashFunctor>
+	inline typename Hashmap<TKey, TValue, HashFunctor>::Iterator Hashmap<TKey, TValue, HashFunctor>::Insert(const PairType& pair, bool& isInserted)
+	{
+		uint32_t index = (hashFunctor(pair.first)) % (mBuckets.Size());
+
+		Iterator iterator = SearchBasedOnIndex(index, pair.first);
+		if (iterator == end())
+		{
+			isInserted = true;
+			++mSize;
+			return Iterator(this, index, mBuckets[index].PushBack(pair));								//If the key of the pair is not present in the Hashmap, then insert the pair.
+		}
+		isInserted = false;
 		return iterator;																				//Or else, return an iterator that points to the already present pair.
 	}
 
@@ -54,7 +74,7 @@ namespace GameEngineLibrary
 	template <class TKey, class TValue, class HashFunctor>
 	inline typename Hashmap<TKey, TValue, HashFunctor>::Iterator Hashmap<TKey, TValue, HashFunctor>::Find(const TKey& key) const
 	{
-		uint32_t index = (hashFunctor(key)) % (mBuckets.Capacity());
+		uint32_t index = (hashFunctor(key)) % (mBuckets.Size());
 		return SearchBasedOnIndex(index, key);
 	}
 
@@ -90,7 +110,7 @@ namespace GameEngineLibrary
 	template <class TKey, class TValue, class HashFunctor>
 	bool Hashmap<TKey, TValue, HashFunctor>::Remove(const TKey& key)
 	{
-		uint32_t index = (hashFunctor(key)) % (mBuckets.Capacity());
+		uint32_t index = (hashFunctor(key)) % (mBuckets.Size());
 
 		for (auto chainIterator = mBuckets[index].begin(); chainIterator != mBuckets[index].end(); ++chainIterator)
 		{
@@ -119,7 +139,7 @@ namespace GameEngineLibrary
 	template <class TKey, class TValue, class HashFunctor>
 	inline typename Hashmap<TKey, TValue, HashFunctor>::Iterator Hashmap<TKey, TValue, HashFunctor>::begin() const
 	{
-		for (uint32_t i = 0; i < mBuckets.Capacity(); ++i)											//Do a DFS for the first found element in the Hashmap.
+		for (uint32_t i = 0; i < mBuckets.Size(); ++i)											//Do a DFS for the first found element in the Hashmap.
 		{
 			if (mBuckets[i].begin() != mBuckets[i].end())
 			{
@@ -132,13 +152,13 @@ namespace GameEngineLibrary
 	template <class TKey, class TValue, class HashFunctor>
 	inline typename Hashmap<TKey, TValue, HashFunctor>::Iterator Hashmap<TKey, TValue, HashFunctor>::end() const
 	{
-		return Iterator(this, mBuckets.Capacity() - 1, mBuckets[mBuckets.Capacity() - 1].end());
+		return Iterator(this, mBuckets.Size() - 1, mBuckets[mBuckets.Size() - 1].end());
 	}
 
 	template <class TKey, class TValue, class HashFunctor>
 	inline void Hashmap<TKey, TValue, HashFunctor>::Clear()
 	{
-		for (uint32_t i = 0; i < mBuckets.Capacity(); ++i)
+		for (uint32_t i = 0; i < mBuckets.Size(); ++i)
 		{
 			mBuckets[i].Clear();
 		}
@@ -161,7 +181,7 @@ namespace GameEngineLibrary
 	}
 
 	template <class TKey, class TValue, class HashFunctor>
-	Hashmap<TKey, TValue, HashFunctor>::Iterator::Iterator(const Hashmap* owner, uint32_t index, typename ChainType::Iterator iterator) :
+	Hashmap<TKey, TValue, HashFunctor>::Iterator::Iterator(const Hashmap* owner, uint32_t index, typename ChainIterator iterator) :
 		mOwner(owner), mIndex(index), mIterator(iterator)
 	{
 
@@ -182,7 +202,7 @@ namespace GameEngineLibrary
 	template <class TKey, class TValue, class HashFunctor>
 	typename Hashmap<TKey, TValue, HashFunctor>::Iterator& Hashmap<TKey, TValue, HashFunctor>::Iterator::operator++()
 	{
-		if (mIndex == mOwner->mBuckets.Capacity() - 1 && mIterator == mOwner->mBuckets[mIndex].end())
+		if (mIndex == mOwner->mBuckets.Size() - 1 && mIterator == mOwner->mBuckets[mIndex].end())
 		{
 			throw out_of_range("Hashmap<TKey, TValue, HashFunctor>::Iterator& Hashmap<TKey, TValue, HashFunctor>::Iterator::operator++(): Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data!");
 		}
@@ -194,7 +214,7 @@ namespace GameEngineLibrary
 			{
 				return (*this);
 			}
-			if ((mIndex + 1) == mOwner->mBuckets.Capacity())
+			if ((mIndex + 1) == mOwner->mBuckets.Size())
 			{
 				break;
 			}
@@ -207,7 +227,7 @@ namespace GameEngineLibrary
 	template <class TKey, class TValue, class HashFunctor>
 	typename Hashmap<TKey, TValue, HashFunctor>::Iterator Hashmap<TKey, TValue, HashFunctor>::Iterator::operator++(int)
 	{
-		//Make a copy of the current Iterator
+		// Make a copy of the current Iterator
 		Iterator temp(*this);
 
 		//Increment the current Iterator
@@ -220,24 +240,28 @@ namespace GameEngineLibrary
 	template <class TKey, class TValue, class HashFunctor>
 	typename Hashmap<TKey, TValue, HashFunctor>::PairType& Hashmap<TKey, TValue, HashFunctor>::Iterator::operator*()
 	{
+		//TODO Check if owner is nullptr
 		return (*mIterator);
 	}
 
 	template <class TKey, class TValue, class HashFunctor>
 	typename const Hashmap<TKey, TValue, HashFunctor>::PairType& Hashmap<TKey, TValue, HashFunctor>::Iterator::operator*() const
 	{
+		//TODO Check if owner is nullptr
 		return (*mIterator);
 	}
 
 	template <class TKey, class TValue, class HashFunctor>
 	typename Hashmap<TKey, TValue, HashFunctor>::PairType* Hashmap<TKey, TValue, HashFunctor>::Iterator::operator->()
 	{
+		//TODO Check if owner is nullptr
 		return &(*mIterator);
 	}
 
 	template <class TKey, class TValue, class HashFunctor>
 	const typename Hashmap<TKey, TValue, HashFunctor>::PairType* Hashmap<TKey, TValue, HashFunctor>::Iterator::operator->() const
 	{
+		//TODO Check if owner is nullptr
 		return &(*mIterator);
 	}
 

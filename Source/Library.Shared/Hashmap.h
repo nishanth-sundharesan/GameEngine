@@ -123,7 +123,7 @@ namespace GameEngineLibrary
 
 			/** The iterator to iterate the chain of an individual bucket.
 			*/
-			typename ChainType::Iterator mIterator;
+			typename ChainIterator mIterator;
 
 			/** The Hashmap to which the Iterator belongs to.
 			*/
@@ -132,6 +132,7 @@ namespace GameEngineLibrary
 
 		/** Parameterized constructor.
 		*	@param size The size for the Hashmap.
+		*	@exception Throws an exception if the passed size is 0.
 		*/
 		explicit Hashmap(const std::uint32_t size = 20);
 

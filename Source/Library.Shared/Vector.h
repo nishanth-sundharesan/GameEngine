@@ -20,8 +20,7 @@ namespace GameEngineLibrary
 			friend class Vector;
 
 		public:
-			/** Zero parameterized constructor.
-			*	Initializes the private members of the class.
+			/** Zero parameterized constructor. Initializes the private members of the class.
 			*/
 			Iterator();
 
@@ -113,8 +112,7 @@ namespace GameEngineLibrary
 		*/
 		Vector& operator=(const Vector& rhs);
 
-		/** Clears the entire Vector.
-		*	Note: This function doesn't reset the capacity of the Vector array. Use ShrinkToFit() or Reserve().
+		/** Clears the entire Vector.		
 		*/
 		virtual ~Vector();
 
@@ -178,7 +176,7 @@ namespace GameEngineLibrary
 		std::uint32_t Capacity() const;
 
 		/** Clears the entire Vector array.
-		*	Note. This function doesn't reset the capacity of the Vector array.
+		*	Note: This function doesn't reset/free the capacity of the Vector array.
 		*	@see ShrinkToFit();
 		*/
 		void Clear();
@@ -246,7 +244,7 @@ namespace GameEngineLibrary
 		/** Reserves/Allocates the memory for the Vector array.
 		*	Reserves the memory for the param "capacity" number of objects in the Vector array.
 		*	Reserves/Allocates the memory only if the specified capacity is greater than the current capacity.
-		*	@param capacity The new capacity of the Vector array. This should be greater than the current capacity
+		*	@param capacity The new capacity of the Vector array. This should be greater than the current capacity.
 		*	@exception Throws an exception if the function fails to allocate memory.
 		*/
 		void Reserve(std::uint32_t capacity);

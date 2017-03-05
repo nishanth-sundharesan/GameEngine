@@ -228,8 +228,11 @@ namespace GameEngineLibrary
 		*/
 		bool Remove(const T& value);
 
+		/** Removes the first matched iterator(value) in SList.
+		*	@param iterator The iterator(value) to be removed in SList.
+		*	@returns Returns true if the data was successfully removed, false otherwise.
+		*/
 		bool Remove(const Iterator& iterator);
-
 	private:
 		/** Node pointer pointing to the back of SList.
 		*/

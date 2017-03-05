@@ -32,7 +32,7 @@ namespace GameEngineLibrary
 			*/
 			Iterator();
 
-			/** Use the default copy constructor to perform member wise copy.			
+			/** Use the default copy constructor to perform member wise copy.
 			*/
 			Iterator(const Iterator&) = default;
 
@@ -70,7 +70,7 @@ namespace GameEngineLibrary
 			*	@exception Throws an exception if the Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data.
 			*/
 			Iterator operator++(int);
-			
+
 			/** Overloaded * (content of) operator.
 			*	Returns the content of which the iterator was pointing to.
 			*	@returns Returns the content of which the iterator was pointing to.
@@ -111,16 +111,11 @@ namespace GameEngineLibrary
 		SList(const SList<T>& rhs);
 
 		/** Move constructor.
-		*	Moves the temporary object's(right hand side) pointers/primitive data to the left hand side object.
+		*	Moves the temporary object's(right hand side) pointers/primitive data to the left hand side object. Assigns default type to all the members of the class.
+		*	Note: This function is called when we are returning a temporary object to a permanent object from a function. Example: Creating a stack allocated object from a function and returning it.(Gets called on the return statement)
 		*	@param rhs The temporary right hand side object which has to be moved.
 		*/
 		SList(SList<T>&& rhs);
-
-		/** Move assignment operator.
-		*	Moves the temporary object's(right hand side) pointers/primitive data to the left hand side object.
-		*	@param rhs The temporary right hand side object which has to be moved.
-		*/
-		SList<T>& operator=(SList<T>&& rhs);
 
 		/** Overloaded assignment operator.
 		*	Performs a deep copy of the right hand side object: SList.
@@ -128,6 +123,13 @@ namespace GameEngineLibrary
 		*	@return Returns the deep copied SList
 		*/
 		SList<T>& operator=(const SList<T>& rhs);
+
+		/** Move assignment operator.
+		*	Moves the temporary object's(right hand side) pointers/primitive data to the left hand side object. Assigns default type to all the members of the class.
+		*	Note: This function is called when we are assigning a temporary object to a permanent object. Example: Assigning a stack allocated object from a function which created the object.(Gets called on the assignment statement)
+		*	@param rhs The temporary right hand side object which has to be moved.
+		*/
+		SList<T>& operator=(SList<T>&& rhs);
 
 		/** Clears the entire SList.
 		*/

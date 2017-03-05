@@ -10,7 +10,7 @@ namespace GameEngineLibrary
 	{
 		/** Scope(Table) stores a Hashmap of std::string and Datum
 		*/
-		typedef Hashmap<std::string, Datum> Hashmap;
+		typedef Hashmap<std::string, Datum> ScopeHashmap;
 
 		/** The Order Vector stores pointers to the inserted pairs. Type defining for convenience.
 		*/
@@ -18,7 +18,7 @@ namespace GameEngineLibrary
 
 		/** Type defining HashmapIterator for convenience.
 		*/
-		typedef Hashmap::Iterator HashmapIterator;
+		typedef ScopeHashmap::Iterator ScopeHashmapIterator;
 
 	public:		
 		/** Constructor: Initializes the private members of the class.
@@ -208,11 +208,11 @@ namespace GameEngineLibrary
 
 		/** The Hashmap containing the appended/inserted records.
 		*/
-		Hashmap mHashmap;
+		ScopeHashmap mHashmap;
 
 		/** A temporary/cached Hashmap Iterator.
 		*/
-		mutable HashmapIterator mHashmapIterator;
+		mutable ScopeHashmapIterator mHashmapIterator;
 
 		/** A scope pointer pointing to the parent scope.
 		*/

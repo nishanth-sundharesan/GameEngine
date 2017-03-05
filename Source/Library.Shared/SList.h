@@ -110,6 +110,18 @@ namespace GameEngineLibrary
 		*/
 		SList(const SList<T>& rhs);
 
+		/** Move constructor.
+		*	Moves the temporary object's(right hand side) pointers/primitive data to the left hand side object.
+		*	@param rhs The temporary right hand side object which has to be moved.
+		*/
+		SList(SList<T>&& rhs);
+
+		/** Move assignment operator.
+		*	Moves the temporary object's(right hand side) pointers/primitive data to the left hand side object.
+		*	@param rhs The temporary right hand side object which has to be moved.
+		*/
+		SList<T>& operator=(SList<T>&& rhs);
+
 		/** Overloaded assignment operator.
 		*	Performs a deep copy of the right hand side object: SList.
 		*	@param rhs It is the right hand side object which will be deep copied to the left hand side object.

@@ -16,12 +16,21 @@ namespace GameEngineLibrary
 	{
 
 	}
-	
+
 	template <class T>
 	SList<T>::SList(const SList<T>& rhs) :
 		mBack(nullptr), mFront(nullptr), mSize(0)
 	{
 		operator=(rhs);
+	}
+
+	template<class T>
+	inline SList<T>::SList(SList<T>&& rhs)
+		:mBack(rhs.mBack), mFront(rhs.mFront), mSize(rhs.mSize)
+	{
+		rhs.mSize = 0;
+		rhs.mFront = nullptr;
+		rhs.mBack = nullptr;
 	}
 
 	template <class T>
@@ -37,6 +46,24 @@ namespace GameEngineLibrary
 		}
 
 		return *this;
+	}
+
+	template<class T>
+	inline SList<T>& SList<T>::operator=(SList<T>&& rhs)
+	{
+		if (this != &rhs)
+		{
+			this->~SList();
+			mSize = rhs.mSize;
+			mFront = rhs.mFront;
+			mBack = rhs.mBack;
+
+			rhs.mSize = 0;
+			rhs.mFront = nullptr;
+			rhs.mBack = nullptr;
+
+		}
+		return *this
 	}
 
 	template <class T>

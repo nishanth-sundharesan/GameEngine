@@ -11,11 +11,11 @@ namespace GameEngineLibrary
 {
 	/************************************************************************/
 	/* BEGIN	-Vector class-		Constructors & Functions.				*/
-	/************************************************************************/	
+	/************************************************************************/
 	template<class T, typename F>
 	Vector<T, F>::Vector(uint32_t capacity) :
 		mSize(0), mStartingAddress(nullptr), mCapacity(0)
-	{		
+	{
 		Reserve(capacity);
 	}
 
@@ -28,6 +28,15 @@ namespace GameEngineLibrary
 		{
 			PushBack(rhs[i]);
 		}
+	}
+
+	template<class T, typename F>
+	inline Vector<T, F>::Vector(Vector&& rhs)
+		:mSize(rhs.mSize), mStartingAddress(rhs.mStartingAddress), mCapacity(rhs.mCapacity)
+	{
+		rhs.mSize = 0;
+		rhs.mStartingAddress = nullptr;
+		rhs.mCapacity = 0;
 	}
 
 	template<class T, typename F>
@@ -45,6 +54,24 @@ namespace GameEngineLibrary
 			}
 		}
 
+		return *this;
+	}
+
+	template<class T, typename F>
+	inline Vector<T,F>& Vector<T, F>::operator=(Vector&& rhs)
+	{
+		if (this != rhs)
+		{
+			Clear();						
+
+			mSize = rhs.mSize;
+			mStartingAddress = rhs.mStartingAddress;
+			mCapacity = rhs.mCapacity;
+
+			rhs.mSize = 0;
+			rhs.mStartingAddress = nullptr;
+			rhs.mCapacity = 0;
+		}
 		return *this;
 	}
 

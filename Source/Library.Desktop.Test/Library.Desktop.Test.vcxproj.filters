@@ -35,6 +35,9 @@
     <ClCompile Include="ScopeTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AttributedFoo.cpp">
+      <Filter>SupportClasses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Pch.h">
@@ -44,6 +47,9 @@
       <Filter>SupportClasses</Filter>
     </ClInclude>
     <ClInclude Include="ToStringTemplates.h">
+      <Filter>SupportClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="AttributedFoo.h">
       <Filter>SupportClasses</Filter>
     </ClInclude>
   </ItemGroup>

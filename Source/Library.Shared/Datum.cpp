@@ -34,13 +34,15 @@ namespace GameEngineLibrary
 		{
 			mDatumValues.voidPointer = rhs.mDatumValues.voidPointer;
 		}
-	}
+	}	
 
 #pragma region Overloaded Assignment Operator Implementations
 	Datum& Datum::operator=(const Datum& rhs)
 	{
 		if (this != &rhs)
 		{
+			
+
 			if (mMemoryType == DatumMemoryType::INTERNAL)
 			{
 				this->~Datum();
@@ -53,21 +55,13 @@ namespace GameEngineLibrary
 
 					Reserve(rhs.mCapacity);
 					(this->*mPerformDeepCopy[static_cast<uint32_t>(mDatumType)])(rhs.mDatumValues, mSize);
-				}
-				else if (rhs.mMemoryType == DatumMemoryType::EXTERNAL)
+				}				
+				else
 				{
 					mSize = rhs.mSize;
 					mCapacity = rhs.mCapacity;
 					mDatumType = rhs.mDatumType;
-					mMemoryType = DatumMemoryType::EXTERNAL;
-					mDatumValues.voidPointer = rhs.mDatumValues.voidPointer;
-				}
-				else																								//For the case where rhs.mMemoryType == DatumMemoryType::UNASSIGNED
-				{
-					mSize = rhs.mSize;
-					mCapacity = rhs.mCapacity;
-					mDatumType = rhs.mDatumType;
-					mMemoryType = DatumMemoryType::UNASSIGNED;
+					mMemoryType = rhs.mMemoryType;
 					mDatumValues.voidPointer = rhs.mDatumValues.voidPointer;
 				}
 			}
@@ -83,24 +77,17 @@ namespace GameEngineLibrary
 
 					Reserve(rhs.mCapacity);
 					(this->*mPerformDeepCopy[static_cast<uint32_t>(mDatumType)])(rhs.mDatumValues, mSize);
-				}
-				else if (rhs.mMemoryType == DatumMemoryType::EXTERNAL)
+				}				
+				else
 				{
 					mSize = rhs.mSize;
 					mCapacity = rhs.mCapacity;
 					mDatumType = rhs.mDatumType;
-					mDatumValues.voidPointer = rhs.mDatumValues.voidPointer;
-				}
-				else																								//For the case where rhs.mMemoryType == DatumMemoryType::UNASSIGNED
-				{
-					mSize = rhs.mSize;
-					mCapacity = rhs.mCapacity;
-					mDatumType = rhs.mDatumType;
-					mMemoryType = DatumMemoryType::UNASSIGNED;
+					mMemoryType = rhs.mMemoryType;
 					mDatumValues.voidPointer = rhs.mDatumValues.voidPointer;
 				}
 			}
-			else																									//For the case where mMemoryType == DatumMemoryType::UNASSIGNED
+			else
 			{
 				if (rhs.mMemoryType == DatumMemoryType::INTERNAL)
 				{
@@ -112,20 +99,14 @@ namespace GameEngineLibrary
 
 					Reserve(rhs.mCapacity);
 					(this->*mPerformDeepCopy[static_cast<uint32_t>(mDatumType)])(rhs.mDatumValues, mSize);
-				}
-				else if (rhs.mMemoryType == DatumMemoryType::EXTERNAL)
-				{
+				}				
+				else
+				{				
 					mSize = rhs.mSize;
 					mCapacity = rhs.mCapacity;
 					mDatumType = rhs.mDatumType;
-					mMemoryType = DatumMemoryType::EXTERNAL;
+					mMemoryType = rhs.mMemoryType;
 					mDatumValues.voidPointer = rhs.mDatumValues.voidPointer;
-				}
-				else
-				{
-					assert(rhs.mSize == 0);
-					mCapacity = rhs.mCapacity;
-					mDatumType = rhs.mDatumType;
 				}
 			}
 		}
@@ -248,7 +229,7 @@ namespace GameEngineLibrary
 		if (mDatumType != datumType && mDatumType != DatumType::UNASSIGNED)
 		{
 			throw exception("void Datum::SetType(DatumType datumType): Trying to assign a different datatype type to an already assigned datum.");
-		}	
+		}
 		mDatumType = datumType;
 	}
 

@@ -39,6 +39,13 @@ namespace GameEngineLibrary
 		*/
 		Datum(const Datum& rhs);
 
+		/** Move constructor.
+		*	Moves the temporary object's(right hand side) pointers/primitive data to the left hand side object. Assigns default type to all the members of the class.
+		*	Note: This function is called when we are returning a temporary object to a permanent object from a function. Example: Creating a stack allocated object from a function and returning it.(Gets called on the return statement)
+		*	@param rhs The temporary right hand side object which has to be moved.
+		*/
+		Datum(Datum&& rhs);
+		
 #pragma region Overloaded Assignment Operator Declarations
 		/** Overloaded assignment operator.
 		*	Performs a deep copy of the right hand side object: Datum.
@@ -46,6 +53,12 @@ namespace GameEngineLibrary
 		*	@return Returns the deep copied Datum object
 		*/
 		Datum& operator=(const Datum& rhs);
+
+		/** Move assignment operator.
+		*	Moves the temporary object's(right hand side) pointers/primitive data to the left hand side object. Assigns default type to all the members of the class.
+		*	Note: This function is called when we are assigning a temporary object to a permanent object. Example: Assigning a stack allocated object from a function which created the object.(Gets called on the assignment statement)
+		*/
+		Datum& operator=(Datum&& rhs);
 
 		/** Overloaded assignment operator.
 		*	Push backs the rhs value and sets the DatumType to INT32_T if the DatumType is UNASSIGNED or else replaces the first element of the Datum Object.

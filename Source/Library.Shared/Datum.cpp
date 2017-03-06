@@ -34,81 +34,71 @@ namespace GameEngineLibrary
 		{
 			mDatumValues.voidPointer = rhs.mDatumValues.voidPointer;
 		}
-	}	
+	}
+
+	Datum::Datum(Datum&& rhs)
+		:mMemoryType(rhs.mMemoryType), mSize(rhs.mSize), mCapacity(rhs.mCapacity), mDatumType(rhs.mDatumType)
+	{
+		AssignFunctionalityForEachType();
+		mDatumValues.voidPointer = rhs.mDatumValues.voidPointer;
+
+		rhs.mMemoryType = DatumMemoryType::UNASSIGNED;
+		rhs.mSize = 0;
+		rhs.mCapacity = 0;
+		rhs.mDatumType = DatumType::UNASSIGNED;
+		rhs.mDatumValues.voidPointer = nullptr;
+	}
 
 #pragma region Overloaded Assignment Operator Implementations
 	Datum& Datum::operator=(const Datum& rhs)
 	{
 		if (this != &rhs)
 		{
-			
-
 			if (mMemoryType == DatumMemoryType::INTERNAL)
 			{
 				this->~Datum();
-				if (rhs.mMemoryType == DatumMemoryType::INTERNAL)
-				{
-					mCapacity = 0;
-					mSize = rhs.mSize;
-					mDatumType = rhs.mDatumType;
-					mDatumValues.voidPointer = nullptr;
-
-					Reserve(rhs.mCapacity);
-					(this->*mPerformDeepCopy[static_cast<uint32_t>(mDatumType)])(rhs.mDatumValues, mSize);
-				}				
-				else
-				{
-					mSize = rhs.mSize;
-					mCapacity = rhs.mCapacity;
-					mDatumType = rhs.mDatumType;
-					mMemoryType = rhs.mMemoryType;
-					mDatumValues.voidPointer = rhs.mDatumValues.voidPointer;
-				}
 			}
-			else if (mMemoryType == DatumMemoryType::EXTERNAL)
-			{
-				if (rhs.mMemoryType == DatumMemoryType::INTERNAL)
-				{
-					mCapacity = 0;
-					mSize = rhs.mSize;
-					mDatumType = rhs.mDatumType;
-					mMemoryType = DatumMemoryType::INTERNAL;
-					mDatumValues.voidPointer = nullptr;
 
-					Reserve(rhs.mCapacity);
-					(this->*mPerformDeepCopy[static_cast<uint32_t>(mDatumType)])(rhs.mDatumValues, mSize);
-				}				
-				else
-				{
-					mSize = rhs.mSize;
-					mCapacity = rhs.mCapacity;
-					mDatumType = rhs.mDatumType;
-					mMemoryType = rhs.mMemoryType;
-					mDatumValues.voidPointer = rhs.mDatumValues.voidPointer;
-				}
+			mSize = rhs.mSize;
+			mDatumType = rhs.mDatumType;
+			mMemoryType = rhs.mMemoryType;
+			if (rhs.mMemoryType == DatumMemoryType::INTERNAL)
+			{
+				mCapacity = 0;				
+				mDatumValues.voidPointer = nullptr;
+
+				Reserve(rhs.mCapacity);
+				(this->*mPerformDeepCopy[static_cast<uint32_t>(mDatumType)])(rhs.mDatumValues, mSize);
 			}
 			else
-			{
-				if (rhs.mMemoryType == DatumMemoryType::INTERNAL)
-				{
-					mCapacity = 0;
-					mSize = rhs.mSize;
-					mDatumType = rhs.mDatumType;
-					mMemoryType = DatumMemoryType::INTERNAL;
-					mDatumValues.voidPointer = nullptr;
-
-					Reserve(rhs.mCapacity);
-					(this->*mPerformDeepCopy[static_cast<uint32_t>(mDatumType)])(rhs.mDatumValues, mSize);
-				}				
-				else
-				{				
-					mSize = rhs.mSize;
-					mCapacity = rhs.mCapacity;
-					mDatumType = rhs.mDatumType;
-					mMemoryType = rhs.mMemoryType;
-					mDatumValues.voidPointer = rhs.mDatumValues.voidPointer;
-				}
+			{				
+				mCapacity = rhs.mCapacity;				
+				mDatumValues.voidPointer = rhs.mDatumValues.voidPointer;
 			}
+		}
+		return *this;
+	}
+
+	Datum& Datum::operator=(Datum&& rhs)
+	{
+		if (this != &rhs)
+		{
+			if (mMemoryType == DatumMemoryType::INTERNAL)
+			{
+				this->~Datum();
+			}
+
+			mSize = rhs.mSize;
+			mCapacity = rhs.mCapacity;
+			mDatumType = rhs.mDatumType;
+			mMemoryType = rhs.mMemoryType;
+			mDatumValues.voidPointer = rhs.mDatumValues.voidPointer;
+
+			rhs.mMemoryType = DatumMemoryType::UNASSIGNED;
+			rhs.mSize = 0;
+			rhs.mCapacity = 0;
+			rhs.mDatumType = DatumType::UNASSIGNED;
+			rhs.mDatumValues.voidPointer = nullptr;
 		}
 		return *this;
 	}

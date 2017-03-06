@@ -140,9 +140,23 @@ namespace GameEngineLibrary
 		*/
 		Hashmap(const Hashmap&) = default;
 
+		/** Move constructor.
+		*	Moves the temporary object's(right hand side) pointers/primitive data to the left hand side object. Assigns default type to all the members of the class.
+		*	Note: This function is called when we are returning a temporary object to a permanent object from a function. Example: Creating a stack allocated object from a function and returning it.(Gets called on the return statement)
+		*	@param rhs The temporary right hand side object which has to be moved.
+		*/
+		Hashmap(Hashmap&& rhs);
+
 		/** Use the default assignment operator to perform member wise copy.
 		*/
 		Hashmap& operator=(const Hashmap&) = default;
+
+		/** Move assignment operator.
+		*	Moves the temporary object's(right hand side) pointers/primitive data to the left hand side object. Assigns default type to all the members of the class.
+		*	Note: This function is called when we are assigning a temporary object to a permanent object. Example: Assigning a stack allocated object from a function which created the object.(Gets called on the assignment statement)
+		*	@param rhs The temporary right hand side object which has to be moved.
+		*/
+		Hashmap& operator=(Hashmap&& rhs);
 
 		/** Clears the entire Hashmap.
 		*/

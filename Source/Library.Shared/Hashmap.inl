@@ -27,6 +27,26 @@ namespace GameEngineLibrary
 		}
 	}
 
+	template<class TKey, class TValue, typename HashFunctor>
+	inline Hashmap<TKey, TValue, HashFunctor>::Hashmap(Hashmap&& rhs)
+		:mSize(rhs.mSize), mBuckets(move(rhs.mBuckets))
+	{
+		rhs.mSize = 0;
+	}
+
+	template<class TKey, class TValue, typename HashFunctor>
+	inline Hashmap<TKey, TValue, HashFunctor>& Hashmap<TKey, TValue, HashFunctor>::operator=(Hashmap&& rhs)
+	{
+		if (this != &rhs)
+		{
+			mSize = rhs.mSize;
+			mBuckets = move(rhs.mBuckets);
+
+			rhs.mSize = 0;
+		}
+		return *this;
+	}
+
 	template <class TKey, class TValue, class HashFunctor>
 	inline typename Hashmap<TKey, TValue, HashFunctor>::Iterator Hashmap<TKey, TValue, HashFunctor>::Insert(const PairType& pair)
 	{

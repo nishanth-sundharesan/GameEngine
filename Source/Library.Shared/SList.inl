@@ -53,7 +53,8 @@ namespace GameEngineLibrary
 	{
 		if (this != &rhs)
 		{
-			this->~SList();
+			Clear();
+
 			mSize = rhs.mSize;
 			mFront = rhs.mFront;
 			mBack = rhs.mBack;

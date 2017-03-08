@@ -60,9 +60,10 @@ namespace GameEngineLibrary
 	template<class T, typename F>
 	inline Vector<T,F>& Vector<T, F>::operator=(Vector&& rhs)
 	{
-		if (this != rhs)
+		if (this != &rhs)
 		{
-			Clear();						
+			Clear();
+			ShrinkToFit();
 
 			mSize = rhs.mSize;
 			mStartingAddress = rhs.mStartingAddress;

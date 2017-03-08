@@ -56,7 +56,8 @@ namespace GameEngineLibrary
 		{
 			if (mMemoryType == DatumMemoryType::INTERNAL)
 			{
-				this->~Datum();
+				Clear();
+				ShrinkToFit();
 			}
 
 			mSize = rhs.mSize;
@@ -85,7 +86,8 @@ namespace GameEngineLibrary
 		{
 			if (mMemoryType == DatumMemoryType::INTERNAL)
 			{
-				this->~Datum();
+				Clear();
+				ShrinkToFit();
 			}
 
 			mSize = rhs.mSize;
@@ -187,7 +189,7 @@ namespace GameEngineLibrary
 		return *this;
 	}
 
-	Datum& Datum::operator=(const Scope* const rhs)
+	Datum& Datum::operator=(const Scope* const& rhs)
 	{
 		if (mDatumType == DatumType::UNASSIGNED)
 		{
@@ -427,7 +429,7 @@ namespace GameEngineLibrary
 		mSize++;
 	}
 
-	void Datum::PushBack(const Scope* const value)
+	void Datum::PushBack(const Scope* const& value)
 	{
 		CheckForTheMemoryType(DatumMemoryType::EXTERNAL);
 		CheckForDatumType(DatumType::TABLE);
@@ -445,7 +447,7 @@ namespace GameEngineLibrary
 #pragma endregion
 
 #pragma region Remove Implementations
-	bool Datum::Remove(const Scope* const value)
+	bool Datum::Remove(const Scope* const& value)
 	{
 		CheckForTheMemoryType(DatumMemoryType::EXTERNAL);
 		CheckForDatumType(DatumType::TABLE);
@@ -584,7 +586,7 @@ namespace GameEngineLibrary
 		*(mDatumValues.rttiPointer + index) = const_cast<RTTI*>(value);
 	}
 
-	void Datum::Set(const Scope* const value, const uint32_t index)
+	void Datum::Set(const Scope* const& value, const uint32_t index)
 	{
 		CheckForBoundsAndDatumType(DatumType::TABLE, index);
 		*(mDatumValues.tablePointer + index) = const_cast<Scope*>(value);

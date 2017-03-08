@@ -107,7 +107,7 @@ namespace GameEngineLibrary
 		*	@param rhs It is the right hand side pointer which will be Pushed back or Set at the 0th index of the Datum object.
 		*	@return Returns the Datum object after Push back or after Set.
 		*/
-		Datum& operator=(const Scope* const rhs);
+		Datum& operator=(const Scope* const& rhs);
 #pragma endregion
 		/** Clears the entire Datum object.
 		*/
@@ -249,7 +249,7 @@ namespace GameEngineLibrary
 		*	@param value The pointer to be appended to the Datum object.
 		*	@exception throws an exception if the Datum object holds external data or if the DatumType is invalid.
 		*/
-		void PushBack(const Scope* const value);
+		void PushBack(const Scope* const& value);
 #pragma endregion
 
 #pragma region Remove
@@ -257,7 +257,7 @@ namespace GameEngineLibrary
 		*	@param value The scope pointer that has to be removed from the Datum object.
 		*	@return Returns true of the Remove() was successful, false otherwise.
 		*/
-		bool Remove(const Scope* const value);
+		bool Remove(const Scope* const& value);
 #pragma endregion
 
 #pragma region Overloaded Equality Operators
@@ -420,7 +420,7 @@ namespace GameEngineLibrary
 		*	@param index The index for the pointer.
 		*	@exception throws an exception if the index is out of range or if the DatumType is invalid.
 		*/
-		void Set(const Scope* const value, const uint32_t index = 0);
+		void Set(const Scope* const& value, const uint32_t index = 0);
 #pragma endregion
 
 #pragma region Get Method Declarations

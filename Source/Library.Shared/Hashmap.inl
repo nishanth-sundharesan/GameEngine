@@ -39,6 +39,9 @@ namespace GameEngineLibrary
 	{
 		if (this != &rhs)
 		{
+			mBuckets.Clear();
+			mBuckets.ShrinkToFit();
+
 			mSize = rhs.mSize;
 			mBuckets = move(rhs.mBuckets);
 

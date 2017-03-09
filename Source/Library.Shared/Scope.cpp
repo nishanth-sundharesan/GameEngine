@@ -1,5 +1,6 @@
 #include "Pch.h"
 #include "Scope.h"
+#include <assert.h>
 
 using namespace std;
 
@@ -20,6 +21,33 @@ namespace GameEngineLibrary
 		PerformDeepCopy(rhsScope);
 	}
 
+	Scope::Scope(Scope&& rhs)
+		:mParentScope(rhs.mParentScope), mOrderVector(move(rhs.mOrderVector)), mHashmap(move(rhs.mHashmap))
+	{
+		//Going through the child scopes and reassigning the parent pointer.
+		for (uint32_t i = 0; i < mOrderVector.Size(); ++i)
+		{
+			if (mOrderVector[i]->second.Type() == DatumType::TABLE)
+			{
+				Datum& datumContainingScope = (*mOrderVector[i]).second;
+				for (uint32_t j = 0; j < datumContainingScope.Size(); ++j)
+				{
+					Scope *scopeToDelete = datumContainingScope.Get<Scope*>(j);
+					if (scopeToDelete != nullptr)
+					{
+						scopeToDelete->mParentScope = this;
+					}
+				}
+			}
+		}
+		PointerFixUp(&rhs);
+		AssignEnumToString();
+
+		rhs.mParentScope = nullptr;
+		rhs.mOrderVector.Clear();
+		rhs.mHashmap.Clear();
+	}
+
 	Scope& Scope::operator=(const Scope& rhsScope)
 	{
 		if (this != &rhsScope)
@@ -27,6 +55,37 @@ namespace GameEngineLibrary
 			Clear();
 			mParentScope = nullptr;
 			PerformDeepCopy(rhsScope);
+		}
+		return *this;
+	}
+
+	Scope& Scope::operator=(Scope&& rhs)
+	{
+		if (this != &rhs)
+		{
+			Clear();
+			mParentScope = rhs.mParentScope;
+			mOrderVector = move(rhs.mOrderVector);
+			mHashmap = move(rhs.mHashmap);
+			
+			//Going through the child scopes and reassigning the parent pointer.
+			for (uint32_t i = 0; i < mOrderVector.Size(); ++i)
+			{
+				if (mOrderVector[i]->second.Type() == DatumType::TABLE)
+				{
+					Datum& datumContainingScope = mOrderVector[i]->second;
+					for (uint32_t j = 0; j < datumContainingScope.Size(); ++j)
+					{
+						Scope *scopeToDelete = datumContainingScope.Get<Scope*>(j);
+						if (scopeToDelete != nullptr)
+						{
+							scopeToDelete->mParentScope = this;
+						}
+					}
+				}
+			}
+			PointerFixUp(&rhs);					
+			rhs.mParentScope = nullptr;			
 		}
 		return *this;
 	}
@@ -79,7 +138,7 @@ namespace GameEngineLibrary
 	}
 
 	Datum& Scope::Append(const string& name)
-	{		
+	{
 		if (name == "")
 		{
 			throw exception("Datum& Scope::Append(const string& name): The name of the scope to adopt is empty.");
@@ -137,6 +196,30 @@ namespace GameEngineLibrary
 		}
 	}
 
+	void Scope::PointerFixUp(Scope* oldScope)
+	{
+		//Making sure that the parent is pointing to the appropriate child
+		if (mParentScope != nullptr)
+		{
+			for (uint32_t i = 0; i < mParentScope->mOrderVector.Size(); ++i)
+			{
+				if (mParentScope->mOrderVector[i]->second.Type() == DatumType::TABLE)
+				{
+					Datum& datumContainingScope = mParentScope->mOrderVector[i]->second;
+					for (uint32_t j = 0; j < datumContainingScope.Size(); ++j)
+					{
+						if (datumContainingScope.Get<Scope*>(j) == oldScope)
+						{
+							datumContainingScope.Set(this, j);
+							return;
+						}
+					}
+				}
+			}
+		}
+		assert("Pointer Fix up failed");
+	}
+
 	void Scope::AssignEnumToString()
 	{
 		mEnumNames[static_cast<uint32_t>(DatumType::UNASSIGNED)] = "UNASSIGNED";
@@ -155,7 +238,7 @@ namespace GameEngineLibrary
 		{
 			throw exception("void Scope::Adopt(Scope& childScope, const string& name): The name of the scope to adopt is empty.");
 		}
-		
+
 		if (this == &childScope)
 		{
 			throw exception("void Scope::Adopt(Scope& childScope, const string& name): Cannot adopt itself.");
@@ -300,7 +383,7 @@ namespace GameEngineLibrary
 		Scope* parentScope = childScope->mParentScope;
 		if (parentScope == nullptr)
 		{
-			throw exception("void Scope::Orphan(Scope* childScope): Cannot adopt the root scope.");
+			return;			
 		}
 
 		for (uint32_t i = 0; i < parentScope->mOrderVector.Size(); ++i)

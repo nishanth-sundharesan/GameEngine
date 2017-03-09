@@ -20,7 +20,7 @@ namespace GameEngineLibrary
 		*/
 		typedef ScopeHashmap::Iterator ScopeHashmapIterator;
 
-	public:		
+	public:
 		/** Constructor: Initializes the private members of the class.
 		*	@param size The size of the Scope(Table) if it is known in advance. Defaulted to 17
 		*/
@@ -32,12 +32,25 @@ namespace GameEngineLibrary
 		*/
 		Scope(const Scope& rhsScope);
 
+		/** Move constructor.
+		*	Moves the temporary object's(right hand side) pointers/primitive data to the left hand side object. Assigns default type to all the members of the class.
+		*	Note: This function is called when we are returning a temporary object to a permanent object from a function. Example: Creating a stack allocated object from a function and returning it.(Gets called on the return statement)
+		*	@param rhs The temporary right hand side object which has to be moved.
+		*/
+		Scope(Scope&& rhsScope);
+
 		/** Assignment operator: Performs deep copy of the scope.
 		*	Note: After deep copying the scope, the parent of the deep copied scope is set to nullptr.
 		*	@param rhsScope The right hand scope which has to be deep copied.
 		*	@return Returns the deep copied Scope object.
 		*/
 		Scope& operator=(const Scope& rhsScope);
+
+		/** Move assignment operator.
+		*	Moves the temporary object's(right hand side) pointers/primitive data to the left hand side object. Assigns default type to all the members of the class.
+		*	Note: This function is called when we are assigning a temporary object to a permanent object. Example: Assigning a stack allocated object from a function which created the object.(Gets called on the assignment statement)
+		*/
+		Scope& operator=(Scope&& rhsScope);
 
 		/** Clears the entire Scope.
 		*/
@@ -66,7 +79,7 @@ namespace GameEngineLibrary
 		*	@param scope The pointer to the scope pointer in which the search has to happen.
 		*	@return Returns the pointer to the Datum object which is associated with the name. Returns nullptr if the Datum object was not found.
 		*/
-		Datum* Search(const std::string& name, Scope** scope = nullptr);		
+		Datum* Search(const std::string& name, Scope** scope = nullptr);
 
 		/** Searches for the Datum object associated with the specified name.
 		*	This function takes in the name and a pointer to the scope pointer, inside which the search happens.
@@ -168,7 +181,7 @@ namespace GameEngineLibrary
 		*/
 		virtual std::string ToString() const override;
 
-	private:		
+	private:
 		/** Appends the passed scope to the current scope.
 		*	Appends a new record inside the Scope/Table with the associated name. It then inserts the passed "scope" into the newly created Datum object of the newly created record.
 		*	If a record of the same name was already present and it was of the type TABLE, then it inserts the passed "scope" inside that Datum and returns a reference to that newly created scope.
@@ -178,6 +191,12 @@ namespace GameEngineLibrary
 		*	@return Returns a reference to the appended scope.
 		*/
 		Scope& AppendScope(const string& name, Scope* scope);
+
+		/** Makes the parent scope point to the appropriate child scope.
+		*	Note: This function gets called in the move semantics.
+		*	@param oldScope Pointer to the old scope which will be searched for and replaced by the "this" pointer.
+		*/
+		void PointerFixUp(Scope* oldScope);
 
 		/** Assigns the std::string representation of the DatumType into the std::string array.
 		*/

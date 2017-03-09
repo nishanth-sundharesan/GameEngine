@@ -193,7 +193,7 @@ namespace LibraryDesktopTest
 			string firstPushedString = "Hello";
 			Scope *firstPushedScope = new Scope();
 
-			Assert::ExpectException<exception>([&] {scope.Append(string()); });			 
+			Assert::ExpectException<exception>([&] {scope.Append(string()); });
 
 			Datum& firstAppend = scope.Append(nameOne);
 			firstAppend.SetType(DatumType::INT32_T);
@@ -258,10 +258,7 @@ namespace LibraryDesktopTest
 			Scope parentOfChildScope;
 
 			string childScopeLevelOneString = "childScopeLevelOneString";
-			string tempString = "tempString";
-
-			Assert::ExpectException<exception>([&] {scope.Adopt(parentOfChildScope, childScopeLevelOneString); });
-			Assert::ExpectException<exception>([&] {parentOfChildScope.Adopt(scope, childScopeLevelOneString); });
+			string tempString = "tempString";			
 
 			Scope& childScopeLevelOne = scope.AppendScope(childScopeLevelOneString);
 			string childScopeLevelTwoString = "childScopeLevelOneString";

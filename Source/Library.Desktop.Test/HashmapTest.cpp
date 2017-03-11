@@ -2021,6 +2021,16 @@ namespace LibraryDesktopTest
 			HashmapIteratorInEqualityOperator(hashmapFoo, firstPairFoo, secondPairFoo, thirdPairFoo);
 		}
 
+
+		TEST_METHOD(HashmapMoveSemantics)
+		{
+			Hashmap<int32_t, int32_t> hashmapInt(100);
+			pair<int32_t, int32_t> firstPairInt = make_pair(10, 100);
+			pair<int32_t, int32_t> secondPairInt = make_pair(20, 200);
+			pair<int32_t, int32_t> thirdPairInt = make_pair(30, 300);
+
+			Hashmap<int32_t, int32_t> hashmaptemp = move(hashmapInt);
+		}
 	private:
 		static _CrtMemState sStartMemState;
 	};

@@ -3,7 +3,7 @@
 
 using namespace std;
 
-RTTI_DEFINITIONS(GameEngineLibrary::Scope);
+RTTI_DEFINITIONS(GameEngineLibrary::Attributed);
 
 namespace GameEngineLibrary
 {
@@ -13,37 +13,56 @@ namespace GameEngineLibrary
 
 	Attributed::Attributed()
 	{
-		AddInternalAttribute("this", this);
 		++sAttributedCount;
+		AddInternalAttribute("this", this);
 	}
 
 	Attributed::Attributed(const Attributed& rhs)
+		:Scope(rhs)
 	{
-		rhs;
+		++sAttributedCount;
+		(*this)["this"] = static_cast<RTTI*>(this);
+	}
+
+	Attributed::Attributed(Attributed&& rhs)
+		: Scope(move(rhs))
+	{
+		++sAttributedCount;
+		(*this)["this"] = static_cast<RTTI*>(this);
 	}
 
 	Attributed& Attributed::operator=(const Attributed& rhs)
 	{
-		rhs;
+		if (this != &rhs)
+		{
+			Scope::operator=(rhs);
+			(*this)["this"] = static_cast<RTTI*>(this);
+		}
 		return *this;
-		// TODO: insert return statement here
+	}
+
+	Attributed& Attributed::operator=(Attributed&& rhs)
+	{
+		if (this != &rhs)
+		{
+			Scope::operator=(move(rhs));
+			(*this)["this"] = static_cast<RTTI*>(this);
+		}
+		return *this;
 	}
 
 	Attributed::~Attributed()
 	{
+		--sAttributedCount;
 		if (sAttributedCount == 0)
 		{
 			sPrescribedAttributes.Clear();
-		}
-		else
-		{
-			--sAttributedCount;
 		}
 	}
 
 	bool Attributed::IsPrescribedAttribute(const string& name)
 	{
-		return sPrescribedAttributes[TypeIdInstance()].Find(name) != sPrescribedAttributes[TypeIdInstance()].end();
+		return !(sPrescribedAttributes[TypeIdInstance()].Find(name) == sPrescribedAttributes[TypeIdInstance()].end());
 	}
 
 	bool Attributed::IsAuxiliaryAttribute(const string& name)
@@ -67,46 +86,112 @@ namespace GameEngineLibrary
 
 	uint32_t Attributed::AuxiliaryBegin()
 	{
-		return sPrescribedAttributes[TypeIdInstance()].Size() + 1;
+		return sPrescribedAttributes[TypeIdInstance()].Size() + 1;								//+ 1 is for the "this" pointer which is added in the constructor
 	}
 
 	void Attributed::AddInternalAttribute(const string& name, const int32_t value)
 	{
-		AddAttribute(name, DatumType::INT32_T).PushBack(value);
+		Append(name) = value;
 		AddToPrescribedAtributesList(name);
 	}
 
 	void Attributed::AddInternalAttribute(const string& name, const float_t value)
 	{
-		AddAttribute(name, DatumType::FLOAT).PushBack(value);
+		Append(name) = value;
 		AddToPrescribedAtributesList(name);
 	}
 
 	void Attributed::AddInternalAttribute(const string& name, const string& value)
 	{
-		AddAttribute(name, DatumType::STRING).PushBack(value);
+		Append(name) = value;
 		AddToPrescribedAtributesList(name);
 	}
 
-	void Attributed::AddInternalAttribute(const string& name, const glm::vec4 value)
+	void Attributed::AddInternalAttribute(const string& name, const glm::vec4& value)
 	{
-		AddAttribute(name, DatumType::GLM_VECTOR4).PushBack(value);
+		Append(name) = value;
 		AddToPrescribedAtributesList(name);
 	}
 
-	void Attributed::AddInternalAttribute(const string& name, const glm::mat4x4 value)
+	void Attributed::AddInternalAttribute(const string& name, const glm::mat4x4& value)
 	{
-		AddAttribute(name, DatumType::GLM_MATRIX4X4).PushBack(value);
+		Append(name) = value;
 		AddToPrescribedAtributesList(name);
 	}
 
 	void Attributed::AddInternalAttribute(const string& name, const RTTI* value)
 	{
-		AddAttribute(name, DatumType::POINTER).PushBack(value);
+		Append(name) = value;
 		AddToPrescribedAtributesList(name);
 	}
 
+	void Attributed::AddInternalArrayAttribute(const string& name, const int32_t* intArray, const uint32_t size)
+	{
+		Datum& datum = AddAttribute(name, DatumType::INT32_T);
+		datum.Clear();
+		for (uint32_t i = 0; i < size; ++i)
+		{
+			datum.PushBack(intArray[i]);
+		}
+		AddToPrescribedAtributesList(name);
+	}
 
+	void Attributed::AddInternalArrayAttribute(const string& name, const float_t* floatArray, const uint32_t size)
+	{
+		Datum& datum = AddAttribute(name, DatumType::FLOAT);
+		datum.Clear();
+		for (uint32_t i = 0; i < size; ++i)
+		{
+			datum.PushBack(floatArray[i]);
+		}
+		AddToPrescribedAtributesList(name);
+	}
+
+	void Attributed::AddInternalArrayAttribute(const string& name, const std::string* stringArray, const uint32_t size)
+	{
+		Datum& datum = AddAttribute(name, DatumType::STRING);
+		datum.Clear();
+		for (uint32_t i = 0; i < size; ++i)
+		{
+			datum.PushBack(stringArray[i]);
+		}
+		AddToPrescribedAtributesList(name);
+	}
+
+	void Attributed::AddInternalArrayAttribute(const string& name, const glm::vec4* vec4Array, const uint32_t size)
+	{
+		Datum& datum = AddAttribute(name, DatumType::GLM_VECTOR4);
+		datum.Clear();
+		for (uint32_t i = 0; i < size; ++i)
+		{
+			datum.PushBack(vec4Array[i]);
+		}
+		AddToPrescribedAtributesList(name);
+	}
+
+	void Attributed::AddInternalArrayAttribute(const string& name, const glm::mat4x4* mat4x4Array, const uint32_t size)
+	{
+		Datum& datum = AddAttribute(name, DatumType::GLM_MATRIX4X4);
+		datum.Clear();
+		for (uint32_t i = 0; i < size; ++i)
+		{
+			datum.PushBack(mat4x4Array[i]);
+		}
+		AddToPrescribedAtributesList(name);
+	}
+
+	Scope& Attributed::AddNestedScopeAttribute(const string& name)
+	{
+		Scope& scope = AppendScope(name);
+		AddToPrescribedAtributesList(name);
+		return scope;
+	}
+
+	void Attributed::AddNestedScopeAttribute(Scope& childScope, const string& name)
+	{
+		Adopt(childScope, name);
+		AddToPrescribedAtributesList(name);
+	}
 
 	void Attributed::AddExternalAttribute(const string& name, const int32_t* pointerToData, const uint32_t size)
 	{
@@ -155,7 +240,7 @@ namespace GameEngineLibrary
 	void Attributed::AddToPrescribedAtributesList(const string& name)
 	{
 		Vector<string>& prescribedAttributes = sPrescribedAttributes[TypeIdInstance()];
-		if (prescribedAttributes.Find(name) != prescribedAttributes.end())
+		if (prescribedAttributes.Find(name) == prescribedAttributes.end())
 		{
 			prescribedAttributes.PushBack(name);
 		}

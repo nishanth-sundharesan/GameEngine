@@ -225,6 +225,10 @@ namespace GameEngineLibrary
 	template <class TKey, class TValue, class HashFunctor>
 	typename Hashmap<TKey, TValue, HashFunctor>::Iterator& Hashmap<TKey, TValue, HashFunctor>::Iterator::operator++()
 	{
+		if (mOwner == nullptr)
+		{
+			throw exception("Uninitialized Hashmap Iterator.");
+		}
 		if (mIndex == mOwner->mBuckets.Size() - 1 && mIterator == mOwner->mBuckets[mIndex].end())
 		{
 			throw out_of_range("Hashmap<TKey, TValue, HashFunctor>::Iterator& Hashmap<TKey, TValue, HashFunctor>::Iterator::operator++(): Iterator is uninitialized or is pointing to the end of the list or is pointing to an invalid data!");
@@ -263,28 +267,28 @@ namespace GameEngineLibrary
 	template <class TKey, class TValue, class HashFunctor>
 	typename Hashmap<TKey, TValue, HashFunctor>::PairType& Hashmap<TKey, TValue, HashFunctor>::Iterator::operator*()
 	{
-		//TODO Check if owner is nullptr
-		return (*mIterator);
+		return const_cast<PairType&>(const_cast<const Hashmap::Iterator*>(this)->operator*());
 	}
 
 	template <class TKey, class TValue, class HashFunctor>
 	typename const Hashmap<TKey, TValue, HashFunctor>::PairType& Hashmap<TKey, TValue, HashFunctor>::Iterator::operator*() const
-	{
-		//TODO Check if owner is nullptr
+	{		
+		if (mOwner == nullptr)
+		{
+			throw exception("Uninitialized Hashmap Iterator.");
+		}
 		return (*mIterator);
 	}
 
 	template <class TKey, class TValue, class HashFunctor>
 	typename Hashmap<TKey, TValue, HashFunctor>::PairType* Hashmap<TKey, TValue, HashFunctor>::Iterator::operator->()
-	{
-		//TODO Check if owner is nullptr
+	{		
 		return &(*mIterator);
 	}
 
 	template <class TKey, class TValue, class HashFunctor>
 	const typename Hashmap<TKey, TValue, HashFunctor>::PairType* Hashmap<TKey, TValue, HashFunctor>::Iterator::operator->() const
-	{
-		//TODO Check if owner is nullptr
+	{	
 		return &(*mIterator);
 	}
 

@@ -1249,6 +1249,8 @@ namespace LibraryDesktopTest
 		{
 			Hashmap<TKey, TValue, HashFunctor>::Iterator iterator;
 
+			Assert::ExpectException<exception>([&] { ++iterator; });
+
 			/************************************************************************/
 			//Checking with the empty Hashmap
 			iterator = hashmap.begin();
@@ -1435,6 +1437,8 @@ namespace LibraryDesktopTest
 
 			secondPair;
 			thirdPair;
+			Assert::ExpectException<exception>([&] { iterator++; });
+
 			/************************************************************************/
 			//Checking with the empty hashmap
 			iterator = hashmap.begin();
@@ -1513,6 +1517,8 @@ namespace LibraryDesktopTest
 		void HashmapIteratorDeferenceOperator(Hashmap<TKey, TValue, HashFunctor>& hashmap, pair<TKey, TValue>& firstPair, pair<TKey, TValue>& secondPair, pair<TKey, TValue>& thirdPair)
 		{
 			Hashmap<TKey, TValue, HashFunctor>::Iterator iterator;
+
+			Assert::ExpectException<exception>([&] { *iterator; });
 
 			//Checking with the empty Hashmap
 			iterator = hashmap.begin();

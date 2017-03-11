@@ -175,6 +175,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AttributedFoo.cpp" />
+    <ClCompile Include="AttributedFooChild.cpp" />
+    <ClCompile Include="AttributedTest.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="DatumTest.cpp">
       <SubType>
       </SubType>
@@ -206,6 +211,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AttributedFoo.h" />
+    <ClInclude Include="AttributedFooChild.h" />
     <ClInclude Include="Foo.h" />
     <ClInclude Include="Pch.h" />
     <ClInclude Include="ToStringTemplates.h" />

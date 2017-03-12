@@ -1,13 +1,11 @@
 #pragma once
 namespace GameEngineLibrary
 {
-	//const std::unit32_t prime=31;
+	const std::uint32_t mPrimeNumber = 65;
 
 	//Default compare hash functor
-
-	// TODO
+	// TODO - This will be called from inside of Hashmap. A functor could be overloaded for char*
 	//bool DefaultCompare<TKey>::operator()(const TKey& lhs, const TKey& rhs) const
-
 	//{
 	//	return lhs == rhs;
 	//}

@@ -10,9 +10,8 @@ namespace GameEngineLibrary
 		uint32_t hash = 0;
 
 		while (*key != '\0')
-		{
-			//hash = hash * hashprime+key[i]
-			hash += 65 * static_cast<uint8_t>(*key);
+		{			
+			hash += (mPrimeNumber * hash) + static_cast<uint8_t>(*key);
 			++key;
 		}
 		return hash;
@@ -24,7 +23,7 @@ namespace GameEngineLibrary
 
 		while (*key != '\0')
 		{
-			hash += 65 * static_cast<uint8_t>(*key);
+			hash += (mPrimeNumber * hash) + static_cast<uint8_t>(*key);
 			++key;
 		}
 		return hash;
@@ -36,7 +35,7 @@ namespace GameEngineLibrary
 
 		for (uint32_t i = 0; i < key.length(); ++i)
 		{
-			hash += 65 * static_cast<uint8_t>(key[i]);
+			hash += (mPrimeNumber * hash) + static_cast<uint8_t>(key[i]);
 		}
 		return hash;
 	}
@@ -47,7 +46,7 @@ namespace GameEngineLibrary
 
 		for (uint32_t i = 0; i < key.length(); ++i)
 		{
-			hash += 65 * static_cast<uint8_t>(key[i]);
+			hash += (mPrimeNumber * hash) + static_cast<uint8_t>(key[i]);
 		}
 		return hash;
 	}

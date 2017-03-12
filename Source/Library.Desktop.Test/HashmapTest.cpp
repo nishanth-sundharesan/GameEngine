@@ -36,6 +36,7 @@ namespace LibraryDesktopTest
 		}
 	};
 
+	// TODO - Test Hash functors themselves.
 	TEST_CLASS(HashmapTest)
 	{
 	public:

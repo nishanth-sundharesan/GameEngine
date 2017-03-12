@@ -254,6 +254,11 @@ namespace GameEngineLibrary
 	template <class TKey, class TValue, class HashFunctor>
 	typename Hashmap<TKey, TValue, HashFunctor>::Iterator Hashmap<TKey, TValue, HashFunctor>::Iterator::operator++(int)
 	{
+		if (mOwner == nullptr)
+		{
+			throw exception("Uninitialized Hashmap Iterator.");
+		}
+
 		// Make a copy of the current Iterator
 		Iterator temp(*this);
 

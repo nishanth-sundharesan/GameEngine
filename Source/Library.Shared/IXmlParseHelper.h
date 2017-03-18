@@ -1,19 +1,27 @@
 #pragma once
+#include "Hashmap.h"
 
-class IXmlParseHelper
+namespace GameEngineLibrary
 {
-public:
-	void Initialize();
+	class IXmlParseHelper
+	{
+	public:
+		IXmlParseHelper() = default;
 
-	// Can return bool
-	void StartElementHandler(void* userData, const char* name, const char* args[]);
+		IXmlParseHelper(const IXmlParseHelper&) = delete;
 
-	// Can return bool
-	void EndElementHandler(void* userData, const char* name);
+		IXmlParseHelper& operator=(const IXmlParseHelper&) = delete;
 
-	void CharDataHandler(void* userData, const char* value, int length);
+		void Initialize();
 
-	virtual IXmlParseHelper* Clone() = 0;
+		virtual bool StartElementHandler(const std::string& name, const Hashmap<std::string, std::string>& attributes) = 0;
 
-	virtual ~IXmlParseHelper();
-};
+		virtual bool EndElementHandler(const std::string& name) = 0;
+
+		void CharacterDataHandler(const std::string& value, const std::int32_t length);
+
+		virtual IXmlParseHelper* Clone() = 0;
+
+		virtual ~IXmlParseHelper() = default;
+	};
+}

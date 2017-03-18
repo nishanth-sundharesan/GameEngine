@@ -2,67 +2,85 @@
 #include <expat.h>
 #include "IXmlParseHelper.h"
 #include "Vector.h"
+#include "RTTI.h"
 
 namespace GameEngineLibrary
 {
-	class XmlParseMaster
+	class XmlParseMaster final
 	{
 	public:
-		class SharedData
+		class SharedData :public RTTI
 		{
 		public:
 			SharedData();
 
-			SharedData* Clone();
+			SharedData(const SharedData&) = delete;
 
-			void SetXmlParseMaster();
+			SharedData& operator=(const SharedData&) = delete;
+
+			virtual SharedData* Clone() const;
+
+			void SetXmlParseMaster(XmlParseMaster* xmlParseMaster);
 
 			XmlParseMaster* GetXmlParseMaster();
+
+			const XmlParseMaster* GetXmlParseMaster() const;
 
 			void IncrementDepth();
 
 			void DecrementDepth();
 
-			int32_t Depth();
-		private:
-			XmlParseMaster* xmlParseMaster;
+			int32_t Depth() const;
 
-			int32_t depth;
+			virtual ~SharedData() = default;
+		private:
+			XmlParseMaster* mXmlParseMaster;
+
+			int32_t mDepth;
+		public:
+			RTTI_DECLARATIONS(SharedData, RTTI);
 		};
 
 	public:
 		XmlParseMaster(SharedData* sharedData);
 
+		XmlParseMaster(const XmlParseMaster&) = delete;
+
+		XmlParseMaster& operator=(const XmlParseMaster&) = delete;
+
 		~XmlParseMaster();
 
-		XmlParseMaster* Clone();
+		XmlParseMaster* Clone() const;
 
-		void AddHelper(IXmlParseHelper* xmlParseHelper);
+		void AddHelper(IXmlParseHelper& xmlParseHelper);
 
-		bool RemoveHelper(IXmlParseHelper* xmlParseHelper);
+		bool RemoveHelper(IXmlParseHelper& xmlParseHelper);
 
-		void Parse(char* rawXmlData, uint32_t length, bool isLastXmlChunkData);
+		void Parse(const char* rawXmlData, const uint32_t length, const bool isLastXmlChunkData);
 
-		void ParseFromFile(char* fileName);
+		void ParseFromFile(const std::string& fileName);
 
-		char* GetFileName();
+		string GetFileName() const;
 
 		SharedData* GetSharedData();
 
+		const SharedData* GetSharedData() const;
+
 		void SetSharedData(SharedData* sharedData);
 	private:
-
-		static void StartElementHandler(void *userData, const char *name, const char **atts);
+		static void StartElementHandler(void *userData, const char *name, const char **attributes);
 
 		static void EndElementHandler(void *userData, const char *name);
 
-		static void CharDataHandler();
+		static void CharacterDataHandler(void *userData, const char *value, std::int32_t length);
 	private:
 		XML_Parser mParser;
 
-		char* mCurrentParsingFile;
+		string mCurrentParsingFile;
 
 		SharedData* mSharedData;
+
+		IXmlParseHelper* currentXmlParseHelper;
 
 		Vector<IXmlParseHelper*> mXmlParseHelpers;
 	};

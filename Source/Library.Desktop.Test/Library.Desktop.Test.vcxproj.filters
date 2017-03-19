@@ -12,6 +12,9 @@
     <Filter Include="SupportClasses">
       <UniqueIdentifier>{044d7d94-d08d-48d7-a17a-4a2b210216da}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Other Supporting Files">
+      <UniqueIdentifier>{d6603494-2e04-499f-a9cc-9ff9190c333b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SListTest.cpp">
@@ -44,6 +47,12 @@
     <ClCompile Include="AttributedFooChild.cpp">
       <Filter>SupportClasses</Filter>
     </ClCompile>
+    <ClCompile Include="XmlParseMasterTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="XmlParseHelperStudent.cpp">
+      <Filter>SupportClasses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Pch.h">
@@ -61,5 +70,13 @@
     <ClInclude Include="AttributedFooChild.h">
       <Filter>SupportClasses</Filter>
     </ClInclude>
+    <ClInclude Include="XmlParseHelperStudent.h">
+      <Filter>SupportClasses</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="TestStudent.xml">
+      <Filter>Other Supporting Files</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

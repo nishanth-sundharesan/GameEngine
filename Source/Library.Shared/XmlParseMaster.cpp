@@ -1,6 +1,8 @@
 #include "Pch.h"
 #include "XmlParseMaster.h"
+#include "IXmlParseHelper.h"
 #include <fstream>
+#include <assert.h>
 
 using namespace std;
 
@@ -8,28 +10,30 @@ RTTI_DEFINITIONS(GameEngineLibrary::XmlParseMaster::SharedData);
 
 namespace GameEngineLibrary
 {
+#pragma region SharedData Implementation
 	XmlParseMaster::SharedData::SharedData()
 		:mDepth(0), mXmlParseMaster(nullptr)
 	{
-		// TODO comeback and check again
 	}
 
 	XmlParseMaster::SharedData* XmlParseMaster::SharedData::Clone() const
 	{
-		// TODO comeback and check again 
-		// returns the address of a SharedData object which has the same internal state as “this” except ready for a fresh file.
 		SharedData* newSharedData = new SharedData();
-		newSharedData->mDepth = this->mDepth;
-		newSharedData->mXmlParseMaster = this->mXmlParseMaster;
-		return nullptr;
+		CloneInternalMembers(newSharedData);
+		return newSharedData;
 	}
 
-	void XmlParseMaster::SharedData::SetXmlParseMaster(XmlParseMaster* xmlParseMaster)
+	void XmlParseMaster::SharedData::Initialize()
+	{
+		mDepth = 0;
+	}
+
+	inline void XmlParseMaster::SharedData::SetXmlParseMaster(XmlParseMaster* xmlParseMaster)
 	{
 		mXmlParseMaster = xmlParseMaster;
 	}
 
-	XmlParseMaster* XmlParseMaster::SharedData::GetXmlParseMaster()
+	inline XmlParseMaster* XmlParseMaster::SharedData::GetXmlParseMaster()
 	{
 		return const_cast<XmlParseMaster*>(const_cast<const SharedData*>(this)->GetXmlParseMaster());
 	}
@@ -39,14 +43,15 @@ namespace GameEngineLibrary
 		return mXmlParseMaster;
 	}
 
-	void XmlParseMaster::SharedData::IncrementDepth()
+	inline void XmlParseMaster::SharedData::IncrementDepth()
 	{
 		++mDepth;
 	}
 
-	void XmlParseMaster::SharedData::DecrementDepth()
+	inline void XmlParseMaster::SharedData::DecrementDepth()
 	{
 		--mDepth;
+		assert(mDepth >= 0);
 	}
 
 	int32_t XmlParseMaster::SharedData::Depth() const
@@ -54,31 +59,57 @@ namespace GameEngineLibrary
 		return mDepth;
 	}
 
-	XmlParseMaster::XmlParseMaster(SharedData* sharedData)
-		:mSharedData(sharedData), currentXmlParseHelper(nullptr), mParser(XML_ParserCreate(NULL))
+	void XmlParseMaster::SharedData::CloneInternalMembers(SharedData* sharedData) const
 	{
-		// TODO sharedData->   //Initialize sharedData or what is this?		
-		// TODO Check if we need & or not?
-		XML_SetElementHandler(mParser, &XmlParseMaster::StartElementHandler, &XmlParseMaster::EndElementHandler);
-		XML_SetCharacterDataHandler(mParser, &XmlParseMaster::CharacterDataHandler);
+		sharedData->mDepth = 0;
+		sharedData->mXmlParseMaster = mXmlParseMaster;
+	}
+#pragma endregion
+
+#pragma region XmlParseMaster Implementation
+	XmlParseMaster::XmlParseMaster(SharedData& sharedData)
+		:mSharedData(&sharedData), mCurrentXmlParseHelper(nullptr), mParser(XML_ParserCreate(NULL)), mIsCloned(false), mCurrentParsingFile(""), mIsCurrentlyParsing(false)
+	{
+		mSharedData->Initialize();
+		mSharedData->SetXmlParseMaster(this);
+
+		XML_SetElementHandler(mParser, StartElementHandler, EndElementHandler);				//Register call backs for StartElementHandler and EndElementHandler
+		XML_SetCharacterDataHandler(mParser, CharacterDataHandler);							//Register call back for CharacterDataHandler
 		XML_SetUserData(mParser, this);
 	}
 
 	XmlParseMaster::~XmlParseMaster()
 	{
-		//TODO  delete helpers of cloned parsers.
 		XML_ParserFree(mParser);
+		if (mIsCloned)
+		{
+			delete mSharedData;
+			for (auto& xmlParseHelper : mXmlParseHelpers)
+			{
+				delete xmlParseHelper;
+			}
+		}
 	}
 
 	XmlParseMaster* XmlParseMaster::Clone() const
 	{
-		//TODO read webcourses and implement this
-		return nullptr;
+		XmlParseMaster* clonedXmlParseMaster = new XmlParseMaster(*(mSharedData->Clone()));
+		clonedXmlParseMaster->mIsCloned = true;
+		clonedXmlParseMaster->mCurrentParsingFile = mCurrentParsingFile;
+
+		for (auto& xmlParseHelper : mXmlParseHelpers)
+		{
+			clonedXmlParseMaster->mXmlParseHelpers.PushBack(xmlParseHelper->Clone());
+		}
+		return clonedXmlParseMaster;
 	}
 
 	void XmlParseMaster::AddHelper(IXmlParseHelper& xmlParseHelper)
 	{
-		mXmlParseHelpers.PushBack(&xmlParseHelper);
+		if (!mIsCloned)
+		{
+			mXmlParseHelpers.PushBack(&xmlParseHelper);
+		}
 	}
 
 	bool XmlParseMaster::RemoveHelper(IXmlParseHelper& xmlParseHelper)
@@ -86,10 +117,19 @@ namespace GameEngineLibrary
 		return mXmlParseHelpers.Remove(&xmlParseHelper);
 	}
 
-	void XmlParseMaster::Parse(const char* rawXmlData, const uint32_t length, const bool isLastXmlChunkData)
+	void XmlParseMaster::Parse(const string& rawXmlData, const uint32_t length, const bool isLastXmlChunkData)
 	{
-		// TODO char* can change to string
-		if (XML_Parse(mParser, rawXmlData, length, isLastXmlChunkData) == 0)
+		if (!mIsCurrentlyParsing)
+		{
+			InitializeSharedDataAndxmlParseHelpers();
+			mIsCurrentlyParsing = true;
+		}
+		if (isLastXmlChunkData)
+		{
+			mIsCurrentlyParsing = false;
+		}
+
+		if (XML_Parse(mParser, rawXmlData.c_str(), length, isLastXmlChunkData) == 0)
 		{
 			int32_t parseErrorCode = XML_GetErrorCode(mParser);
 			const char* parseErrorMessage = (const char*)XML_ErrorString((XML_Error)parseErrorCode);
@@ -101,26 +141,31 @@ namespace GameEngineLibrary
 
 	void XmlParseMaster::ParseFromFile(const string& fileName)
 	{
-		mCurrentParsingFile = fileName;
+		mCurrentParsingFile = fileName;		
 
-		std::ifstream xmlInput(fileName);
-		if (!xmlInput)
+		ifstream xmlInputFile(fileName);
+		if (!xmlInputFile)
 		{
 			string exceptionMessage = "Cannot open the file " + fileName + " for reading";
 			throw new exception(exceptionMessage.c_str());
 		}
 
-		std::string readInputLine;
-		while (std::getline(xmlInput, readInputLine))
+		string readInputLine;
+		while (getline(xmlInputFile, readInputLine))
 		{
-			Parse(readInputLine.c_str(), readInputLine.length(), !xmlInput.eof());
+			Parse(readInputLine, readInputLine.length(), xmlInputFile.eof());
 		}
-		xmlInput.close();
+		xmlInputFile.close();
 	}
 
 	string XmlParseMaster::GetFileName() const
 	{
 		return mCurrentParsingFile;
+	}
+
+	void XmlParseMaster::SetSharedData(SharedData* sharedData)
+	{
+		mSharedData = sharedData;
 	}
 
 	XmlParseMaster::SharedData* XmlParseMaster::GetSharedData()
@@ -131,11 +176,6 @@ namespace GameEngineLibrary
 	const XmlParseMaster::SharedData* XmlParseMaster::GetSharedData() const
 	{
 		return mSharedData;
-	}
-
-	void XmlParseMaster::SetSharedData(SharedData* sharedData)
-	{
-		mSharedData = sharedData;
 	}
 
 	void XmlParseMaster::StartElementHandler(void* userData, const char* name, const char** attributes)
@@ -152,9 +192,9 @@ namespace GameEngineLibrary
 
 		for (auto& xmlParseHelper : xmlParseMaster->mXmlParseHelpers)
 		{
-			if (xmlParseHelper->StartElementHandler(name, attributeHashmap))
+			if (xmlParseHelper->StartElementHandler(*xmlParseMaster->mSharedData, name, attributeHashmap))
 			{
-				xmlParseMaster->currentXmlParseHelper = xmlParseHelper;
+				xmlParseMaster->mCurrentXmlParseHelper = xmlParseHelper;
 				break;
 			}
 		}
@@ -167,9 +207,9 @@ namespace GameEngineLibrary
 
 		for (auto& xmlParseHelper : xmlParseMaster->mXmlParseHelpers)
 		{
-			if (xmlParseHelper->EndElementHandler(name))
+			if (xmlParseHelper->EndElementHandler(*xmlParseMaster->mSharedData, name))
 			{
-				xmlParseMaster->currentXmlParseHelper = nullptr;
+				xmlParseMaster->mCurrentXmlParseHelper = nullptr;
 				break;
 			}
 		}
@@ -178,6 +218,20 @@ namespace GameEngineLibrary
 	void XmlParseMaster::CharacterDataHandler(void* userData, const char* value, int32_t length)
 	{
 		XmlParseMaster* xmlParseMaster = static_cast<XmlParseMaster*>(userData);
-		xmlParseMaster->currentXmlParseHelper->CharacterDataHandler(value, length);
+
+		if (xmlParseMaster->mCurrentXmlParseHelper != nullptr)
+		{
+			xmlParseMaster->mCurrentXmlParseHelper->CharacterDataHandler(*xmlParseMaster->mSharedData, string(value, length), length, value[length] == '<');
+		}
 	}
+
+	void XmlParseMaster::InitializeSharedDataAndxmlParseHelpers()
+	{
+		mSharedData->Initialize();															//Initializing the SharedData
+		for (auto& xmlParseHelper : mXmlParseHelpers)										//Initializing all the helper objects.
+		{
+			xmlParseHelper->Initialize();
+		}
+	}
+#pragma endregion
 }

@@ -53,6 +53,9 @@
     <ClCompile Include="XmlParseHelperStudent.cpp">
       <Filter>SupportClasses</Filter>
     </ClCompile>
+    <ClCompile Include="SharedDataFoo.cpp">
+      <Filter>SupportClasses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Pch.h">
@@ -71,6 +74,9 @@
       <Filter>SupportClasses</Filter>
     </ClInclude>
     <ClInclude Include="XmlParseHelperStudent.h">
+      <Filter>SupportClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedDataFoo.h">
       <Filter>SupportClasses</Filter>
     </ClInclude>
   </ItemGroup>

@@ -108,6 +108,16 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <AdditionalDependencies>Expat.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>xcopy "$(SolutionDir)..\External\Expat\Lib\$(Platform)\$(Configuration)\Expat.pdb" "$(ProjectDir)Lib\$(Platform)\$(Configuration)\" /Y /I</Command>
+    </PreLinkEvent>
+    <PreBuildEvent>
+      <Command>xcopy "$(ProjectDir)TestStudent.xml" "$(ProjectDir)Lib\$(Platform)\$(Configuration)\" /Y /I</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -128,6 +138,16 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <AdditionalDependencies>Expat.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>xcopy "$(SolutionDir)..\External\Expat\Lib\$(Platform)\$(Configuration)\Expat.pdb" "$(ProjectDir)Lib\$(Platform)\$(Configuration)\" /Y /I</Command>
+    </PreLinkEvent>
+    <PreBuildEvent>
+      <Command>xcopy "$(ProjectDir)TestStudent.xml" "$(ProjectDir)Lib\$(Platform)\$(Configuration)\" /Y /I</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -152,6 +172,12 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <AdditionalDependencies>Expat.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreLinkEvent>
+      <Command>xcopy "$(SolutionDir)..\External\Expat\Lib\$(Platform)\$(Configuration)\Expat.pdb" "$(ProjectDir)Lib\$(Platform)\$(Configuration)\" /Y /I</Command>
+    </PreLinkEvent>
+    <PreBuildEvent>
+      <Command>xcopy "$(ProjectDir)TestStudent.xml" "$(ProjectDir)Lib\$(Platform)\$(Configuration)\" /Y /I</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -176,6 +202,12 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <AdditionalDependencies>Expat.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreLinkEvent>
+      <Command>xcopy "$(SolutionDir)..\External\Expat\Lib\$(Platform)\$(Configuration)\Expat.pdb" "$(ProjectDir)Lib\$(Platform)\$(Configuration)\" /Y /I</Command>
+    </PreLinkEvent>
+    <PreBuildEvent>
+      <Command>xcopy "$(ProjectDir)TestStudent.xml" "$(ProjectDir)Lib\$(Platform)\$(Configuration)\" /Y /I</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AttributedFoo.cpp" />
@@ -207,6 +239,7 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="SharedDataFoo.cpp" />
     <ClCompile Include="SListTest.cpp" />
     <ClCompile Include="VectorTest.cpp">
       <SubType>
@@ -223,6 +256,7 @@
     <ClInclude Include="AttributedFooChild.h" />
     <ClInclude Include="Foo.h" />
     <ClInclude Include="Pch.h" />
+    <ClInclude Include="SharedDataFoo.h" />
     <ClInclude Include="ToStringTemplates.h" />
     <ClInclude Include="XmlParseHelperStudent.h" />
   </ItemGroup>

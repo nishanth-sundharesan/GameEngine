@@ -5,10 +5,22 @@ RTTI_DEFINITIONS(UnitTestSupportClasses::SharedDataFoo);
 
 namespace UnitTestSupportClasses
 {
+	SharedDataFoo::SharedDataFoo()
+		:mReadCharacterData("")
+	{
+	}
+
 	XmlParseMaster::SharedData* SharedDataFoo::Clone() const
 	{		
 		SharedData* newSharedData = new SharedDataFoo();
-		newSharedData->SetXmlParseMaster(const_cast<XmlParseMaster*>(GetXmlParseMaster()));
+		CloneInternalMembers(newSharedData);
 		return newSharedData;
+	}
+
+	void SharedDataFoo::Initialize()
+	{
+		SharedData::Initialize();
+		mReadCharacterData = "";
+		mKeyValuePairs.Clear();		
 	}
 }

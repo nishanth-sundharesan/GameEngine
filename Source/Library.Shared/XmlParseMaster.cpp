@@ -28,12 +28,12 @@ namespace GameEngineLibrary
 		mDepth = 0;
 	}
 
-	inline void XmlParseMaster::SharedData::SetXmlParseMaster(XmlParseMaster* xmlParseMaster)
+	void XmlParseMaster::SharedData::SetXmlParseMaster(XmlParseMaster& xmlParseMaster)
 	{
-		mXmlParseMaster = xmlParseMaster;
+		mXmlParseMaster = &xmlParseMaster;
 	}
 
-	inline XmlParseMaster* XmlParseMaster::SharedData::GetXmlParseMaster()
+	XmlParseMaster* XmlParseMaster::SharedData::GetXmlParseMaster()
 	{
 		return const_cast<XmlParseMaster*>(const_cast<const SharedData*>(this)->GetXmlParseMaster());
 	}
@@ -43,12 +43,12 @@ namespace GameEngineLibrary
 		return mXmlParseMaster;
 	}
 
-	inline void XmlParseMaster::SharedData::IncrementDepth()
+	void XmlParseMaster::SharedData::IncrementDepth()
 	{
 		++mDepth;
 	}
 
-	inline void XmlParseMaster::SharedData::DecrementDepth()
+	void XmlParseMaster::SharedData::DecrementDepth()
 	{
 		--mDepth;
 		assert(mDepth >= 0);
@@ -71,7 +71,6 @@ namespace GameEngineLibrary
 		:mSharedData(&sharedData), mCurrentXmlParseHelper(nullptr), mParser(XML_ParserCreate(NULL)), mIsCloned(false), mCurrentParsingFile(""), mIsCurrentlyParsing(false)
 	{
 		mSharedData->Initialize();
-		mSharedData->SetXmlParseMaster(this);
 
 		XML_SetElementHandler(mParser, StartElementHandler, EndElementHandler);				//Register call backs for StartElementHandler and EndElementHandler
 		XML_SetCharacterDataHandler(mParser, CharacterDataHandler);							//Register call back for CharacterDataHandler
@@ -93,23 +92,26 @@ namespace GameEngineLibrary
 
 	XmlParseMaster* XmlParseMaster::Clone() const
 	{
-		XmlParseMaster* clonedXmlParseMaster = new XmlParseMaster(*(mSharedData->Clone()));
+		XmlParseMaster* clonedXmlParseMaster = new XmlParseMaster(*(mSharedData->Clone()));	//Cloning SharedData
 		clonedXmlParseMaster->mIsCloned = true;
 		clonedXmlParseMaster->mCurrentParsingFile = mCurrentParsingFile;
 
 		for (auto& xmlParseHelper : mXmlParseHelpers)
 		{
-			clonedXmlParseMaster->mXmlParseHelpers.PushBack(xmlParseHelper->Clone());
+			clonedXmlParseMaster->mXmlParseHelpers.PushBack(xmlParseHelper->Clone());		//Cloning all the Xml Helper objects.
 		}
 		return clonedXmlParseMaster;
 	}
 
-	void XmlParseMaster::AddHelper(IXmlParseHelper& xmlParseHelper)
+	bool XmlParseMaster::AddHelper(IXmlParseHelper& xmlParseHelper)
 	{
 		if (!mIsCloned)
 		{
 			mXmlParseHelpers.PushBack(&xmlParseHelper);
+			return true;
 		}
+
+		return false;
 	}
 
 	bool XmlParseMaster::RemoveHelper(IXmlParseHelper& xmlParseHelper)
@@ -121,7 +123,7 @@ namespace GameEngineLibrary
 	{
 		if (!mIsCurrentlyParsing)
 		{
-			InitializeSharedDataAndxmlParseHelpers();
+			InitializeSharedDataAndxmlParseHelpers();											//Initializing SharedData and XmlHelpers if a fresh parsing happens
 			mIsCurrentlyParsing = true;
 		}
 		if (isLastXmlChunkData)
@@ -134,26 +136,25 @@ namespace GameEngineLibrary
 			int32_t parseErrorCode = XML_GetErrorCode(mParser);
 			const char* parseErrorMessage = (const char*)XML_ErrorString((XML_Error)parseErrorCode);
 			string exceptionMessage = "Error while parsing XML. ErrorCode: " + to_string(parseErrorCode) + "ErrorMessage: " + parseErrorMessage;
-			XML_ParserFree(mParser);
-			throw new exception(exceptionMessage.c_str());
+			throw exception(exceptionMessage.c_str());
 		}
 	}
 
 	void XmlParseMaster::ParseFromFile(const string& fileName)
 	{
-		mCurrentParsingFile = fileName;		
+		mCurrentParsingFile = fileName;
 
 		ifstream xmlInputFile(fileName);
 		if (!xmlInputFile)
 		{
 			string exceptionMessage = "Cannot open the file " + fileName + " for reading";
-			throw new exception(exceptionMessage.c_str());
+			throw exception(exceptionMessage.c_str());
 		}
 
 		string readInputLine;
 		while (getline(xmlInputFile, readInputLine))
 		{
-			Parse(readInputLine, readInputLine.length(), xmlInputFile.eof());
+			Parse(readInputLine, static_cast<uint32_t>(readInputLine.length()), xmlInputFile.eof());					//Parsing line by line
 		}
 		xmlInputFile.close();
 	}
@@ -163,9 +164,14 @@ namespace GameEngineLibrary
 		return mCurrentParsingFile;
 	}
 
-	void XmlParseMaster::SetSharedData(SharedData* sharedData)
+	bool XmlParseMaster::SetSharedData(SharedData& sharedData)
 	{
-		mSharedData = sharedData;
+		if (!mIsCloned)
+		{
+			mSharedData = &sharedData;
+			return true;
+		}
+		return false;
 	}
 
 	XmlParseMaster::SharedData* XmlParseMaster::GetSharedData()
@@ -180,6 +186,7 @@ namespace GameEngineLibrary
 
 	void XmlParseMaster::StartElementHandler(void* userData, const char* name, const char** attributes)
 	{
+		//Creating a Hashmap of Name-Value pairs
 		Hashmap<std::string, std::string> attributeHashmap;
 		for (int32_t i = 0; attributes[i]; i += 2)
 		{
@@ -190,6 +197,7 @@ namespace GameEngineLibrary
 		XmlParseMaster* xmlParseMaster = static_cast<XmlParseMaster*>(userData);
 		xmlParseMaster->mSharedData->IncrementDepth();
 
+		//Chain of Responsibility pattern
 		for (auto& xmlParseHelper : xmlParseMaster->mXmlParseHelpers)
 		{
 			if (xmlParseHelper->StartElementHandler(*xmlParseMaster->mSharedData, name, attributeHashmap))
@@ -205,6 +213,7 @@ namespace GameEngineLibrary
 		XmlParseMaster* xmlParseMaster = static_cast<XmlParseMaster*>(userData);
 		xmlParseMaster->mSharedData->DecrementDepth();
 
+		//Chain of Responsibility pattern
 		for (auto& xmlParseHelper : xmlParseMaster->mXmlParseHelpers)
 		{
 			if (xmlParseHelper->EndElementHandler(*xmlParseMaster->mSharedData, name))

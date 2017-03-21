@@ -48,7 +48,7 @@ namespace GameEngineLibrary
 			/** Takes in the address of the XmlParseMaster class and saves it as a private copy.
 			*	@param xmlParseMaster The address of the XmlParseMaster class
 			*/
-			void SetXmlParseMaster(XmlParseMaster* xmlParseMaster);
+			void SetXmlParseMaster(XmlParseMaster& xmlParseMaster);
 
 			/** Returns the address of the XmlParseMaster class(which was cached using SetXmlParseMaster()), returns nullptr if it wasn't cached.
 			*	@returns Returns the address of the XmlParseMaster class(which was cached using SetXmlParseMaster()), returns nullptr if it wasn't cached.
@@ -84,6 +84,7 @@ namespace GameEngineLibrary
 			*	@param sharedData The cloned SharedData pointer.
 			*/
 			virtual void CloneInternalMembers(SharedData* sharedData) const;
+
 			/** Cached address of the XmlParseMaster class.
 			*/
 			XmlParseMaster* mXmlParseMaster;
@@ -125,13 +126,15 @@ namespace GameEngineLibrary
 		*/
 		XmlParseMaster* Clone() const;
 
-		/** Takes in a reference to the IXmlParseHelper object and adds it to the list of IXmlParseHelper objects.
+		/** Takes in a reference to the IXmlParseHelper object and adds it to the list of IXmlParseHelper objects. Cannot add IXmlParseHelper to the cloned XmlParseMaster.
 		*	@param xmlParseHelper The reference to an IXmlParseHelper object which has to be added to the list of IXmlParseHelper objects.
+		*	@returns Returns true if the xmlParseHelper was successfully added, false otherwise.
 		*/
-		void AddHelper(IXmlParseHelper& xmlParseHelper);
+		bool AddHelper(IXmlParseHelper& xmlParseHelper);
 
 		/** Takes in a reference to the IXmlParseHelper object and removes it from the list of IXmlParseHelper objects.
 		*	@param xmlParseHelper The reference to an IXmlParseHelper object which has to be removed from the list of IXmlParseHelper objects.
+		*	@returns Returns true if the xmlParseHelper was successfully removed, false otherwise.
 		*/
 		bool RemoveHelper(IXmlParseHelper& xmlParseHelper);
 
@@ -141,7 +144,7 @@ namespace GameEngineLibrary
 		*	@param isLastXmlChunkData True is passed if the character buffer contains the last chunk of the XmlData.
 		*	@exception Throws an exception if the Expat's Xml parsing fails.
 		*/
-		void Parse(const string& rawXmlData, const std::uint32_t length, const bool isLastXmlChunkData);
+		void Parse(const std::string& rawXmlData, const std::uint32_t length, const bool isLastXmlChunkData);
 
 		/** Takes in the string containing the path to the Xml file(along with the filename) and parses the entire file.
 		*	@param fileName The string containing the path to the Xml file(along with the filename).
@@ -154,10 +157,11 @@ namespace GameEngineLibrary
 		*/
 		std::string GetFileName() const;
 
-		/** Takes in the address of the SharedData class and saves it as a private copy(caches it).
+		/** Takes in the address of the SharedData class and saves it as a private copy(caches it). Cannot Set SharedData for a cloned XmlMaster.
 		*	@param sharedData The address of the SharedData class.
+		*	@returns Returns true if the sharedData was successfully set, false otherwise.
 		*/
-		void SetSharedData(SharedData* sharedData);
+		bool SetSharedData(SharedData& sharedData);
 
 		/** Returns the address of the SharedData class(which was cached using SetSharedData()).
 		*	@returns Returns the address of the SharedData class(which was cached using SetSharedData()).

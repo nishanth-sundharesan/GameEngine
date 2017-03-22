@@ -246,6 +246,7 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="XmlParseHelperStudent.cpp" />
+    <ClCompile Include="XmlParseHelperTracer.cpp" />
     <ClCompile Include="XmlParseMasterTest.cpp">
       <SubType>
       </SubType>
@@ -259,6 +260,7 @@
     <ClInclude Include="SharedDataFoo.h" />
     <ClInclude Include="ToStringTemplates.h" />
     <ClInclude Include="XmlParseHelperStudent.h" />
+    <ClInclude Include="XmlParseHelperTracer.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Library.Desktop\Library.Desktop.vcxproj">

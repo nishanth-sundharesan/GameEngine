@@ -10,6 +10,7 @@ namespace GameEngineLibrary
 	{
 	public:
 		typedef XmlParseMaster::SharedData SharedData;
+
 		/** Defaulted constructor.
 		*/
 		IXmlParseHelper() = default;
@@ -56,7 +57,7 @@ namespace GameEngineLibrary
 		/** Pure virtual function which creates copies of IXmlParseHelper.
 		*	This function is marked as virtual so that the derived classes can Clone their copies in the sense of a virtual constructor.
 		*/
-		virtual IXmlParseHelper* Clone() = 0;//Change to create
+		virtual IXmlParseHelper* Clone() = 0;
 
 		/** Defaulted virtual destructor.
 		*/

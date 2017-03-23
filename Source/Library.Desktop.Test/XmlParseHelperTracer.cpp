@@ -7,9 +7,8 @@ using namespace std;
 namespace UnitTestSupportClasses
 {
 	XmlParseHelperTracer::XmlParseHelperTracer(XmlParseMaster& xmlParseMaster)
-		:mXmlParseMaster(&xmlParseMaster), mXmlHandlerName("Tracer"), mStartElementHandlerCount(0), mEndElementHandlerCount(0), mCharDataHandlerCount(0), mMaxDepth(0), mIsInitialized(false), mIsCurrentlyHandlingData(false)
+		:IXmlParseHelper(xmlParseMaster), mXmlHandlerName("Tracer"), mStartElementHandlerCount(0), mEndElementHandlerCount(0), mCharDataHandlerCount(0), mMaxDepth(0), mIsInitialized(false), mIsCurrentlyHandlingData(false)
 	{
-		mXmlParseMaster->AddHelper(*this);
 	}
 
 	bool XmlParseHelperTracer::StartElementHandler(SharedData& sharedData, const string& name, const Hashmap<string, string>& attributes)
@@ -22,7 +21,7 @@ namespace UnitTestSupportClasses
 
 		attributes;
 		if (mIsCurrentlyHandlingData || (name == mXmlHandlerName && sharedData.Is(SharedData::TypeIdClass())))
-		{						
+		{
 			mIsCurrentlyHandlingData = true;
 			return true;
 		}
@@ -43,12 +42,12 @@ namespace UnitTestSupportClasses
 	void XmlParseHelperTracer::CharacterDataHandler(SharedData& sharedData, const string& value, const int32_t length, bool isCompleteData)
 	{
 		++mCharDataHandlerCount;
-		
+
 		mWasPreviousDataCompleted = isCompleteData;
 
 		sharedData;
 		value;
-		length;				
+		length;
 	}
 
 	void XmlParseHelperTracer::Initialize()
@@ -66,10 +65,5 @@ namespace UnitTestSupportClasses
 		XmlParseHelperTracer* clonedXmlParseHelper = new XmlParseHelperTracer(*mXmlParseMaster);
 		clonedXmlParseHelper->mXmlHandlerName = mXmlHandlerName;
 		return clonedXmlParseHelper;
-	}
-
-	XmlParseHelperTracer::~XmlParseHelperTracer()
-	{
-		mXmlParseMaster->RemoveHelper(*this);
 	}
 }

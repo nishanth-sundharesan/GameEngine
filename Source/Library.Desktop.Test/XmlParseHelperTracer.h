@@ -10,6 +10,10 @@ namespace UnitTestSupportClasses
 	public:
 		XmlParseHelperTracer(XmlParseMaster& xmlParseMaster);
 
+		XmlParseHelperTracer(const XmlParseHelperTracer&) = delete;
+
+		XmlParseHelperTracer& operator=(const XmlParseHelperTracer&) = delete;
+
 		virtual bool StartElementHandler(SharedData& sharedData, const std::string& name, const Hashmap<std::string, std::string>& attributes) override;
 
 		virtual bool EndElementHandler(SharedData& sharedData, const std::string& name) override;
@@ -20,7 +24,7 @@ namespace UnitTestSupportClasses
 
 		virtual IXmlParseHelper* Clone() override;
 
-		~XmlParseHelperTracer();
+		~XmlParseHelperTracer() = default;
 
 		bool mIsInitialized;
 

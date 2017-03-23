@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Scope name="Table">
+	<Integer name="FirstInteger" value="10"/>
+	<Float name="FirstFloat" value ="20.25"/>
+	<String name="FirstString" value ="HelloWorld"/>
+	<Vector4 name="FirstVector">
+		<x value="12.2"/>
+		<y value="6.2"/>
+		<z value="2.6"/>
+		<w value="17.77"/>
+	</Vector4>
+	<Matrix4x4 name="FirstMatrix">
+		<Vector4>
+			<x value="1034.77632"/>
+			<y value="91238.1202"/>
+			<z value="0890.012"/>
+			<w value="1.960"/>
+		</Vector4>
+		<Vector4>
+			<x value="12.2"/>
+			<y value="6.2"/>
+			<z value="2.6"/>
+			<w value="17.77"/>
+		</Vector4>
+		<Vector4>
+			<x value="77.77"/>
+			<y value="19.21"/>
+			<z value="99.6912"/>
+			<w value="69.96"/>
+		</Vector4>
+		<Vector4>
+			<x value="41.44"/>
+			<y value="32.201"/>
+			<z value="05.0"/>
+			<w value="69.00"/>
+		</Vector4>
+	</Matrix4x4>
+	<Scope name="InnerTable">
+		<Integer name="SecondInteger" value="100"/>
+		<Float name="SecondFloat" value ="200.250"/>
+		<String name="SecondString" value ="LinusTrovaldis"/>
+	</Scope>
+</Scope>

@@ -90,5 +90,8 @@
     <Xml Include="TestStudent.xml">
       <Filter>Other Supporting Files</Filter>
     </Xml>
+    <Xml Include="TestXmlParseHelperTable.xml">
+      <Filter>Other Supporting Files</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

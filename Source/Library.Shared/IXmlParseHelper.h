@@ -11,9 +11,10 @@ namespace GameEngineLibrary
 	public:
 		typedef XmlParseMaster::SharedData SharedData;
 
-		/** Defaulted constructor.
+		/** Parameterized constructor which takes in a reference to XmlParseMaster and registers itself to XmlParseMaster.
+		*	@param xmlParseMaster The XmlParseMaster to which the XmlParseHelper has to be registered to.
 		*/
-		IXmlParseHelper() = default;
+		IXmlParseHelper(XmlParseMaster& xmlParseMaster);
 
 		/** Marking the copy constructor as delete. Use Clone() instead
 		*	@see Clone()
@@ -59,8 +60,12 @@ namespace GameEngineLibrary
 		*/
 		virtual IXmlParseHelper* Clone() = 0;
 
-		/** Defaulted virtual destructor.
+		/** Virtual destructor. Unregisters itself from the cached XmlParseMaster.
 		*/
-		virtual ~IXmlParseHelper() = default;
+		virtual ~IXmlParseHelper();
+	protected:
+		/** The XmlParseMaster to which the inherited XmlParseHelper is registered to.
+		*/
+		XmlParseMaster *mXmlParseMaster;
 	};
 }

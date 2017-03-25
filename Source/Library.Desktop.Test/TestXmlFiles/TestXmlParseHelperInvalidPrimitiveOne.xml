@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Scope name="Table">
+<Integer name="FirstInteger" value="10">
+100
+</Integer>
+</Scope>

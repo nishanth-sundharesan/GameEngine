@@ -65,15 +65,15 @@ namespace GameEngineLibrary
 			mMemoryType = rhs.mMemoryType;
 			if (rhs.mMemoryType == DatumMemoryType::INTERNAL)
 			{
-				mCapacity = 0;				
+				mCapacity = 0;
 				mDatumValues.voidPointer = nullptr;
 
 				Reserve(rhs.mCapacity);
 				(this->*mPerformDeepCopy[static_cast<uint32_t>(mDatumType)])(rhs.mDatumValues, mSize);
 			}
 			else
-			{				
-				mCapacity = rhs.mCapacity;				
+			{
+				mCapacity = rhs.mCapacity;
 				mDatumValues.voidPointer = rhs.mDatumValues.voidPointer;
 			}
 		}
@@ -445,6 +445,10 @@ namespace GameEngineLibrary
 	}
 
 #pragma endregion
+	void Datum::PushFromString(const string& inputString)
+	{
+		(this->*mPushBackFromString[static_cast<uint32_t>(mDatumType)])(inputString);
+	}
 
 #pragma region Remove Implementations
 	bool Datum::Remove(const Scope* const& value)
@@ -836,6 +840,15 @@ namespace GameEngineLibrary
 		mPerformDeepCopy[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = &Datum::PerformDeepCopyMat4x4;
 		mPerformDeepCopy[static_cast<uint32_t>(DatumType::POINTER)] = &Datum::PerformDeepCopyRTTIPointer;
 		mPerformDeepCopy[static_cast<uint32_t>(DatumType::TABLE)] = &Datum::PerformDeepCopyRTTIPointer;
+
+		mPushBackFromString[static_cast<uint32_t>(DatumType::UNASSIGNED)] = &Datum::PushBackFromStringUnassigned;
+		mPushBackFromString[static_cast<uint32_t>(DatumType::INT32_T)] = &Datum::PushBackFromStringInt;
+		mPushBackFromString[static_cast<uint32_t>(DatumType::FLOAT)] = &Datum::PushBackFromStringFloat;
+		mPushBackFromString[static_cast<uint32_t>(DatumType::STRING)] = &Datum::PushBackFromStringString;
+		mPushBackFromString[static_cast<uint32_t>(DatumType::GLM_VECTOR4)] = &Datum::PushBackFromStringVec4;
+		mPushBackFromString[static_cast<uint32_t>(DatumType::GLM_MATRIX4X4)] = &Datum::PushBackFromStringMat4x4;
+		mPushBackFromString[static_cast<uint32_t>(DatumType::POINTER)] = &Datum::PushBackFromStringRTTIPointer;
+		mPushBackFromString[static_cast<uint32_t>(DatumType::TABLE)] = &Datum::PushBackFromStringRTTIPointer;
 	}
 
 	uint32_t Datum::ReserveStrategy(const uint32_t capacity) const
@@ -888,7 +901,7 @@ namespace GameEngineLibrary
 	}
 #pragma endregion
 
-#pragma region Pushbacking based on each data type	
+#pragma region PushBacking based on each data type	
 	void Datum::PushBackIntData(const uint32_t startIndex, const uint32_t endIndex)
 	{
 		for (uint32_t i = startIndex; i < endIndex; ++i)
@@ -1053,6 +1066,58 @@ namespace GameEngineLibrary
 		throw exception("void Datum::SetFromStringRTTIPointer(std::string & inputString, const std::uint32_t index): Cannot set a pointer from string.");
 		inputString;
 		index;
+	}
+
+#pragma endregion
+
+#pragma region PushBackFromString Implementations
+	void Datum::PushBackFromStringUnassigned(const string& inputString)
+	{
+		throw exception("void PushBackFromStringUnassigned(const std::string& inputString);: Cannot Pushback data to an UNASSIGNED Datum object.");
+		inputString;
+	}
+
+	void Datum::PushBackFromStringInt(const string& inputString)
+	{
+		int32_t intValue;
+		sscanf_s(inputString.c_str(), "%d", &intValue);
+		PushBack(intValue);
+	}
+
+	void Datum::PushBackFromStringFloat(const string& inputString)
+	{
+		float floatValue;
+		sscanf_s(inputString.c_str(), "%f", &floatValue);
+		PushBack(floatValue);
+	}
+
+	void Datum::PushBackFromStringString(const string& inputString)
+	{
+		PushBack(inputString);
+	}
+
+	void Datum::PushBackFromStringVec4(const string& inputString)
+	{
+		vec4 vec4Value;
+		sscanf_s(inputString.c_str(), "vec4(%f, %f, %f, %f)", &vec4Value[0], &vec4Value[1], &vec4Value[2], &vec4Value[3]);
+		PushBack(vec4Value);
+	}
+
+	void Datum::PushBackFromStringMat4x4(const string& inputString)
+	{
+		mat4x4 mat4x4Value;
+		sscanf_s(inputString.c_str(), "mat4x4((%f, %f, %f, %f), (%f, %f, %f, %f), (%f, %f, %f, %f), (%f, %f, %f, %f))",
+			&mat4x4Value[0][0], &mat4x4Value[0][1], &mat4x4Value[0][2], &mat4x4Value[0][3],
+			&mat4x4Value[1][0], &mat4x4Value[1][1], &mat4x4Value[1][2], &mat4x4Value[1][3],
+			&mat4x4Value[2][0], &mat4x4Value[2][1], &mat4x4Value[2][2], &mat4x4Value[2][3],
+			&mat4x4Value[3][0], &mat4x4Value[3][1], &mat4x4Value[3][2], &mat4x4Value[3][3]);
+		PushBack(mat4x4Value);
+	}
+
+	void Datum::PushBackFromStringRTTIPointer(const string& inputString)
+	{
+		throw exception("void PushBackFromStringRTTIPointer(const std::string& inputString);: Cannot PushBack a pointer from string.");
+		inputString;
 	}
 #pragma endregion
 

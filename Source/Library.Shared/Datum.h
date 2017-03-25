@@ -252,6 +252,11 @@ namespace GameEngineLibrary
 		void PushBack(const Scope* const& value);
 #pragma endregion
 
+		/** Converts the inputString to the appropriate type and Appends/Push backs to the Datum object.
+		*	@param inputString The input string which has to be converted to the appropriate type.
+		*/
+		void PushFromString(const std::string& inputString);
+
 #pragma region Remove
 		/** Removes the passed scope pointer from the Datum object.
 		*	@param value The scope pointer that has to be removed from the Datum object.
@@ -658,21 +663,21 @@ namespace GameEngineLibrary
 #pragma region Set from std::string to specific data type Declarations
 		/** Throws an exception when trying to set from string to an UNASSIGNED Datum.
 		*	Note: This function gets called from SetFromString()
-		*	@param inputString The input string which has to be converted.
+		*	@param inputString The input string which has to be converted to the appropriate type.
 		*	@param index The index where the data has to be set in the Datum.
 		*/
 		void SetFromStringUnassigned(const std::string& inputString, const std::uint32_t index);
 
-		/** Converts std::string to std::int32_t and sets it at the specified index.
+		/** Converts the inputString from std::string to std::int32_t and sets it at the specified index.
 		*	Note: This function gets called from SetFromString()
-		*	@param inputString The input string which has to be converted.
+		*	@param inputString The input string which has to be converted to the appropriate type.
 		*	@param index The index where the date has to be set in the Datum.
 		*/
 		void SetFromStringInt(const std::string& inputString, const std::uint32_t index);
 
-		/** Converts std::string to std::float_t and sets it at the specified index.
+		/** Converts the inputString from std::string to std::float_t and sets it at the specified index.
 		*	Note: This function gets called from SetFromString()
-		*	@param inputString The input string which has to be converted.
+		*	@param inputString The input string which has to be converted to the appropriate type.
 		*	@param index The index where the date has to be set in the Datum.
 		*/
 		void SetFromStringFloat(const std::string& inputString, const std::uint32_t index);
@@ -684,28 +689,72 @@ namespace GameEngineLibrary
 		*/
 		void SetFromStringString(const std::string& inputString, const std::uint32_t index);
 
-		/** Converts std::string to glm::vec4 and sets it at the specified index.
+		/** Converts the inputString from std::string to glm::vec4 and sets it at the specified index.
 		*	Note: This function gets called from SetFromString()
-		*	@param inputString The input string which has to be converted.
+		*	@param inputString The input string which has to be converted to the appropriate type.
 		*	@param index The index where the date has to be set in the Datum.
 		*/
 		void SetFromStringVec4(const std::string& inputString, const std::uint32_t index);
 
-		/** Converts std::string to glm::mat4x4 and sets it at the specified index.
+		/** Converts the inputString from std::string to glm::mat4x4 and sets it at the specified index.
 		*	Note: This function gets called from SetFromString()
-		*	@param inputString The input string which has to be converted.
+		*	@param inputString The input string which has to be converted to the appropriate type.
 		*	@param index The index where the date has to be set in the Datum.
 		*/
 		void SetFromStringMat4x4(const std::string& inputString, const std::uint32_t index);
 
 		/** Throws an exception when trying to set from string to a POINTER Datum.
 		*	Note: This function gets called from SetFromString()
-		*	@param inputString The input string which has to be converted.
+		*	@param inputString The input string which has to be converted to the appropriate type.
 		*	@param index The index where the date has to be set in the Datum.
 		*/
 		void SetFromStringRTTIPointer(const std::string& inputString, const std::uint32_t index);
 
 #pragma endregion		
+
+#pragma region PushBackFromString Declarations
+		/** Throws an exception when trying to Push back from string to an UNASSIGNED Datum.
+		*	Note: This function gets called from PushFromString()
+		*	@param inputString The input string which has to be converted to the appropriate type.		
+		*/
+		void PushBackFromStringUnassigned(const std::string& inputString);
+
+		/** Converts the inputString from std::string to std::int32_t and push backs the data.
+		*	Note: This function gets called from PushFromString()
+		*	@param inputString The input string which has to be converted to the appropriate type.		
+		*/
+		void PushBackFromStringInt(const std::string& inputString);
+
+		/** Converts the inputString from std::string to std::float_t and push backs the data.
+		*	Note: This function gets called from PushFromString()
+		*	@param inputString The input string which has to be converted to the appropriate type.
+		*/
+		void PushBackFromStringFloat(const std::string& inputString);
+
+		/** Push backs the string.
+		*	Note: This function gets called from PushFromString()
+		*	@param inputString The input string which has to be pushed back.
+		*/
+		void PushBackFromStringString(const std::string& inputString);
+
+		/** Converts the inputString from std::string to glm::vec4 and push backs the data.
+		*	Note: This function gets called from PushFromString()
+		*	@param inputString The input string which has to be converted to the appropriate type.		
+		*/
+		void PushBackFromStringVec4(const std::string& inputString);
+
+		/** Converts the inputString from std::string to glm::mat4x4 and push backs the data.
+		*	Note: This function gets called from PushFromString()
+		*	@param inputString The input string which has to be converted to the appropriate type.
+		*/
+		void PushBackFromStringMat4x4(const std::string& inputString);
+
+		/** Throws an exception when trying to Push back a string to a POINTER Datum.
+		*	Note: This function gets called from PushFromString()
+		*	@param inputString The input string which has to be converted to the appropriate type.		
+		*/
+		void PushBackFromStringRTTIPointer(const std::string& inputString);
+#pragma endregion
 
 		/** The Union which holds the pointers to various supported data types.
 		*/
@@ -842,9 +891,11 @@ namespace GameEngineLibrary
 		typedef void (Datum::*ToStringForDataType)(const std::uint32_t index, std::string& convertedString) const;
 		typedef void (Datum::*SetFromStringForDataType)(const std::string& inputString, const std::uint32_t index);
 		typedef void (Datum::*PerformDeepCopyForDataType)(const DatumValues& rhsDatumValues, const std::uint32_t mSize);
+		typedef void (Datum::*PushBackFromStringForDataType)(const std::string& inputString);
 
 		enum class NumberOfDatumTypes
 		{
+			//TODO change to static const
 			SIZE = 8
 		};
 
@@ -875,6 +926,10 @@ namespace GameEngineLibrary
 		/** Function pointer array containing pointers to functions which perform deep copy based on their specific type.
 		*/
 		PerformDeepCopyForDataType mPerformDeepCopy[static_cast<uint32_t>(NumberOfDatumTypes::SIZE)];
+
+		/** Function pointer array containing pointers to functions which Push backs string representation of the data.
+		*/
+		PushBackFromStringForDataType mPushBackFromString[static_cast<uint32_t>(NumberOfDatumTypes::SIZE)];
 	};
 
 	template<typename T>

@@ -1,12 +1,13 @@
 #pragma once
 #include "Hashmap.h"
+#include "RTTI.h"
 #include "XmlParseMaster.h"
 
 namespace GameEngineLibrary
 {
 	/** Abstract base class for all the Xml Parse Helper classes.
 	*/
-	class IXmlParseHelper
+	class IXmlParseHelper :public RTTI
 	{
 	public:
 		typedef XmlParseMaster::SharedData SharedData;
@@ -58,7 +59,7 @@ namespace GameEngineLibrary
 		/** Pure virtual function which creates copies of IXmlParseHelper.
 		*	This function is marked as virtual so that the derived classes can Clone their copies in the sense of a virtual constructor.
 		*/
-		virtual IXmlParseHelper* Clone() = 0;
+		virtual IXmlParseHelper* Clone() const= 0;
 
 		/** Virtual destructor. Unregisters itself from the cached XmlParseMaster.
 		*/
@@ -67,5 +68,7 @@ namespace GameEngineLibrary
 		/** The XmlParseMaster to which the inherited XmlParseHelper is registered to.
 		*/
 		XmlParseMaster *mXmlParseMaster;
+	public:
+		RTTI_DECLARATIONS(IXmlParseHelper, RTTI);
 	};
 }

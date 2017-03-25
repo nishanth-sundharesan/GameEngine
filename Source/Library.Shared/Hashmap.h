@@ -136,6 +136,12 @@ namespace GameEngineLibrary
 		*/
 		explicit Hashmap(const std::uint32_t size = 20);
 
+		/** Parameterized constructor which takes an initializer_list.
+		*	@param initializerList The initializer list for the Hashmap.
+		*	@exception Throws an exception if the size of the initializerList is 0.
+		*/
+		Hashmap(const std::initializer_list<PairType>& initializerList);
+
 		/** Use the default copy constructor to perform member wise copy.
 		*/
 		Hashmap(const Hashmap&) = default;

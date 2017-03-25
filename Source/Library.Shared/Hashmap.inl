@@ -28,6 +28,26 @@ namespace GameEngineLibrary
 	}
 
 	template<class TKey, class TValue, typename HashFunctor>
+	inline Hashmap<TKey, TValue, HashFunctor>::Hashmap(const initializer_list<PairType>& initializerList)
+	{
+		if (initializerList.size() == 0)
+		{
+			throw exception("Hashmap<TKey, TValue, HashFunctor>::Hashmap(initializer_list<PairType> initializerList): Cannot set hashmap size to 0");
+		}
+
+		ChainType defaultChain;
+		for (uint32_t i = 0; i < initializerList.size(); ++i)
+		{
+			mBuckets.PushBack(defaultChain);															//Initializing all the buckets with the default chain.
+		}
+
+		for (auto& pair : initializerList)
+		{
+			Insert(pair);
+		}
+	}
+
+	template<class TKey, class TValue, typename HashFunctor>
 	inline Hashmap<TKey, TValue, HashFunctor>::Hashmap(Hashmap&& rhs)
 		:mSize(rhs.mSize), mBuckets(move(rhs.mBuckets))
 	{
@@ -277,7 +297,7 @@ namespace GameEngineLibrary
 
 	template <class TKey, class TValue, class HashFunctor>
 	typename const Hashmap<TKey, TValue, HashFunctor>::PairType& Hashmap<TKey, TValue, HashFunctor>::Iterator::operator*() const
-	{		
+	{
 		if (mOwner == nullptr)
 		{
 			throw exception("Uninitialized Hashmap Iterator.");
@@ -287,13 +307,13 @@ namespace GameEngineLibrary
 
 	template <class TKey, class TValue, class HashFunctor>
 	typename Hashmap<TKey, TValue, HashFunctor>::PairType* Hashmap<TKey, TValue, HashFunctor>::Iterator::operator->()
-	{		
+	{
 		return &(*mIterator);
 	}
 
 	template <class TKey, class TValue, class HashFunctor>
 	const typename Hashmap<TKey, TValue, HashFunctor>::PairType* Hashmap<TKey, TValue, HashFunctor>::Iterator::operator->() const
-	{	
+	{
 		return &(*mIterator);
 	}
 

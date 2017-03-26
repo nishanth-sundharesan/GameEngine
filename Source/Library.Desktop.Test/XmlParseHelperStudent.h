@@ -10,6 +10,10 @@ namespace UnitTestSupportClasses
 	public:
 		XmlParseHelperStudent(XmlParseMaster& xmlParseMaster);
 
+		XmlParseHelperStudent(const XmlParseHelperStudent& xmlParseMaster) = delete;
+
+		XmlParseHelperStudent& operator=(const XmlParseHelperStudent&) = delete;
+
 		virtual bool StartElementHandler(SharedData& sharedData, const std::string& name, const Hashmap<std::string, std::string>& attributes) override;
 
 		virtual bool EndElementHandler(SharedData& sharedData, const std::string& name) override;
@@ -18,9 +22,9 @@ namespace UnitTestSupportClasses
 
 		virtual void Initialize() override;
 
-		virtual IXmlParseHelper* Clone() override;
+		virtual IXmlParseHelper* Clone() const override;
 
-		~XmlParseHelperStudent();
+		~XmlParseHelperStudent() = default;
 		
 		bool mIsInitialized;		
 
@@ -33,8 +37,6 @@ namespace UnitTestSupportClasses
 		std::int32_t mMaxDepth;
 
 	private:
-		XmlParseMaster* mXmlParseMaster;
-
 		std::string mXmlHandlerName;
 
 		bool mWasPreviousDataCompleted;

@@ -7,9 +7,8 @@ using namespace std;
 namespace UnitTestSupportClasses
 {
 	XmlParseHelperStudent::XmlParseHelperStudent(XmlParseMaster& xmlParseMaster)
-		:mXmlParseMaster(&xmlParseMaster), mXmlHandlerName("Student"), mStartElementHandlerCount(0), mEndElementHandlerCount(0), mCharDataHandlerCount(0), mMaxDepth(0), mIsInitialized(false), mIsCurrentlyHandlingData(false)
-	{
-		mXmlParseMaster->AddHelper(*this);
+		:IXmlParseHelper(xmlParseMaster), mXmlHandlerName("student"), mStartElementHandlerCount(0), mEndElementHandlerCount(0), mCharDataHandlerCount(0), mMaxDepth(0), mIsInitialized(false), mIsCurrentlyHandlingData(false)
+	{		
 	}
 
 	bool XmlParseHelperStudent::StartElementHandler(SharedData& sharedData, const string& name, const Hashmap<string, string>& attributes)
@@ -68,15 +67,10 @@ namespace UnitTestSupportClasses
 		mIsCurrentlyHandlingData = false;
 	}
 
-	IXmlParseHelper* XmlParseHelperStudent::Clone()
+	IXmlParseHelper* XmlParseHelperStudent::Clone() const
 	{
 		XmlParseHelperStudent* clonedXmlParseHelper = new XmlParseHelperStudent(*mXmlParseMaster);
 		clonedXmlParseHelper->mXmlHandlerName = mXmlHandlerName;
 		return clonedXmlParseHelper;
-	}
-
-	XmlParseHelperStudent::~XmlParseHelperStudent()
-	{
-		mXmlParseMaster->RemoveHelper(*this);
-	}
+	}	
 }

@@ -22,7 +22,7 @@ namespace UnitTestSupportClasses
 
 		virtual void Initialize() override;
 
-		virtual IXmlParseHelper* Clone() override;
+		virtual IXmlParseHelper* Clone() const override;
 
 		~XmlParseHelperTracer() = default;
 

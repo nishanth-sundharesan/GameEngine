@@ -7,7 +7,7 @@ using namespace std;
 namespace UnitTestSupportClasses
 {
 	XmlParseHelperTracer::XmlParseHelperTracer(XmlParseMaster& xmlParseMaster)
-		:IXmlParseHelper(xmlParseMaster), mXmlHandlerName("Tracer"), mStartElementHandlerCount(0), mEndElementHandlerCount(0), mCharDataHandlerCount(0), mMaxDepth(0), mIsInitialized(false), mIsCurrentlyHandlingData(false)
+		:IXmlParseHelper(xmlParseMaster), mXmlHandlerName("tracer"), mStartElementHandlerCount(0), mEndElementHandlerCount(0), mCharDataHandlerCount(0), mMaxDepth(0), mIsInitialized(false), mIsCurrentlyHandlingData(false)
 	{
 	}
 
@@ -60,7 +60,7 @@ namespace UnitTestSupportClasses
 		mIsCurrentlyHandlingData = false;
 	}
 
-	IXmlParseHelper* XmlParseHelperTracer::Clone()
+	IXmlParseHelper* XmlParseHelperTracer::Clone() const
 	{
 		XmlParseHelperTracer* clonedXmlParseHelper = new XmlParseHelperTracer(*mXmlParseMaster);
 		clonedXmlParseHelper->mXmlHandlerName = mXmlHandlerName;

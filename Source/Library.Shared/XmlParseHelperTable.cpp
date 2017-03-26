@@ -1,77 +1,16 @@
 #include "Pch.h"
 #include "XmlParseHelperTable.h"
+#include "SharedDataTable.h"
 
-RTTI_DEFINITIONS(GameEngineLibrary::XmlParseHelperTable::SharedDataTable);
 using namespace std;
-
-const string GameEngineLibrary::XmlParseHelperTable::mXmlElementName = "Scope";
-const string GameEngineLibrary::XmlParseHelperTable::mXmlElementAttributeName = "name";
 
 namespace GameEngineLibrary
 {
-#pragma region SharedDataTable
-	XmlParseHelperTable::SharedDataTable::SharedDataTable()
-		:mScope(nullptr)
-	{
-	}
+	RTTI_DEFINITIONS(XmlParseHelperTable);
 
-	void XmlParseHelperTable::SharedDataTable::Initialize()
-	{
-		SharedData::Initialize();
-		delete mScope;
-		mScope = nullptr;
-	}
+	const string XmlParseHelperTable::mXmlElementScopeName = "scope";
+	const string XmlParseHelperTable::mXmlElementAttributeKeyName = "name";
 
-	XmlParseMaster::SharedData* XmlParseHelperTable::SharedDataTable::Clone() const
-	{
-		SharedData* newSharedData = new SharedDataTable();
-		CloneInternalMembers(newSharedData);
-		return newSharedData;
-	}
-
-	Scope* XmlParseHelperTable::SharedDataTable::GetScope()
-	{
-		return const_cast<Scope*>(const_cast<const XmlParseHelperTable::SharedDataTable*>(this)->GetScope());
-	}
-
-	const Scope* XmlParseHelperTable::SharedDataTable::GetScope() const
-	{
-		return mScope;
-	}
-
-	void XmlParseHelperTable::SharedDataTable::AppendNewScope(const string& name)
-	{
-		if (mScope == nullptr)
-		{
-			mScope = new Scope();
-		}
-		else
-		{
-			mScope = &(mScope->AppendScope(name));
-		}
-	}
-
-	void XmlParseHelperTable::SharedDataTable::GotoParentScope()
-	{
-		if (mScope->GetParent() != nullptr)
-		{
-			mScope = mScope->GetParent();
-		}
-	}
-
-	XmlParseHelperTable::SharedDataTable::~SharedDataTable()
-	{
-		delete mScope;
-	}
-
-	void XmlParseHelperTable::SharedDataTable::CloneInternalMembers(SharedData* sharedData) const
-	{
-		SharedData::CloneInternalMembers(sharedData);
-		*(static_cast<SharedDataTable*>(sharedData)->mScope) = *mScope;
-	}
-#pragma endregion
-
-#pragma region XmlParseHelperTable
 	XmlParseHelperTable::XmlParseHelperTable(XmlParseMaster& xmlParseMaster)
 		:IXmlParseHelper(xmlParseMaster)
 	{
@@ -84,18 +23,23 @@ namespace GameEngineLibrary
 	bool XmlParseHelperTable::StartElementHandler(SharedData& sharedData, const string& name, const Hashmap<string, string>& attributes)
 	{
 		SharedDataTable* sharedDataTable = sharedData.As<SharedDataTable>();
-		if (sharedDataTable == nullptr || name != mXmlElementAttributeName || !attributes.ContainsKey(mXmlElementAttributeName))
+		if (sharedDataTable == nullptr || name != mXmlElementScopeName)
 		{
 			return false;
 		}
-		sharedDataTable->AppendNewScope(name);
+		if (!attributes.ContainsKey(mXmlElementAttributeKeyName))
+		{
+			throw exception("The Attribute 'name' is not present in the Scope XML element.");
+		}
+
+		sharedDataTable->AppendNewScope(attributes[mXmlElementAttributeKeyName]);
 		return true;
 	}
 
 	bool XmlParseHelperTable::EndElementHandler(SharedData& sharedData, const string& name)
 	{
 		SharedDataTable* sharedDataTable = sharedData.As<SharedDataTable>();
-		if (sharedDataTable == nullptr || name != mXmlElementAttributeName)
+		if (sharedDataTable == nullptr || name != mXmlElementScopeName)
 		{
 			return false;
 		}
@@ -105,16 +49,15 @@ namespace GameEngineLibrary
 
 	void XmlParseHelperTable::CharacterDataHandler(SharedData& sharedData, const string& value, const int32_t length, bool isCompleteData)
 	{
-		throw exception("XmlParseHelperTable cannot handle any character data.");
+		throw exception("XmlParseHelperTable cannot handle any data inside the Scope XML element.");
 		sharedData;
 		value;
 		length;
 		isCompleteData;
 	}
 
-	IXmlParseHelper* XmlParseHelperTable::Clone()
+	IXmlParseHelper* XmlParseHelperTable::Clone() const
 	{
-		return new XmlParseHelperTable(*mXmlParseMaster);		
+		return new XmlParseHelperTable(*mXmlParseMaster);
 	}
-#pragma endregion
 }

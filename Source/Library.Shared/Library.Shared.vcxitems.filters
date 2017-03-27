@@ -54,6 +54,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)SharedDataTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Factory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Pch.cpp">
@@ -98,6 +101,9 @@
       <Filter>Source Files</Filter>
     </None>
     <None Include="$(MSBuildThisFileDirectory)DefaultHashFunctor.inl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Factory.inl">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

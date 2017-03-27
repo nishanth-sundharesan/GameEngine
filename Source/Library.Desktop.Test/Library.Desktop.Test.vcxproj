@@ -224,7 +224,12 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="FactoryTest.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="Foo.cpp" />
+    <ClCompile Include="FooProduct.cpp" />
     <ClCompile Include="HashmapTest.cpp">
       <SubType>
       </SubType>
@@ -264,6 +269,7 @@
     <ClInclude Include="AttributedFoo.h" />
     <ClInclude Include="AttributedFooChild.h" />
     <ClInclude Include="Foo.h" />
+    <ClInclude Include="FooProduct.h" />
     <ClInclude Include="Pch.h" />
     <ClInclude Include="SharedDataFoo.h" />
     <ClInclude Include="ToStringTemplates.h" />

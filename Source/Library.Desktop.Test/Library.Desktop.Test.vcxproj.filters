@@ -59,6 +59,15 @@
     <ClCompile Include="XmlParseHelperTracer.cpp">
       <Filter>SupportClasses</Filter>
     </ClCompile>
+    <ClCompile Include="XmlParseHelperTableTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FactoryTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FooProduct.cpp">
+      <Filter>SupportClasses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Pch.h">
@@ -85,12 +94,51 @@
     <ClInclude Include="XmlParseHelperTracer.h">
       <Filter>SupportClasses</Filter>
     </ClInclude>
+    <ClInclude Include="FooProduct.h">
+      <Filter>SupportClasses</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="TestStudent.xml">
+    <Xml Include="TestXmlParseHelperTable.xml">
       <Filter>Other Supporting Files</Filter>
     </Xml>
-    <Xml Include="TestXmlParseHelperTable.xml">
+    <Xml Include="TestXmlFiles\TestStudent.xml">
+      <Filter>Other Supporting Files</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\TestXmlParseHelperEmpty.xml">
+      <Filter>Other Supporting Files</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\TestXmlParseHelperEmptyTable.xml">
+      <Filter>Other Supporting Files</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\TestXmlParseHelperErrorTableOne.xml">
+      <Filter>Other Supporting Files</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\TestXmlParseHelperErrorTableTwo.xml">
+      <Filter>Other Supporting Files</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\TestXmlParseHelperInnerScope.xml">
+      <Filter>Other Supporting Files</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\TestXmlParseHelperInnerScopeSiblings.xml">
+      <Filter>Other Supporting Files</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\TestXmlParseHelperInvalidPrimitiveOne.xml">
+      <Filter>Other Supporting Files</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\TestXmlParseHelperInvalidPrimitiveThree.xml">
+      <Filter>Other Supporting Files</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\TestXmlParseHelperInvalidPrimitiveTwo.xml">
+      <Filter>Other Supporting Files</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\TestXmlParseHelperPrimitiveTypes.xml">
+      <Filter>Other Supporting Files</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\TestXmlParseHelperPrimitiveTypesArray.xml">
+      <Filter>Other Supporting Files</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\TestXmlParseHelperPrimitiveTypesFormat2.xml">
       <Filter>Other Supporting Files</Filter>
     </Xml>
   </ItemGroup>

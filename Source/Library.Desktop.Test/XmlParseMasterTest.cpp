@@ -14,6 +14,8 @@ namespace LibraryDesktopTest
 	TEST_CLASS(XmlParseMasterTest)
 	{
 	public:
+		const string xmlFileEmptyTable = "..\\..\\..\\TestXmlFiles\\TestStudent.xml";
+
 		TEST_METHOD_INITIALIZE(Initialize)
 		{
 			_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF);
@@ -69,7 +71,7 @@ namespace LibraryDesktopTest
 			Assert::AreEqual(0, studentXmlParser.mCharDataHandlerCount);
 			Assert::AreEqual(1, studentXmlParser.mMaxDepth);
 			Assert::AreEqual(true, studentXmlParser.mIsInitialized);
-			Assert::IsTrue("Hello" == sharedDataFoo.mKeyValuePairs["Ola"]);
+			Assert::IsTrue("Hello" == sharedDataFoo.mKeyValuePairs["ola"]);
 			Assert::AreEqual(0, sharedDataFoo.Depth());
 		}
 
@@ -91,9 +93,9 @@ namespace LibraryDesktopTest
 			Assert::AreEqual(2, studentXmlParser.mMaxDepth);
 			Assert::AreEqual(true, studentXmlParser.mIsInitialized);
 
-			Assert::IsTrue("World" == sharedDataFoo.mKeyValuePairs["Hello"]);
-			Assert::IsTrue("Me" == sharedDataFoo.mKeyValuePairs["Welp"]);
-			Assert::IsTrue("Rocks" == sharedDataFoo.mKeyValuePairs["Paul"]);
+			Assert::IsTrue("World" == sharedDataFoo.mKeyValuePairs["hello"]);
+			Assert::IsTrue("Me" == sharedDataFoo.mKeyValuePairs["welp"]);
+			Assert::IsTrue("Rocks" == sharedDataFoo.mKeyValuePairs["paul"]);
 			Assert::AreEqual(0, sharedDataFoo.Depth());
 		}
 
@@ -119,9 +121,9 @@ namespace LibraryDesktopTest
 			Assert::AreEqual(2, studentXmlParser.mMaxDepth);
 			Assert::AreEqual(true, studentXmlParser.mIsInitialized);
 
-			Assert::IsTrue("World" == sharedDataFoo.mKeyValuePairs["Hello"]);
-			Assert::IsTrue("Me" == sharedDataFoo.mKeyValuePairs["Welp"]);
-			Assert::IsTrue("Rocks" == sharedDataFoo.mKeyValuePairs["Paul"]);
+			Assert::IsTrue("World" == sharedDataFoo.mKeyValuePairs["hello"]);
+			Assert::IsTrue("Me" == sharedDataFoo.mKeyValuePairs["welp"]);
+			Assert::IsTrue("Rocks" == sharedDataFoo.mKeyValuePairs["paul"]);
 			Assert::AreEqual(0, sharedDataFoo.Depth());
 		}
 
@@ -167,14 +169,12 @@ namespace LibraryDesktopTest
 
 		TEST_METHOD(TextXmlParseMasterParseFromFile)
 		{
-			string fileName = "TestStudent.xml";
-
 			SharedDataFoo sharedDataFoo;
 			XmlParseMaster xmlParseMaster(sharedDataFoo);
 			sharedDataFoo.SetXmlParseMaster(xmlParseMaster);
 			XmlParseHelperStudent studentXmlParser(xmlParseMaster);
 
-			xmlParseMaster.ParseFromFile(fileName);
+			xmlParseMaster.ParseFromFile(xmlFileEmptyTable);
 			Assert::IsTrue(sharedDataFoo.mReadCharacterData == "3216669295");
 			Assert::AreEqual(0U, sharedDataFoo.mKeyValuePairs.Size());
 			Assert::AreEqual(13, studentXmlParser.mStartElementHandlerCount);
@@ -183,7 +183,7 @@ namespace LibraryDesktopTest
 			Assert::AreEqual(4, studentXmlParser.mMaxDepth);
 			Assert::AreEqual(true, studentXmlParser.mIsInitialized);
 			Assert::AreEqual(0, sharedDataFoo.Depth());
-			Assert::IsTrue(xmlParseMaster.GetFileName() == fileName);
+			Assert::IsTrue(xmlParseMaster.GetFileName() == xmlFileEmptyTable);
 		}
 
 		TEST_METHOD(TestXmlParseMasterCloneParse)
@@ -214,16 +214,15 @@ namespace LibraryDesktopTest
 			XmlParseMaster xmlParseMaster(sharedDataFoo);
 			sharedDataFoo.SetXmlParseMaster(xmlParseMaster);
 			XmlParseHelperStudent studentXmlParser(xmlParseMaster);
-
-			string fileName = "TestStudent.xml";
+			
 			XmlParseMaster *clonedXmlParseMaster = xmlParseMaster.Clone();
-			clonedXmlParseMaster->ParseFromFile(fileName);
+			clonedXmlParseMaster->ParseFromFile(xmlFileEmptyTable);
 			SharedDataFoo *clonedSharedDataFoo = static_cast<SharedDataFoo*>(clonedXmlParseMaster->GetSharedData());
 
 			Assert::IsTrue(clonedSharedDataFoo->mReadCharacterData == "3216669295");
 			Assert::AreEqual(0U, clonedSharedDataFoo->mKeyValuePairs.Size());
 			Assert::AreEqual(0, clonedSharedDataFoo->Depth());
-			Assert::IsTrue(clonedXmlParseMaster->GetFileName() == fileName);
+			Assert::IsTrue(clonedXmlParseMaster->GetFileName() == xmlFileEmptyTable);
 
 			delete clonedXmlParseMaster;
 		}
@@ -242,14 +241,13 @@ namespace LibraryDesktopTest
 
 		TEST_METHOD(TestXmlParseMasterInvalidFileNameException)
 		{
-			string fileName = "InvalidBoom.xml";
-
 			SharedDataFoo sharedDataFoo;
 			XmlParseMaster xmlParseMaster(sharedDataFoo);
 			sharedDataFoo.SetXmlParseMaster(xmlParseMaster);
 			XmlParseHelperStudent studentXmlParser(xmlParseMaster);
 
-			Assert::ExpectException<exception>([&] { xmlParseMaster.ParseFromFile(fileName); });
+			string invalidFileName = "..\\..\\..\\TestXmlFiles\\Dummy.xml";
+			Assert::ExpectException<exception>([&] { xmlParseMaster.ParseFromFile(invalidFileName); });
 		}
 
 		TEST_METHOD(TestSharedDataClone)
@@ -303,9 +301,9 @@ namespace LibraryDesktopTest
 			Assert::AreEqual(2, studentXmlParser.mMaxDepth);
 			Assert::AreEqual(true, studentXmlParser.mIsInitialized);
 
-			Assert::IsTrue("World" == clonedSharedDataFoo->mKeyValuePairs["Hello"]);
-			Assert::IsTrue("Me" == clonedSharedDataFoo->mKeyValuePairs["Welp"]);
-			Assert::IsTrue("Rocks" == clonedSharedDataFoo->mKeyValuePairs["Paul"]);
+			Assert::IsTrue("World" == clonedSharedDataFoo->mKeyValuePairs["hello"]);
+			Assert::IsTrue("Me" == clonedSharedDataFoo->mKeyValuePairs["welp"]);
+			Assert::IsTrue("Rocks" == clonedSharedDataFoo->mKeyValuePairs["paul"]);
 			Assert::AreEqual(0, clonedSharedDataFoo->Depth());
 
 			delete clonedSharedDataFoo;

@@ -6,17 +6,29 @@ using namespace std;
 namespace GameEngineLibrary
 {
 	template<class T>
-	Hashmap<std::string, Factory<T>*> Factory<T>::factoryHashmap;
+	Hashmap<string, Factory<T>*> Factory<T>::factoryHashmap;
+
+	template<class T>
+	typename Hashmap<string, Factory<T>*>::Iterator Factory<T>::begin()
+	{
+		return factoryHashmap.begin();
+	}
+
+	template<class T>
+	typename Hashmap<string, Factory<T>*>::Iterator Factory<T>::end()
+	{
+		return factoryHashmap.end();
+	}
 
 	template<class T>
 	Factory<T>* Factory<T>::Find(const string& className)
 	{
-		Hashmap::Iterator iterator = factoryHashmap.Find(className);
+		Hashmap<std::string, Factory<T>*>::Iterator iterator = factoryHashmap.Find(className);
 		if (iterator == factoryHashmap.end())
 		{
 			return nullptr;
 		}
-		(*iterator).second;
+		return (*iterator).second;
 	}
 
 	template<class T>
@@ -25,9 +37,8 @@ namespace GameEngineLibrary
 		Hashmap<std::string, Factory<T>*>::Iterator iterator = factoryHashmap.Find(className);
 		if (iterator == factoryHashmap.end())
 		{
-			throw new exception("T* Factory<T>::Create(const string& className): ConcreteFactory macro is not declared for the mentioned string.");
+			return nullptr;
 		}
-
 		return (*iterator).second->Create();
 	}
 
@@ -38,8 +49,8 @@ namespace GameEngineLibrary
 	}
 
 	template<class T>
-	void Factory<T>::Remove(Factory<T>& factory)
+	bool Factory<T>::Remove(const Factory<T>& factory)
 	{
-		factoryHashmap.Remove(factory.ClassName());
+		return factoryHashmap.Remove(factory.ClassName());
 	}
 }

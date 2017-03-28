@@ -220,6 +220,8 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="BarChildProduct.cpp" />
+    <ClCompile Include="BarProduct.cpp" />
     <ClCompile Include="DatumTest.cpp">
       <SubType>
       </SubType>
@@ -268,6 +270,8 @@
   <ItemGroup>
     <ClInclude Include="AttributedFoo.h" />
     <ClInclude Include="AttributedFooChild.h" />
+    <ClInclude Include="BarChildProduct.h" />
+    <ClInclude Include="BarProduct.h" />
     <ClInclude Include="Foo.h" />
     <ClInclude Include="FooProduct.h" />
     <ClInclude Include="Pch.h" />

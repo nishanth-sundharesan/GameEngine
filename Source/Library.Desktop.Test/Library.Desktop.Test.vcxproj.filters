@@ -68,6 +68,12 @@
     <ClCompile Include="FooProduct.cpp">
       <Filter>SupportClasses</Filter>
     </ClCompile>
+    <ClCompile Include="BarProduct.cpp">
+      <Filter>SupportClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="BarChildProduct.cpp">
+      <Filter>SupportClasses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Pch.h">
@@ -95,6 +101,12 @@
       <Filter>SupportClasses</Filter>
     </ClInclude>
     <ClInclude Include="FooProduct.h">
+      <Filter>SupportClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="BarProduct.h">
+      <Filter>SupportClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="BarChildProduct.h">
       <Filter>SupportClasses</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,8 +2,6 @@
 #include "RTTI.h"
 #include "Factory.h"
 
-using namespace GameEngineLibrary;
-
 namespace UnitTestSupportClasses
 {
 	class FooProduct :public GameEngineLibrary::RTTI
@@ -29,30 +27,4 @@ namespace UnitTestSupportClasses
 	};
 
 	ConcreteFactory(GameEngineLibrary::RTTI, FooProduct);
-
-	/*class FooProductFactory :public GameEngineLibrary::Factory<GameEngineLibrary::RTTI>
-	{
-	public:
-		FooProductFactory()
-		{
-			Add(*this);
-		}
-
-		virtual ~FooProductFactory()
-		{
-			Remove(*this);
-		}
-
-		virtual std::string ClassName() override
-		{
-			return "FooProduct";
-		}
-
-	private:
-		virtual GameEngineLibrary::RTTI* Create()
-		{
-			GameEngineLibrary::RTTI* product = new FooProduct();
-			return product;
-		}
-	};	*/
 }

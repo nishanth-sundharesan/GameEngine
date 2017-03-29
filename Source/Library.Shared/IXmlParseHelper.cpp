@@ -3,6 +3,8 @@
 
 namespace GameEngineLibrary
 {
+	RTTI_DEFINITIONS(IXmlParseHelper);
+
 	IXmlParseHelper::IXmlParseHelper(XmlParseMaster& xmlParseMaster)
 		:mXmlParseMaster(&xmlParseMaster)
 	{

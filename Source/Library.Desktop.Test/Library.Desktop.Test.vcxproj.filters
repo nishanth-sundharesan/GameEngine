@@ -153,5 +153,8 @@
     <Xml Include="TestXmlFiles\TestXmlParseHelperPrimitiveTypesFormat2.xml">
       <Filter>Other Supporting Files</Filter>
     </Xml>
+    <Xml Include="TestWorldSectorEntity.xml">
+      <Filter>Other Supporting Files</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

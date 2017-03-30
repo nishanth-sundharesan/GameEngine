@@ -286,6 +286,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="TestWorldSectorEntity.xml" />
     <Xml Include="TestXmlFiles\TestStudent.xml" />
     <Xml Include="TestXmlFiles\TestXmlParseHelperEmpty.xml" />
     <Xml Include="TestXmlFiles\TestXmlParseHelperEmptyTable.xml" />

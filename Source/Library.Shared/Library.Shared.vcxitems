@@ -18,15 +18,21 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Datum.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DefaultHashFunctor.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DefaultReserveStrategy.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Entity.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Factory.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GameClock.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GameTime.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Hashmap.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IXmlParseHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Pch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RTTI.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Scope.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Sector.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SharedDataTable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Vector.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)World.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WorldState.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperPrimitives.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperTable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseMaster.h" />
@@ -35,12 +41,18 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Attributed.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Datum.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DefaultHashFunctor.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Entity.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GameClock.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GameTime.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)IXmlParseHelper.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Scope.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Sector.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SharedDataTable.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)World.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)WorldState.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperPrimitives.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperTable.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseMaster.cpp" />

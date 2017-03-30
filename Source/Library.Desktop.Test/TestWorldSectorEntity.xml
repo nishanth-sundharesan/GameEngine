@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<World name="FIEA">
+	<Sector name="Prog2">
+		<Entity name="Assignments">
+			<Action name="EntityAssignment">				
+			</Action>
+		</Entity>
+	</Sector>
+</World>

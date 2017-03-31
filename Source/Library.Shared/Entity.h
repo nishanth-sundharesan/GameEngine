@@ -9,24 +9,33 @@ namespace GameEngineLibrary
 	class Entity :public Attributed
 	{
 	public:
-		//TODO Can be made const std::string&
-		std::string Name();
+		Entity();
+
+		Entity(const Entity&) = delete;
+
+		Entity& operator=(const Entity&) = delete;
+
+		std::string& Name();
+
+		const std::string& Name() const;
 
 		void SetName(const std::string& name);
-		
+
 		Sector& GetSector();
 
 		const Sector& GetSector() const;
 
-		void SetSector(const Sector& sector);		
-
-		//TODO accept the parameter  WorldState reference
 		void Update(WorldState& worldState);
 
 		virtual ~Entity() = default;
+
+	protected:
+		virtual void InitializeSignatures();
+
 	private:
 		std::string mName;
 
-		Sector* mAssociatedSector;
+	public:
+		RTTI_DECLARATIONS(Entity, Attributed);
 	};
 }

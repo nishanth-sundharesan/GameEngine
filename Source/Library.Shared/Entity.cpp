@@ -6,35 +6,46 @@ using namespace std;
 
 namespace GameEngineLibrary
 {
-	string Entity::Name()
+	RTTI_DEFINITIONS(Entity);
+
+	Entity::Entity()
 	{
-		return string();
+		InitializeSignatures();
+	}
+
+	string& Entity::Name()
+	{
+		return const_cast<string&>(const_cast<const Entity*>(this)->Name());
+	}
+
+	const string& Entity::Name() const
+	{
+		return mName;
 	}
 
 	void Entity::SetName(const string& name)
 	{
-		name;
+		mName = name;
 	}
 
 	Sector& Entity::GetSector()
 	{
-		return *mAssociatedSector;
+		return const_cast<Sector&>(const_cast<const Entity*>(this)->GetSector());
 	}
 
 	const Sector& Entity::GetSector() const
 	{
-		return *mAssociatedSector;
-	}
-
-	void Entity::SetSector(const Sector& sector)
-	{
-		//Read assignment before implementing
-		sector;
+		assert(mParentScope->Is("Sector"));
+		return *(static_cast<const Sector*>(mParentScope));
 	}
 
 	void Entity::Update(WorldState& worldState)
-	{
-		//Read assignment before implementing
+	{		
 		worldState;
+	}
+
+	void Entity::InitializeSignatures()
+	{
+		AddExternalAttribute("EntityName", &mName, 1);
 	}
 }

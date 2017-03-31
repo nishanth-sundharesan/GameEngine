@@ -8,8 +8,15 @@ namespace GameEngineLibrary
 	class Sector final :public Attributed
 	{
 	public:
-		//TODO Can be made const std::string&
-		std::string Name();
+		Sector(const std::string& name);
+
+		Sector(const Sector&) = delete;
+
+		Sector& operator=(const Sector&) = delete;
+		
+		std::string& Name();
+
+		const std::string& Name() const;
 
 		void SetName(const std::string& name);
 
@@ -23,18 +30,20 @@ namespace GameEngineLibrary
 
 		const World& GetWorld() const;
 		
-		void SetWorld(const World& world);
-
-		//TODO accept the parameter  WorldState reference
+		void AdoptEntity(Entity& entity);
+		
 		void Update(WorldState& worldState);
 
 	private:
+		void InitializeSignatures();
+
 		std::string mName;
 
-		Datum tempDatum;
+		Datum* mEntityDatum;		
 
-		Entity entity;
+		static const std::string mEntitiesName;
 
-		World* mAssociatedWorld;
+	public:
+		RTTI_DECLARATIONS(Sector, Attributed);
 	};
 }

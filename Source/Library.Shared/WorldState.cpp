@@ -3,65 +3,68 @@
 
 namespace GameEngineLibrary
 {
+	WorldState::WorldState(const GameTime& gameTime)
+		:mGameTime(gameTime)
+	{
+	}
+
 	GameTime& WorldState::GetGameTime()
 	{
-		// TODO:
-		return mGameTime;
+		return const_cast<GameTime&>(const_cast<const WorldState*>(this)->GetGameTime());
 	}
 
 	const GameTime& WorldState::GetGameTime() const
 	{
-		// TODO:
 		return mGameTime;
 	}
 
 	void WorldState::SetGameTime(const GameTime& gameTime)
 	{
-		gameTime;
+		mGameTime = gameTime;
 	}
 
-	void WorldState::SetCurrentWorld(World& world)
+	World* WorldState::GetCurrentWorld()
 	{
-		mWorld = &world;
+		return const_cast<World*>(const_cast<const WorldState*>(this)->GetCurrentWorld());
 	}
 
-	World& WorldState::GetCurrentWorld()
+	const World* WorldState::GetCurrentWorld() const
 	{
-		return const_cast<World&>(const_cast<const WorldState*>(this)->GetCurrentWorld());
+		return mWorld;
 	}
 
-	const World& WorldState::GetCurrentWorld() const
+	void WorldState::SetCurrentWorld(World* world)
 	{
-		return *mWorld;
+		mWorld = world;
 	}
-
-	void WorldState::SetCurrentSector(Sector& sector)
+	
+	Sector* WorldState::GetCurrentSector()
 	{
-		mSector = &sector;
+		return const_cast<Sector*>(const_cast<const WorldState*>(this)->GetCurrentSector());
 	}
 
-	Sector& WorldState::GetCurrentSector()
-	{		
-		return const_cast<Sector&>(const_cast<const WorldState*>(this)->GetCurrentSector());
-	}
-
-	const Sector& WorldState::GetCurrentSector() const
-	{		
-		return *mSector;
-	}
-
-	void WorldState::SetCurrentEntity(Entity& entity)
+	const Sector* WorldState::GetCurrentSector() const
 	{
-		mEntity = &entity;
+		return mSector;
 	}
 
-	Entity& WorldState::GetCurrentEntity()
+	void WorldState::SetCurrentSector(Sector* sector)
 	{
-		return const_cast<Entity&>(const_cast<const WorldState*>(this)->GetCurrentEntity());
+		mSector = sector;
+	}	
+
+	Entity* WorldState::GetCurrentEntity()
+	{
+		return const_cast<Entity*>(const_cast<const WorldState*>(this)->GetCurrentEntity());
 	}
 
-	const Entity& WorldState::GetCurrentEntity() const
+	const Entity* WorldState::GetCurrentEntity() const
 	{
-		return *mEntity;
+		return mEntity;
+	}
+
+	void WorldState::SetCurrentEntity(Entity* entity)
+	{
+		mEntity = entity;
 	}
 }

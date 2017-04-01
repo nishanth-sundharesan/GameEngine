@@ -8,12 +8,13 @@ namespace GameEngineLibrary
 {
 	RTTI_DEFINITIONS(World);
 
-	const string World::mSectorsName = "Sectors";
+	const string World::sSectorsName = "Sectors";
+	const string World::sAttributeName = "WorldName";
 
 	World::World(const string& name)
 		:mName(name), mSectorDatum(nullptr)
 	{
-		mName = name;
+		InitializeSignatures();
 	}
 
 	string& World::Name()
@@ -43,19 +44,19 @@ namespace GameEngineLibrary
 
 	void World::AdoptSector(Sector& sector)
 	{
-		AddNestedScopeAttribute(sector, mSectorsName);
+		AddNestedScopeAttribute(sector, sSectorsName);
 	}
 
-	Sector& World::CreateSector(const string& instanceName)
+	Sector& World::CreateSector(const string& name)
 	{
-		Sector* sector = new Sector(instanceName);
-		AddNestedScopeAttribute(*sector, mSectorsName);		
+		Sector* sector = new Sector(name);
+		AddNestedScopeAttribute(*sector, sSectorsName);		
 		return *sector;
 	}
 
 	void World::Update(WorldState& worldState)
 	{
-		worldState.SetCurrentWorld(*this);
+		worldState.SetCurrentWorld(this);
 
 		assert(mSectorDatum != nullptr);
 		for (uint32_t i = 0; i < mSectorDatum->Size(); ++i)
@@ -63,11 +64,12 @@ namespace GameEngineLibrary
 			assert(static_cast<Sector*>(mSectorDatum->Get<Scope*>(i))->Is(Sector::TypeIdClass()));
 			(static_cast<Sector*>(mSectorDatum->Get<Scope*>(i)))->Update(worldState);
 		}
+		worldState.SetCurrentWorld(nullptr);
 	}
 
 	void World::InitializeSignatures()
 	{
-		AddExternalAttribute("WorldName", &mName, 1);
-		mSectorDatum = &AddEmptyNestedScopeAttribute(mSectorsName);
+		AddExternalAttribute(sAttributeName, &mName, 1);
+		mSectorDatum = &AddEmptyNestedScopeAttribute(sSectorsName);
 	}
 }

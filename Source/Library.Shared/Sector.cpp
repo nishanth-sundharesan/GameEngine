@@ -9,7 +9,8 @@ namespace GameEngineLibrary
 {
 	RTTI_DEFINITIONS(Sector);
 
-	const string Sector::mEntitiesName = "Entities";
+	const string Sector::sEntitiesName = "Entities";
+	const string Sector::sAttributeName = "SectorName";
 
 	Sector::Sector(const std::string& name)
 		:mName(name), mEntityDatum(nullptr)
@@ -45,9 +46,8 @@ namespace GameEngineLibrary
 	Entity& Sector::CreateEntity(const string& entityClassName, const string& instanceName)
 	{
 		Entity* entity = Factory<Entity>::Create(entityClassName);
-		entity->SetName(instanceName);		
-
-		AddNestedScopeAttribute(*entity, mEntitiesName);	
+		entity->SetName(instanceName);
+		AddNestedScopeAttribute(*entity, sEntitiesName);
 		return *entity;
 	}
 
@@ -64,22 +64,25 @@ namespace GameEngineLibrary
 
 	void Sector::AdoptEntity(Entity& entity)
 	{
-		AddNestedScopeAttribute(entity, mEntitiesName);
+		AddNestedScopeAttribute(entity, sEntitiesName);
 	}
 
 	void Sector::Update(WorldState& worldState)
 	{
+		worldState.SetCurrentSector(this);
+
 		assert(mEntityDatum != nullptr);
 		for (uint32_t i = 0; i < mEntityDatum->Size(); ++i)
 		{
 			assert(static_cast<Entity*>(mEntityDatum->Get<Scope*>(i))->As<Entity>() != nullptr);
 			(static_cast<Entity*>(mEntityDatum->Get<Scope*>(i)))->Update(worldState);
 		}
+		worldState.SetCurrentSector(nullptr);
 	}
 
 	void Sector::InitializeSignatures()
 	{
-		AddExternalAttribute("SectorName", &mName, 1);
-		mEntityDatum = &AddEmptyNestedScopeAttribute(mEntitiesName);
+		AddExternalAttribute(sAttributeName, &mName, 1);
+		mEntityDatum = &AddEmptyNestedScopeAttribute(sEntitiesName);
 	}
 }

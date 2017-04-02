@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<World name="FIEA">
+<Integer name="FirstInteger"/>
+<Sector name="Prog2">
+<Entity classname="MonsterEntity" instancename="Monster">
+</Entity>
+</Sector>
+</World>

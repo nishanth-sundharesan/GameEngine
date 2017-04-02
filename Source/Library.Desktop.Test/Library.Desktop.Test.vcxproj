@@ -240,6 +240,7 @@
       <TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</TreatWarningAsError>
       <TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</TreatWarningAsError>
     </ClCompile>
+    <ClCompile Include="MonsterEntity.cpp" />
     <ClCompile Include="Pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -252,7 +253,15 @@
     </ClCompile>
     <ClCompile Include="SharedDataFoo.cpp" />
     <ClCompile Include="SListTest.cpp" />
+    <ClCompile Include="XmlParseHelperWSETest.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="VectorTest.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="WorldSectorEntityTest.cpp">
       <SubType>
       </SubType>
     </ClCompile>
@@ -274,6 +283,7 @@
     <ClInclude Include="BarProduct.h" />
     <ClInclude Include="Foo.h" />
     <ClInclude Include="FooProduct.h" />
+    <ClInclude Include="MonsterEntity.h" />
     <ClInclude Include="Pch.h" />
     <ClInclude Include="SharedDataFoo.h" />
     <ClInclude Include="ToStringTemplates.h" />
@@ -286,21 +296,34 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="TestWorldSectorEntity.xml" />
     <Xml Include="TestXmlFiles\TestStudent.xml" />
-    <Xml Include="TestXmlFiles\TestXmlParseHelperEmpty.xml" />
-    <Xml Include="TestXmlFiles\TestXmlParseHelperEmptyTable.xml" />
-    <Xml Include="TestXmlFiles\TestXmlParseHelperErrorTableOne.xml" />
-    <Xml Include="TestXmlFiles\TestXmlParseHelperErrorTableTwo.xml" />
-    <Xml Include="TestXmlFiles\TestXmlParseHelperInnerScope.xml" />
-    <Xml Include="TestXmlFiles\TestXmlParseHelperInnerScopeSiblings.xml" />
-    <Xml Include="TestXmlFiles\TestXmlParseHelperInvalidPrimitiveOne.xml" />
-    <Xml Include="TestXmlFiles\TestXmlParseHelperInvalidPrimitiveThree.xml" />
-    <Xml Include="TestXmlFiles\TestXmlParseHelperInvalidPrimitiveTwo.xml" />
-    <Xml Include="TestXmlFiles\TestXmlParseHelperPrimitiveTypes.xml" />
-    <Xml Include="TestXmlFiles\TestXmlParseHelperPrimitiveTypesArray.xml" />
-    <Xml Include="TestXmlFiles\TestXmlParseHelperPrimitiveTypesFormat2.xml" />
-    <Xml Include="TestXmlParseHelperTable.xml" />
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestEmptyWSE.xml" />
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestEmptyWSEWithPrimitives.xml" />
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestEmptyWSEWithPrimitivesArray.xml" />
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestEmptyWSEWithPrimitivesArraysMixed.xml" />
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestInvalidEntity.xml" />
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestInvalidEntityWithoutName.xml" />
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestInvalidPrimitive.xml" />
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestInvalidSector.xml" />
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestInvalidSectorWithoutName.xml" />
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestInvalidTwoWorlds.xml" />
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestInvalidWorldWithoutName.xml" />
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestInvalidWSE.xml" />
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestInvalidWSEWithData.xml" />
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestWSEInvalidGlmPrimitive.xml" />
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestWSEInvalidPrimitive.xml" />
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperEmpty.xml" />
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperEmptyTable.xml" />
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperErrorTableOne.xml" />
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperErrorTableTwo.xml" />
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperInnerScope.xml" />
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperInnerScopeSiblings.xml" />
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperInvalidPrimitiveOne.xml" />
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperInvalidPrimitiveThree.xml" />
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperInvalidPrimitiveTwo.xml" />
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperPrimitiveTypes.xml" />
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperPrimitiveTypesArray.xml" />
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperPrimitiveTypesFormat2.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

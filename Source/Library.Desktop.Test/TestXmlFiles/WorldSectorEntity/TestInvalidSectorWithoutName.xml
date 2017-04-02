@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<World name="FIEA">
+<Sector>
+<Entity classname="MonsterEntity" instancename="Monster">
+</Entity>
+</Sector>
+</World>

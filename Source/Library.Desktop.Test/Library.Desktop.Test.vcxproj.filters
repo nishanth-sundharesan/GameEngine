@@ -12,8 +12,17 @@
     <Filter Include="SupportClasses">
       <UniqueIdentifier>{044d7d94-d08d-48d7-a17a-4a2b210216da}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Other Supporting Files">
+    <Filter Include="Xml Supporting Files">
       <UniqueIdentifier>{d6603494-2e04-499f-a9cc-9ff9190c333b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Xml Supporting Files\WorldSectorEntity">
+      <UniqueIdentifier>{cd61248c-cc90-48b8-9109-f80808ace1ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Xml Supporting Files\XmlParseHelperTable">
+      <UniqueIdentifier>{063e3a04-2939-4683-96af-247a4ba9c318}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Xml Supporting Files\XmlParseMaster">
+      <UniqueIdentifier>{ba096c88-4cd8-44d4-a888-f53809cd7020}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -74,6 +83,15 @@
     <ClCompile Include="BarChildProduct.cpp">
       <Filter>SupportClasses</Filter>
     </ClCompile>
+    <ClCompile Include="WorldSectorEntityTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterEntity.cpp">
+      <Filter>SupportClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="XmlParseHelperWSETest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Pch.h">
@@ -109,52 +127,94 @@
     <ClInclude Include="BarChildProduct.h">
       <Filter>SupportClasses</Filter>
     </ClInclude>
+    <ClInclude Include="MonsterEntity.h">
+      <Filter>SupportClasses</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="TestXmlParseHelperTable.xml">
-      <Filter>Other Supporting Files</Filter>
-    </Xml>
     <Xml Include="TestXmlFiles\TestStudent.xml">
-      <Filter>Other Supporting Files</Filter>
+      <Filter>Xml Supporting Files\XmlParseMaster</Filter>
     </Xml>
-    <Xml Include="TestXmlFiles\TestXmlParseHelperEmpty.xml">
-      <Filter>Other Supporting Files</Filter>
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperEmpty.xml">
+      <Filter>Xml Supporting Files\XmlParseHelperTable</Filter>
     </Xml>
-    <Xml Include="TestXmlFiles\TestXmlParseHelperEmptyTable.xml">
-      <Filter>Other Supporting Files</Filter>
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperEmptyTable.xml">
+      <Filter>Xml Supporting Files\XmlParseHelperTable</Filter>
     </Xml>
-    <Xml Include="TestXmlFiles\TestXmlParseHelperErrorTableOne.xml">
-      <Filter>Other Supporting Files</Filter>
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperErrorTableOne.xml">
+      <Filter>Xml Supporting Files\XmlParseHelperTable</Filter>
     </Xml>
-    <Xml Include="TestXmlFiles\TestXmlParseHelperErrorTableTwo.xml">
-      <Filter>Other Supporting Files</Filter>
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperErrorTableTwo.xml">
+      <Filter>Xml Supporting Files\XmlParseHelperTable</Filter>
     </Xml>
-    <Xml Include="TestXmlFiles\TestXmlParseHelperInnerScope.xml">
-      <Filter>Other Supporting Files</Filter>
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperInnerScope.xml">
+      <Filter>Xml Supporting Files\XmlParseHelperTable</Filter>
     </Xml>
-    <Xml Include="TestXmlFiles\TestXmlParseHelperInnerScopeSiblings.xml">
-      <Filter>Other Supporting Files</Filter>
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperInnerScopeSiblings.xml">
+      <Filter>Xml Supporting Files\XmlParseHelperTable</Filter>
     </Xml>
-    <Xml Include="TestXmlFiles\TestXmlParseHelperInvalidPrimitiveOne.xml">
-      <Filter>Other Supporting Files</Filter>
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperInvalidPrimitiveOne.xml">
+      <Filter>Xml Supporting Files\XmlParseHelperTable</Filter>
     </Xml>
-    <Xml Include="TestXmlFiles\TestXmlParseHelperInvalidPrimitiveThree.xml">
-      <Filter>Other Supporting Files</Filter>
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperInvalidPrimitiveThree.xml">
+      <Filter>Xml Supporting Files\XmlParseHelperTable</Filter>
     </Xml>
-    <Xml Include="TestXmlFiles\TestXmlParseHelperInvalidPrimitiveTwo.xml">
-      <Filter>Other Supporting Files</Filter>
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperInvalidPrimitiveTwo.xml">
+      <Filter>Xml Supporting Files\XmlParseHelperTable</Filter>
     </Xml>
-    <Xml Include="TestXmlFiles\TestXmlParseHelperPrimitiveTypes.xml">
-      <Filter>Other Supporting Files</Filter>
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperPrimitiveTypes.xml">
+      <Filter>Xml Supporting Files\XmlParseHelperTable</Filter>
     </Xml>
-    <Xml Include="TestXmlFiles\TestXmlParseHelperPrimitiveTypesArray.xml">
-      <Filter>Other Supporting Files</Filter>
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperPrimitiveTypesArray.xml">
+      <Filter>Xml Supporting Files\XmlParseHelperTable</Filter>
     </Xml>
-    <Xml Include="TestXmlFiles\TestXmlParseHelperPrimitiveTypesFormat2.xml">
-      <Filter>Other Supporting Files</Filter>
+    <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperPrimitiveTypesFormat2.xml">
+      <Filter>Xml Supporting Files\XmlParseHelperTable</Filter>
     </Xml>
-    <Xml Include="TestWorldSectorEntity.xml">
-      <Filter>Other Supporting Files</Filter>
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestEmptyWSE.xml">
+      <Filter>Xml Supporting Files\WorldSectorEntity</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestEmptyWSEWithPrimitives.xml">
+      <Filter>Xml Supporting Files\WorldSectorEntity</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestEmptyWSEWithPrimitivesArray.xml">
+      <Filter>Xml Supporting Files\WorldSectorEntity</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestEmptyWSEWithPrimitivesArraysMixed.xml">
+      <Filter>Xml Supporting Files\WorldSectorEntity</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestInvalidEntity.xml">
+      <Filter>Xml Supporting Files\WorldSectorEntity</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestInvalidPrimitive.xml">
+      <Filter>Xml Supporting Files\WorldSectorEntity</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestInvalidSector.xml">
+      <Filter>Xml Supporting Files\WorldSectorEntity</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestInvalidTwoWorlds.xml">
+      <Filter>Xml Supporting Files\WorldSectorEntity</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestInvalidWSE.xml">
+      <Filter>Xml Supporting Files\WorldSectorEntity</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestInvalidEntityWithoutName.xml">
+      <Filter>Xml Supporting Files\WorldSectorEntity</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestInvalidSectorWithoutName.xml">
+      <Filter>Xml Supporting Files\WorldSectorEntity</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestInvalidWSEWithData.xml">
+      <Filter>Xml Supporting Files\WorldSectorEntity</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestWSEInvalidPrimitive.xml">
+      <Filter>Xml Supporting Files\WorldSectorEntity</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestInvalidWorldWithoutName.xml">
+      <Filter>Xml Supporting Files\WorldSectorEntity</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\WorldSectorEntity\TestWSEInvalidGlmPrimitive.xml">
+      <Filter>Xml Supporting Files\WorldSectorEntity</Filter>
     </Xml>
   </ItemGroup>
 </Project>

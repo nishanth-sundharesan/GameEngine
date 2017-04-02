@@ -9,6 +9,8 @@ namespace GameEngineLibrary
 	class Factory
 	{
 	public:
+		typedef typename Hashmap<std::string, Factory<T>*>::Iterator HashmapIterator;
+
 		/** Defaulted constructor.
 		*/
 		Factory() = default;
@@ -29,12 +31,12 @@ namespace GameEngineLibrary
 		/** Returns the Hashmap's begin iterator.
 		*	@returns Returns the Hashmap's begin iterator.
 		*/
-		static typename Hashmap<std::string, Factory<T>*>::Iterator begin();
+		static HashmapIterator begin();
 
 		/** Returns the Hashmap's end iterator.
 		*	@returns Returns the Hashmap's end iterator.
 		*/
-		static typename Hashmap<std::string, Factory<T>*>::Iterator end();
+		static HashmapIterator end();
 
 		/** Static function which takes in the name of the class as a string and returns a base class pointer to that instance.
 		*	The function returns nullptr if the className was not found.

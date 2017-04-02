@@ -23,7 +23,7 @@ namespace GameEngineLibrary
 	template<class T>
 	Factory<T>* Factory<T>::Find(const string& className)
 	{
-		Hashmap<std::string, Factory<T>*>::Iterator iterator = factoryHashmap.Find(className);
+		HashmapIterator iterator = factoryHashmap.Find(className);
 		if (iterator == factoryHashmap.end())
 		{
 			return nullptr;
@@ -34,7 +34,7 @@ namespace GameEngineLibrary
 	template<class T>
 	T* Factory<T>::Create(const string& className)
 	{
-		Hashmap<std::string, Factory<T>*>::Iterator iterator = factoryHashmap.Find(className);
+		HashmapIterator iterator = factoryHashmap.Find(className);
 		if (iterator == factoryHashmap.end())
 		{
 			return nullptr;

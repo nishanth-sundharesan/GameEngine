@@ -41,7 +41,8 @@ namespace GameEngineLibrary
 
 	void Entity::Update(WorldState& worldState)
 	{		
-		worldState;
+		worldState.SetCurrentEntity(this);
+		worldState.SetCurrentEntity(nullptr);
 	}
 
 	void Entity::InitializeSignatures()

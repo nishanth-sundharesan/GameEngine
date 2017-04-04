@@ -193,6 +193,11 @@ namespace GameEngineLibrary
 		AddToPrescribedAtributesList(name);
 	}
 
+	Datum& Attributed::AddEmptyNestedScopeAttribute(const string& name)
+	{
+		return AddAttribute(name, DatumType::TABLE);
+	}
+
 	void Attributed::AddExternalAttribute(const string& name, const int32_t* pointerToData, const uint32_t size)
 	{
 		AddAttribute(name, DatumType::INT32_T).SetStorage(pointerToData, size);

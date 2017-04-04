@@ -1,5 +1,4 @@
 #pragma once
-#include <cstdint>
 #include "Scope.h"
 
 namespace GameEngineLibrary
@@ -155,6 +154,12 @@ namespace GameEngineLibrary
 		*	@param name The name for the internal attribute to be added.
 		*/
 		void AddNestedScopeAttribute(Scope& childScope, const std::string& name);
+
+		/** Appends an empty Datum, sets the type of Datum to TABLE and adds the passed name to the prescribed attribute list.
+		*	@param name The name for the internal attribute to be added.
+		*	@returns Returns the empty Datum whose type is set to TABLE.
+		*/
+		Datum& AddEmptyNestedScopeAttribute(const std::string& name);
 
 		/** Adds an external attribute and adds the passed name to the prescribed attribute list.
 		*	Note: This function internally calls the SetStorage() of Datum.

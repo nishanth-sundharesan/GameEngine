@@ -73,7 +73,7 @@ namespace GameEngineLibrary
 		void AdoptEntity(Entity& entity);
 		
 		/** Updates all the Entities contained in the Sector.
-		*	@param WorldState Represents the state of the World. While in this function, updates the Sector* to this of the WorldState..
+		*	@param WorldState Represents the state of the World. While in this function, updates the Sector* to this of the WorldState.
 		*/
 		void Update(WorldState& worldState);
 

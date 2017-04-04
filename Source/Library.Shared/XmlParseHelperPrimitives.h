@@ -52,6 +52,7 @@ namespace GameEngineLibrary
 		virtual void CharacterDataHandler(SharedData& sharedData, const std::string& value, const std::int32_t length, bool isCompleteData) override;
 
 		/** Virtual function which creates copies of XmlParseHelperPrimitives.		
+		*	@returns Returns the cloned XmlParseHelperPrimitives.
 		*/
 		virtual IXmlParseHelper* Clone() const override;
 
@@ -87,7 +88,7 @@ namespace GameEngineLibrary
 		*/
 		static const std::string mXmlElementAttributeKeyValue;
 
-		/** A Hashmap containing the xml element names paired to DatumTypes.
+		/** Static Hashmap containing the Xml element names paired to DatumTypes.
 		*/
 		static Hashmap<std::string, DatumType> mHashmapXmlElementNames;
 
@@ -97,7 +98,7 @@ namespace GameEngineLibrary
 
 		/** Cached name of the Datum.
 		*/
-		std::string mDatumName;		
+		std::string mDatumName;
 
 		/** Set to true if the data was not found in the value attribute(waiting for data which might be present between the Xml elements), false otherwise.
 		*/

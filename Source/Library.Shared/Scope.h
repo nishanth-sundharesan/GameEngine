@@ -181,6 +181,17 @@ namespace GameEngineLibrary
 		*/
 		virtual std::string ToString() const override;
 
+		/** The overridden Equals method from RTTI.h.
+		*	Returns true if the passed "rhs" pointer is a scope pointer and the content of it is equal to the current scope.
+		*	@param rhs The right hand side scope pointer which has to be checked for equality.
+		*	Returns true if the passed "rhs" pointer is a scope pointer and the content of it is equal to the current scope.
+		*/
+		virtual bool Equals(const RTTI* rhs) const override;
+	protected:		
+		/** A scope pointer pointing to the parent scope.
+		*/
+		Scope* mParentScope;
+
 	private:
 		/** Appends the passed scope to the current scope.
 		*	Appends a new record inside the Scope/Table with the associated name. It then inserts the passed "scope" into the newly created Datum object of the newly created record.
@@ -212,14 +223,7 @@ namespace GameEngineLibrary
 		*	Note: This function is called from the Copy constructor and the Assignment operator.
 		*	@param rhsScope The right hand side which has to be deep copied.
 		*/
-		void PerformDeepCopy(const Scope& rhsScope);
-
-		/** The overridden Equals method from RTTI.h.
-		*	Returns true if the passed "rhs" pointer is a scope pointer and the content of it is equal to the current scope.
-		*	@param rhs The right hand side scope pointer which has to be checked for equality.
-		*	Returns true if the passed "rhs" pointer is a scope pointer and the content of it is equal to the current scope.
-		*/
-		virtual bool Equals(const RTTI* rhs) const override;
+		void PerformDeepCopy(const Scope& rhsScope);		
 
 		/** The order vector containing the address of the records appended/inserted.
 		*/
@@ -232,10 +236,6 @@ namespace GameEngineLibrary
 		/** A temporary/cached Hashmap Iterator.
 		*/
 		mutable ScopeHashmapIterator mHashmapIterator;
-
-		/** A scope pointer pointing to the parent scope.
-		*/
-		Scope* mParentScope;
 
 		/** A std::string array containing the std::string representation of the DatumTypes.
 		*/

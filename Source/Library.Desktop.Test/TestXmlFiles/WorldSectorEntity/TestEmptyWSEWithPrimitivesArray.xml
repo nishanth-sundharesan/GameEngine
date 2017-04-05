@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <World name="FIEA">
-<Integer name="FirstInteger" value="10"/>
-<Integer name="FirstInteger" value="20"/>
-<Integer name="FirstInteger" value="30"/>
-<Sector name="Prog2">
-<Integer name="FirstInteger" value="10"/>
-<Integer name="FirstInteger" value="20"/>
-<Integer name="FirstInteger" value="30"/>
-<Entity classname="MonsterEntity" instancename="Monster">
-<Integer name="FirstInteger" value="10"/>
-<Integer name="FirstInteger" value="20"/>
-<Integer name="FirstInteger" value="30"/>
-</Entity>
-</Sector>
+	<Integer name="FirstInteger" value="10"/>
+	<Integer name="FirstInteger" value="20"/>
+	<Integer name="FirstInteger" value="30"/>
+	<Sector name="Prog2">
+		<Integer name="FirstInteger" value="10"/>
+		<Integer name="FirstInteger" value="20"/>
+		<Integer name="FirstInteger" value="30"/>
+		<Entity classname="MonsterEntity" instancename="Monster">
+			<Integer name="FirstInteger" value="10"/>
+			<Integer name="FirstInteger" value="20"/>
+			<Integer name="FirstInteger" value="30"/>
+		</Entity>
+	</Sector>
 </World>

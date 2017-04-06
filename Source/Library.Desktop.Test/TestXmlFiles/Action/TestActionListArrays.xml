@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<World name="FIEA">
+	<Sector name="Prog2">
+		<Entity classname="MonsterEntity" instancename="Monster">
+			<ActionList name="MonsterActionList">
+				<Action classname="AttackAction" instancename="Attack"/>
+				<Action classname="HealAction" instancename="Heal"/>
+			</ActionList>
+			<ActionList name="MonsterActionList">
+				<Action classname="HealAction" instancename="Heal"/>
+			</ActionList>
+		</Entity>
+	</Sector>
+</World>

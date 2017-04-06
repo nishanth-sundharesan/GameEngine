@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<World name="FIEA">
+	<Sector name="Prog2">		
+		<Entity classname="MonsterEntity" instancename="Monster">
+			<If classname="ActionListIf" instancename="MonsterState" lhsValue="FIEA.Prog2.Monster.MonsterState.FirstString" rhsValue="FIEA.Prog2.Monster.MonsterState.SecondString">
+				<String name="FirstString" value ="HelloWorld"/>
+				<Then className="AttackAction" instanceName="Attack"/>
+				<Else className="HealAction" instanceName="Heal"/>
+				<String name="SecondString" value ="HelloWorld"/>
+			</If>
+		</Entity>
+	</Sector>
+</World>

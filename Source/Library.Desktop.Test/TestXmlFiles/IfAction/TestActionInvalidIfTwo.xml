@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<If classname="ActionListIf" instancename="MonsterState" lhsValue="FIEA.Prog2.FirstInteger" rhsValue="FIEA.Prog2.Monster.MonsterState.SecondInteger">
+	<Integer name="SecondInteger" value="20"/>
+	<Then className="AttackAction" instanceName="Attack"/>
+	<Else className="HealAction" instanceName="Heal"/>
+</If>

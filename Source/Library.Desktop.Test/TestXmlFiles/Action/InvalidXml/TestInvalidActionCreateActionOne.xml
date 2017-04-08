@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<World name="FIEA">
+	<Sector name="Prog2">
+		<CreateAction classname="ActionCreateAction" instancename="FirstCreateAction" actionClassName="AttackAction" actionInstanceName="Attack"/>		
+	</Sector>
+</World>

@@ -75,6 +75,30 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)World.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)SharedDataWSE.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperWSE.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Action.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ActionList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperIf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ActionListIf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ActionCreateAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ActionDeleteAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Pch.cpp">
@@ -123,6 +147,30 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)World.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)SharedDataWSE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperWSE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Action.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ActionList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperIf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ActionListIf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ActionCreateAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ActionDeleteAction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

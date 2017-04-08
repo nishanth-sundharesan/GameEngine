@@ -55,17 +55,42 @@ namespace GameEngineLibrary
 		/** Adopts the passed Sector into the current World.
 		*	@param sector The Sector to be adopted to the current World.
 		*/
-		void AdoptSector(Sector& sector);		
+		void AdoptSector(Sector& sector);
+
+		/** Takes in the path and searches for the specified Datum.
+		*	@param path The path to the Datum delimited by '.' .
+		*	@returns Returns the reference to found Datum.
+		*	@exception Throws an exception if the datum is not found.
+		*/
+		Datum& SearchDatum(const std::string& path);
+
+		/** Takes in the path and searches for the specified Datum.
+		*	@param path The path to the Datum delimited by '.' .
+		*	@returns Returns the reference to found Datum.
+		*	@exception Throws an exception if the datum is not found.
+		*/
+		const Datum& SearchDatum(const std::string& path) const;
+
+		/** Adds the action to the Vector, which will be after a frame.
+		*	@param actionToDelete The action to delete.
+		*/
+		void AddActionToDelete(Action& actionToDelete);
 
 		/** Updates all the Sectors contained in the World.
-		*	@param WorldState Represents the state of the World. While in this function, updates the World* to this of the WorldState..
+		*	@param WorldState Represents the state of the World. While in this function, updates the World* to this of the WorldState.
 		*/
 		void Update(WorldState& worldState);
 
 		/** Defaulted World's destructor.
 		*/
 		~World() = default;
-	private:
+	private:		
+		/** Private helper method to fetch the next data chunk.
+		*	@param path The data from which the chunk has to be fetched.
+		*	@returns Returns the next data chunk present after the delimiter.
+		*/
+		const char* FindNextDataChunk(char* path = nullptr) const;
+
 		/** Initializes the signatures(member variables) of the World.
 		*/
 		void InitializeSignatures();
@@ -76,7 +101,7 @@ namespace GameEngineLibrary
 
 		/** Cached datum containing Sectors.
 		*/
-		Datum* mSectorDatum;
+		const Datum* mSectorDatum;
 
 		/** The name aside which the Sectors are added to the scope.
 		*/
@@ -85,6 +110,14 @@ namespace GameEngineLibrary
 		/** The attribute name for the name of the World.
 		*/
 		static const std::string sAttributeName;
+
+		/** The delimiter string for evaluating path.
+		*/
+		static const char* sDelimiterString;
+
+		/** List of Action pointers to delete.
+		*/
+		Vector<Action*> mActionsToDelete;
 	public:
 		RTTI_DECLARATIONS(World, Attributed);
 	};

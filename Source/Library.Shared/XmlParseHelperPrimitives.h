@@ -82,11 +82,11 @@ namespace GameEngineLibrary
 
 		/** static const string containing the name of the "name" attribute of an XmlElement.
 		*/
-		static const std::string mXmlElementAttributeKeyName;
+		static const std::string mAttributeName;
 
 		/** static const string containing the name of the "value" attribute of an XmlElement.
 		*/
-		static const std::string mXmlElementAttributeKeyValue;
+		static const std::string mAttributeValue;
 
 		/** Static Hashmap containing the Xml element names paired to DatumTypes.
 		*/

@@ -12,8 +12,8 @@ namespace GameEngineLibrary
 	const string XmlParseHelperPrimitives::mXmlElementNameString = "string";
 	const string XmlParseHelperPrimitives::mXmlElementNameVec4 = "vec4";
 	const string XmlParseHelperPrimitives::mXmlElementNameMat4x4 = "mat4x4";
-	const string XmlParseHelperPrimitives::mXmlElementAttributeKeyName = "name";
-	const string XmlParseHelperPrimitives::mXmlElementAttributeKeyValue = "value";
+	const string XmlParseHelperPrimitives::mAttributeName = "name";
+	const string XmlParseHelperPrimitives::mAttributeValue = "value";
 
 	Hashmap<string, DatumType> XmlParseHelperPrimitives::mHashmapXmlElementNames =
 	{
@@ -43,28 +43,28 @@ namespace GameEngineLibrary
 		{
 			return false;
 		}
-		if (!attributes.ContainsKey(mXmlElementAttributeKeyName))
+		if (!attributes.ContainsKey(mAttributeName))
 		{
 			throw exception("The Attribute 'name' is not present in the XML element.");
 		}
 
-		if (attributes.ContainsKey(mXmlElementAttributeKeyValue))
+		if (attributes.ContainsKey(mAttributeValue))
 		{
-			Datum& datum = sharedDataTable->GetScope()->Append(attributes[mXmlElementAttributeKeyName]);
+			Datum& datum = sharedDataTable->GetScope()->Append(attributes[mAttributeName]);
 			datum.SetType(mHashmapXmlElementNames[name]);
 
 			if (name == mXmlElementNameVec4 || name == mXmlElementNameMat4x4)
 			{
-				datum.PushFromString(name + attributes[mXmlElementAttributeKeyValue]);
+				datum.PushFromString(name + attributes[mAttributeValue]);
 			}
 			else
 			{
-				datum.PushFromString(attributes[mXmlElementAttributeKeyValue]);
+				datum.PushFromString(attributes[mAttributeValue]);
 			}
 		}
 		else
 		{
-			mDatumName = attributes[mXmlElementAttributeKeyName];
+			mDatumName = attributes[mAttributeName];
 			isValueFound = false;
 		}
 		return true;

@@ -24,6 +24,15 @@
     <Filter Include="Xml Supporting Files\XmlParseMaster">
       <UniqueIdentifier>{ba096c88-4cd8-44d4-a888-f53809cd7020}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SupportClasses\ActionTestClasses">
+      <UniqueIdentifier>{d9525250-190d-41c7-a9e2-0fdf6701d36b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Xml Supporting Files\Action">
+      <UniqueIdentifier>{52a1cb8e-beb9-4eae-863d-177846bea22e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Xml Supporting Files\IfAction">
+      <UniqueIdentifier>{86ada34c-79a3-4d82-8e58-0a0595392c2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SListTest.cpp">
@@ -92,6 +101,15 @@
     <ClCompile Include="XmlParseHelperWSETest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ActionTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AttackAction.cpp">
+      <Filter>SupportClasses\ActionTestClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="HealAction.cpp">
+      <Filter>SupportClasses\ActionTestClasses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Pch.h">
@@ -130,11 +148,14 @@
     <ClInclude Include="MonsterEntity.h">
       <Filter>SupportClasses</Filter>
     </ClInclude>
+    <ClInclude Include="AttackAction.h">
+      <Filter>SupportClasses\ActionTestClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="HealAction.h">
+      <Filter>SupportClasses\ActionTestClasses</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="TestXmlFiles\TestStudent.xml">
-      <Filter>Xml Supporting Files\XmlParseMaster</Filter>
-    </Xml>
     <Xml Include="TestXmlFiles\XmlParseHelperTable\TestXmlParseHelperEmpty.xml">
       <Filter>Xml Supporting Files\XmlParseHelperTable</Filter>
     </Xml>
@@ -215,6 +236,114 @@
     </Xml>
     <Xml Include="TestXmlFiles\WorldSectorEntity\TestWSEInvalidGlmPrimitive.xml">
       <Filter>Xml Supporting Files\WorldSectorEntity</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Action\TestEmptyAction.xml">
+      <Filter>Xml Supporting Files\Action</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\XmlParseMaster\TestStudent.xml">
+      <Filter>Xml Supporting Files\XmlParseMaster</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Action\TestActionArrays.xml">
+      <Filter>Xml Supporting Files\Action</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Action\TestActionList.xml">
+      <Filter>Xml Supporting Files\Action</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Action\TestActionListArrays.xml">
+      <Filter>Xml Supporting Files\Action</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\IfAction\TestActionIfThenExecute.xml">
+      <Filter>Xml Supporting Files\IfAction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\IfAction\TestActionIfAuxiliaryInside.xml">
+      <Filter>Xml Supporting Files\IfAction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\IfAction\TestActionIfElseExecute.xml">
+      <Filter>Xml Supporting Files\IfAction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\IfAction\TestActionIfWithNoElse.xml">
+      <Filter>Xml Supporting Files\IfAction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Action\TestActionCreateAction.xml">
+      <Filter>Xml Supporting Files\Action</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Action\TestActionDeleteAction.xml">
+      <Filter>Xml Supporting Files\Action</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\IfAction\TestActionInvalidIfOne.xml">
+      <Filter>Xml Supporting Files\IfAction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\IfAction\TestActionInvalidIfThree.xml">
+      <Filter>Xml Supporting Files\IfAction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\IfAction\TestActionInvalidIfTwo.xml">
+      <Filter>Xml Supporting Files\IfAction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Action\InvalidXml\TestInvalidActionTwo.xml">
+      <Filter>Xml Supporting Files\Action</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\IfAction\TestInvalidElseAction.xml">
+      <Filter>Xml Supporting Files\IfAction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\IfAction\TestInvalidThenAction.xml">
+      <Filter>Xml Supporting Files\IfAction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Action\TestActionCreateActionInActionList.xml">
+      <Filter>Xml Supporting Files\Action</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Action\TestActionDeleteActionInActionList.xml">
+      <Filter>Xml Supporting Files\Action</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\IfAction\TestActionIfElseExecuteInsideActionList.xml">
+      <Filter>Xml Supporting Files\IfAction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Action\InvalidXml\TestInvalidAction.xml">
+      <Filter>Xml Supporting Files\Action</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Action\InvalidXml\TestInvalidActionCreateActionOne.xml">
+      <Filter>Xml Supporting Files\Action</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Action\InvalidXml\TestInvalidActionCreateActionTwo.xml">
+      <Filter>Xml Supporting Files\Action</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Action\InvalidXml\TestInvalidActionDeleteActionOne.xml">
+      <Filter>Xml Supporting Files\Action</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Action\InvalidXml\TestInvalidActionDeleteActionTwo.xml">
+      <Filter>Xml Supporting Files\Action</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Action\InvalidXml\TestInvalidActionList.xml">
+      <Filter>Xml Supporting Files\Action</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Action\InvalidXml\TestInvalidActionListNoAttributes.xml">
+      <Filter>Xml Supporting Files\Action</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Action\InvalidXml\TestInvalidActionNoAttributes.xml">
+      <Filter>Xml Supporting Files\Action</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Action\InvalidXml\TestInvalidCreateActionNoAttributes.xml">
+      <Filter>Xml Supporting Files\Action</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Action\InvalidXml\TestInvalidDeleteActionNoAttributes.xml">
+      <Filter>Xml Supporting Files\Action</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\IfAction\TestInvalidElseOutsideIf.xml">
+      <Filter>Xml Supporting Files\IfAction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\IfAction\TestInvalidIfWithNoAttributesOne.xml">
+      <Filter>Xml Supporting Files\IfAction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\IfAction\TestInvalidIfWithNoAttributesTwo.xml">
+      <Filter>Xml Supporting Files\IfAction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\IfAction\TestInvalidThenOutSideIf.xml">
+      <Filter>Xml Supporting Files\IfAction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\IfAction\TestInvalidIfPath.xml">
+      <Filter>Xml Supporting Files\IfAction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\IfAction\TestInvalidIfThenExecuteWithData.xml">
+      <Filter>Xml Supporting Files\IfAction</Filter>
     </Xml>
   </ItemGroup>
 </Project>

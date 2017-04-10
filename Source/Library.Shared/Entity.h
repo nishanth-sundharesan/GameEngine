@@ -1,6 +1,7 @@
 #pragma once
-#include "Attributed.h"
-#include "WorldState.h"
+#include "ActionList.h"
+#include "ActionCreateAction.h"
+#include "ActionDeleteAction.h"
 
 namespace GameEngineLibrary
 {
@@ -40,6 +41,29 @@ namespace GameEngineLibrary
 		*/
 		void SetName(const std::string& name);
 
+		/** Returns the Datum containing Actions.
+		*	@returns Returns the Datum containing Actions.
+		*/
+		Datum& Actions();
+
+		/** Returns the Datum containing Actions.
+		*	@returns Returns the Datum containing Actions.
+		*/
+		const Datum& Actions() const;
+
+		/** Creates a new ActionList inside the Entity and returns it.
+		*	@param actionListName The name of the ActionList to be created.
+		*	@returns Returns the newly created ActionList.
+		*/
+		ActionList& CreateActionList(const std::string& actionListName);
+
+		/** Creates a new Action inside the Entity and returns it.
+		*	@param actionClassName The Action class to be created
+		*	@param actionInstanceName The name of the Action to be created.
+		*	@returns Returns the newly created Action.
+		*/
+		Action& CreateAction(const std::string& className, const std::string& instanceName);						
+
 		/** Returns the reference to the Sector in which the Entity is present.
 		*	@returns Returns the reference to the Sector in which the Entity is present.
 		*/
@@ -66,6 +90,22 @@ namespace GameEngineLibrary
 		/** The name of the Entity.
 		*/
 		std::string mName;
+
+		/** Cached datum containing Actions.
+		*/
+		Datum* mActionsDatum;
+
+		/** The name aside which the Actions are added to the scope.
+		*/
+		static const std::string sActionsName;
+
+		/** The attribute name for the name of the Entity.
+		*/
+		static const std::string sAttributeName;
+
+		/** Name Of the createAction.
+		*/
+		static const std::string sActionCreateActionName;
 	public:
 		RTTI_DECLARATIONS(Entity, Attributed);
 	};

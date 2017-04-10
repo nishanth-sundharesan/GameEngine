@@ -15,29 +15,31 @@ namespace LibraryDesktopTest
 	TEST_CLASS(XmlParseHelperTableTest)
 	{
 	public:
-		const string xmlFileEmpty = "..\\..\\..\\TestXmlFiles\\TestXmlParseHelperEmpty.xml";
+		const string xmlFolder = "..\\..\\..\\TestXmlFiles\\XmlParseHelperTable\\";
 
-		const string xmlFileEmptyTable = "..\\..\\..\\TestXmlFiles\\TestXmlParseHelperEmptyTable.xml";
+		const string xmlFileEmpty = xmlFolder + "TestXmlParseHelperEmpty.xml";
 
-		const string xmlFilePrimitiveTypes = "..\\..\\..\\TestXmlFiles\\TestXmlParseHelperPrimitiveTypes.xml";
+		const string xmlFileEmptyTable = xmlFolder + "TestXmlParseHelperEmptyTable.xml";
 
-		const string xmlFileInnerScopes = "..\\..\\..\\TestXmlFiles\\TestXmlParseHelperInnerScope.xml";
+		const string xmlFilePrimitiveTypes = xmlFolder + "TestXmlParseHelperPrimitiveTypes.xml";
 
-		const string xmlFileInnerScopesSiblings = "..\\..\\..\\TestXmlFiles\\TestXmlParseHelperInnerScopeSiblings.xml";
+		const string xmlFileInnerScopes = xmlFolder + "TestXmlParseHelperInnerScope.xml";
 
-		const string xmlFilePrimitiveTypesArray = "..\\..\\..\\TestXmlFiles\\TestXmlParseHelperPrimitiveTypesArray.xml";
+		const string xmlFileInnerScopesSiblings = xmlFolder + "TestXmlParseHelperInnerScopeSiblings.xml";
 
-		const string xmlFilePrimitiveTypesFormat2 = "..\\..\\..\\TestXmlFiles\\TestXmlParseHelperPrimitiveTypesFormat2.xml";
+		const string xmlFilePrimitiveTypesArray = xmlFolder + "TestXmlParseHelperPrimitiveTypesArray.xml";
 
-		const string xmlFileErrorTableOne = "..\\..\\..\\TestXmlFiles\\TestXmlParseHelperErrorTableOne.xml";
+		const string xmlFilePrimitiveTypesFormat2 = xmlFolder + "TestXmlParseHelperPrimitiveTypesFormat2.xml";
 
-		const string xmlFileErrorTableTwo = "..\\..\\..\\TestXmlFiles\\TestXmlParseHelperErrorTableTwo.xml";
+		const string xmlFileErrorTableOne = xmlFolder + "TestXmlParseHelperErrorTableOne.xml";
 
-		const string xmlFileErrorInvalidPrimitiveOne = "..\\..\\..\\TestXmlFiles\\TestXmlParseHelperInvalidPrimitiveOne.xml";
+		const string xmlFileErrorTableTwo = xmlFolder + "TestXmlParseHelperErrorTableTwo.xml";
 
-		const string xmlFileErrorInvalidPrimitiveTwo = "..\\..\\..\\TestXmlFiles\\TestXmlParseHelperInvalidPrimitiveTwo.xml";
+		const string xmlFileErrorInvalidPrimitiveOne = xmlFolder + "TestXmlParseHelperInvalidPrimitiveOne.xml";
 
-		const string xmlFileErrorInvalidPrimitiveThree = "..\\..\\..\\TestXmlFiles\\TestXmlParseHelperInvalidPrimitiveThree.xml";
+		const string xmlFileErrorInvalidPrimitiveTwo = xmlFolder + "TestXmlParseHelperInvalidPrimitiveTwo.xml";
+
+		const string xmlFileErrorInvalidPrimitiveThree = xmlFolder + "TestXmlParseHelperInvalidPrimitiveThree.xml";
 
 		TEST_METHOD_INITIALIZE(Initialize)
 		{
@@ -86,7 +88,7 @@ namespace LibraryDesktopTest
 			XmlParseMaster xmlParseMaster(sharedDataTable);
 			sharedDataTable.SetXmlParseMaster(xmlParseMaster);
 			XmlParseHelperPrimitives primitivesParser(xmlParseMaster);
-			XmlParseHelperTable tableXmlParser(xmlParseMaster);			
+			XmlParseHelperTable tableXmlParser(xmlParseMaster);
 
 			xmlParseMaster.ParseFromFile(xmlFilePrimitiveTypes);
 
@@ -437,7 +439,7 @@ namespace LibraryDesktopTest
 			XmlParseHelperTable tableXmlParser(xmlParseMaster);
 			XmlParseHelperPrimitives primitivesParser(xmlParseMaster);
 
-			Assert::ExpectException<exception>([&] { xmlParseMaster.ParseFromFile(xmlFileErrorTableOne); });			
+			Assert::ExpectException<exception>([&] { xmlParseMaster.ParseFromFile(xmlFileErrorTableOne); });
 		}
 
 		TEST_METHOD(XmlParseHelperErrorTableTwo)
@@ -447,7 +449,7 @@ namespace LibraryDesktopTest
 			sharedDataTable.SetXmlParseMaster(xmlParseMaster);
 			XmlParseHelperTable tableXmlParser(xmlParseMaster);
 			XmlParseHelperPrimitives primitivesParser(xmlParseMaster);
-			
+
 			Assert::ExpectException<exception>([&] { xmlParseMaster.ParseFromFile(xmlFileErrorTableTwo); });
 		}
 
@@ -559,7 +561,7 @@ namespace LibraryDesktopTest
 			XmlParseMaster xmlParseMaster(sharedDataTable);
 			XmlParseHelperTable xmlParseHelperTable(xmlParseMaster);
 			Assert::IsTrue(sharedDataTable.Is("SharedDataTable"));
-			Assert::IsFalse(sharedDataTable.Is("SharedDataTa"));			
+			Assert::IsFalse(sharedDataTable.Is("SharedDataTa"));
 
 			RTTI* sharedDataRTTI = sharedDataTable.QueryInterface(sharedDataTable.TypeIdClass());
 			Assert::IsTrue(static_cast<RTTI*>(sharedDataRTTI) == &sharedDataTable);
@@ -626,5 +628,6 @@ namespace LibraryDesktopTest
 	private:
 		static _CrtMemState sStartMemState;
 	};
+
 	_CrtMemState XmlParseHelperTableTest::sStartMemState;
 }

@@ -463,7 +463,7 @@ namespace GameEngineLibrary
 				--mSize;
 				if (i != mSize)
 				{
-					memmove(mDatumValues.tablePointer[i], mDatumValues.tablePointer[i + 1], mDataTypeSizes[static_cast<uint32_t>(mDatumType)] * (mSize - i));
+					memmove(mDatumValues.tablePointer + i, mDatumValues.tablePointer + i + 1, mDataTypeSizes[static_cast<uint32_t>(mDatumType)] * (mSize - i));
 				}
 				return true;
 			}

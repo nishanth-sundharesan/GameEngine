@@ -21,7 +21,7 @@ namespace GameEngineLibrary
 
 	/** Represents the state of the World.
 	*/
-	class WorldState
+	class WorldState final
 	{
 	public:
 		/** Parameterized constructor which takes in the GameTime object and caches it.
@@ -37,6 +37,7 @@ namespace GameEngineLibrary
 		*/
 		WorldState& operator=(const WorldState&) = default;
 
+#pragma region GameTime Setters/Getters Declarations
 		/** Returns the reference to the cached GameTime object.
 		*   @returns Returns the reference to the cached GameTime object.
 		*/
@@ -51,7 +52,9 @@ namespace GameEngineLibrary
 		*	@param gameTime The GameTime object which is to be cached.
 		*/
 		void SetGameTime(const GameTime& gameTime);
+#pragma endregion
 
+#pragma region World Setters/Getters Declarations
 		/** Returns the cached World pointer.
 		*	@returns Returns the cached World pointer.
 		*/
@@ -66,7 +69,9 @@ namespace GameEngineLibrary
 		*	@param world The World pointer which is to be cached.
 		*/
 		void SetCurrentWorld(World* world);
-		
+#pragma endregion
+
+#pragma region Sector Setters/Getters Declarations
 		/** Returns the cached Sector pointer.
 		*	@returns Returns the cached Sector pointer.
 		*/
@@ -81,7 +86,9 @@ namespace GameEngineLibrary
 		*	@param sector The Sector pointer which is to be cached.
 		*/
 		void SetCurrentSector(Sector* sector);
-		
+#pragma endregion		
+
+#pragma region Entity Setters/Getters Declarations
 		/** Returns the cached Entity pointer.
 		*	@returns Returns the cached Entity pointer.
 		*/
@@ -96,6 +103,24 @@ namespace GameEngineLibrary
 		*	@param entity The Entity pointer which is to be cached.
 		*/
 		void SetCurrentEntity(Entity* entity);
+#pragma endregion
+
+#pragma region Action Setters/Getters Declarations
+		/** Returns the cached Action pointer.
+		*	@returns Returns the cached Action pointer.
+		*/
+		Action* GetCurrentAction();
+
+		/** Returns the cached Action pointer.
+		*	@returns Returns the cached Action pointer.
+		*/
+		const Action* GetCurrentAction() const;
+
+		/** Takes in the pointer to Action object and caches it.
+		*	@param action The Action pointer which is to be cached.
+		*/
+		void SetCurrentAction(Action* action);
+#pragma endregion
 
 		/** Defaulted destructor.
 		*/

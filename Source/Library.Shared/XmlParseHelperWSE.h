@@ -51,7 +51,7 @@ namespace GameEngineLibrary
 		*	@param value The data between the Xml elements.
 		*	@param length The length of the value/data.
 		*	@param isCompleteData True is passed when complete data is passed, false otherwise.
-		*	@exception This function throws exception when it is called as this helper does not handle any data inside Xml elements.
+		*	@exception This function throws exception if it contains any data other than the tab space.
 		*/
 		virtual void CharacterDataHandler(SharedData& sharedData, const std::string& value, const std::int32_t length, bool isCompleteData) override;
 
@@ -85,10 +85,38 @@ namespace GameEngineLibrary
 		/** This handler gets called when a start Entity Xml element is found.
 		*	@param sharedDataWSE Reference to the shared data associated with this helper.
 		*	@param attributes Hashmap of the key-value pairs of attributes.
-		*	@exception Throws exception if the Sector element does not contain the className attribute or instanceName attribute.
+		*	@exception Throws exception if the Entity element does not contain the className attribute or instanceName attribute.
 		*/
 		static void EntityElementHandler(SharedDataWSE& sharedDataWSE, const Hashmap<std::string, std::string>& attributes);
-		
+
+		/** This handler gets called when a start Action Xml element is found.
+		*	@param sharedDataWSE Reference to the shared data associated with this helper.
+		*	@param attributes Hashmap of the key-value pairs of attributes.
+		*	@exception Throws exception if the Action element does not contain the className attribute or instanceName attribute.
+		*/
+		static void ActionElementHandler(SharedDataWSE& sharedDataWSE, const Hashmap<std::string, std::string>& attributes);
+
+		/** This handler gets called when a start ActionList Xml element is found.
+		*	@param sharedDataWSE Reference to the shared data associated with this helper.
+		*	@param attributes Hashmap of the key-value pairs of attributes.
+		*	@exception Throws exception if the ActionList element does not contain the name attribute.
+		*/
+		static void ActionListElementHandler(SharedDataWSE& sharedDataWSE, const Hashmap<std::string, std::string>& attributes);
+
+		/** This handler gets called when a start ActionCreateAction Xml element is found.
+		*	@param sharedDataWSE Reference to the shared data associated with this helper.
+		*	@param attributes Hashmap of the key-value pairs of attributes.
+		*	@exception Throws exception if the ActionCreateAction element does not contain the name, className or instanceName attribute.
+		*/
+		static void ActionCreateActionElementHandler(SharedDataWSE& sharedDataWSE, const Hashmap<std::string, std::string>& attributes);
+
+		/** This handler gets called when a start ActionDeleteAction Xml element is found.
+		*	@param sharedDataWSE Reference to the shared data associated with this helper.
+		*	@param attributes Hashmap of the key-value pairs of attributes.
+		*	@exception Throws exception if the ActionDeleteAction element does not contain the name or className attribute.
+		*/
+		static void ActionDeleteActionElementHandler(SharedDataWSE& sharedDataWSE, const Hashmap<std::string, std::string>& attributes);
+
 		/** The name of the World xml element.
 		*/
 		static const std::string mXmlElementNameWorld;
@@ -100,6 +128,22 @@ namespace GameEngineLibrary
 		/** The name of the Entity xml element.
 		*/
 		static const std::string mXmlElementNameEntity;
+
+		/** The name of the Action xml element.
+		*/
+		static const std::string mXmlElementNameAction;
+
+		/** The name of the CreateAction xml element.
+		*/
+		static const std::string mXmlElementNameCreateAction;
+
+		/** The name of the DeleteAction xml element.
+		*/
+		static const std::string mXmlElementNameDeleteAction;
+
+		/** The name of the ActionList xml element.
+		*/
+		static const std::string mXmlElementNameActionList;
 
 		/** The name of the Integer xml element.
 		*/
@@ -123,23 +167,35 @@ namespace GameEngineLibrary
 
 		/** The name of the value Attribute.
 		*/
-		static const std::string mXmlElementAttributeKeyValue;
+		static const std::string mAttributeValue;
 
 		/** The name of the name Attribute.
 		*/
-		static const std::string mXmlElementAttributeKeyName;
+		static const std::string mAttributeName;
 
-		/** The name of the Entity class name attribute.
+		/** ClassName attribute name.
 		*/
-		static const std::string mEntityElementClassName;
+		static const std::string mAttributeClassName;
 
-		/** The name of the Entity Instance name attribute.
+		/** InstanceName attribute name.
 		*/
-		static const std::string mEntityElementInstanceName;
+		static const std::string mAttributeInstanceName;
+
+		/** ActionClassName attribute name.
+		*/
+		static const std::string mAttributeActionClassName;
+
+		/** ActionInstanceName attribute name.
+		*/
+		static const std::string mAttributeActionInstanceName;
 
 		/** Static Hashmap containing Handlers for each Xml element.
 		*/
 		static Hashmap<std::string, std::function<HandlerParameters>> mHashmapWSEXmlHandlers;
+
+		/** Static Hashmap containing Handlers for each ActionCreateAction & ActionDeleteAction element.
+		*/
+		static Hashmap<std::string, std::function<HandlerParameters>> mHashmapActionCreateDeleteHandlers;
 
 		/** Static Hashmap containing the Xml(int32_t, float_t, string) element names paired to DatumTypes.
 		*/

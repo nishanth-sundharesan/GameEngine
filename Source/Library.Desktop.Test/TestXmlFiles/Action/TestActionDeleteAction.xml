@@ -2,8 +2,8 @@
 <World name="FIEA">
 	<Sector name="Prog2">
 		<Entity classname="MonsterEntity" instancename="Monster">
-			<CreateAction name="FirstCreateAction" classname="AttackAction" instancename="Attack"/>
-			<DeleteAction name="FirstDeleteAction" instancename="FirstCreateAction"/>	
+			<CreateAction classname="ActionCreateAction" instancename="FirstCreateAction" actionClassName="AttackAction" actionInstanceName="Attack"/>
+			<DeleteAction classname="ActionDeleteAction" instancename="FirstDeleteAction" actionInstanceName="FirstCreateAction"/>	
 		</Entity>
 	</Sector>
 </World>

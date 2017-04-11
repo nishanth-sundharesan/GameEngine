@@ -3,6 +3,7 @@
 #pragma once
 #include "SharedDataTable.h"
 #include "World.h"
+#include "ActionListIf.h"
 
 namespace GameEngineLibrary
 {
@@ -57,16 +58,71 @@ namespace GameEngineLibrary
 
 		/** This function gets called when a start Sector element is encountered. Creates Sector Object.
 		*	@param name The name of the Sector.
-		*	@exception Throws exception if the World doesn't exist.
+		*	@exception Throws an exception if the World doesn't exist.
 		*/
 		void CreateSector(const std::string& name);
 
 		/** This function gets called when a start Entity element is encountered. Creates Entity Object.
 		*	@param className The name of the class of which type the object has to be instantiated.
 		*	@param instanceName The name of the Entity.
-		*	@exception Throws exception if the Sector doesn't exist.
+		*	@exception Throws an exception if the Sector doesn't exist.
 		*/
 		void CreateEntity(const std::string& className, const std::string& instanceName);
+
+		/** This function gets called when a start ActionList element is encountered. Creates ActionList Object.
+		*	@param name The name of the ActionList.
+		*	@exception Throws an exception if the ActionList is not present inside Entity element.
+		*/
+		void CreateActionList(const std::string& name);
+
+		/** This function gets called when a start Action element is encountered. Creates Action Object.
+		*	@param className The name of the class of which type the object has to be instantiated.
+		*	@param instanceName The name of the Action.
+		*	@exception Throws exception if the Entity or ActionList doesn't exist.
+		*/
+		void CreateAction(const std::string& className, const std::string& instanceName);
+
+		/** This function gets called when a start Then element is encountered. Creates ThenAction Object.
+		*	@param className The name of the class of which type the object has to be instantiated.
+		*	@param instanceName The name of the Action.
+		*	@exception Throws exception if the ActionListIf doesn't exist.
+		*/
+		void AddThenAction(const std::string& className, const std::string& instanceName) const;
+
+		/** This function gets called when a start Else element is encountered. Creates ElseAction Object.
+		*	@param className The name of the class of which type the object(Action) has to be instantiated.
+		*	@param instanceName The name of the Action.
+		*	@exception Throws exception if the ActionListIf doesn't exist.
+		*/
+		void AddElseAction(const std::string& className, const std::string& instanceName) const;
+
+		/** This function gets called when a start CreateAction element is encountered. Creates ActionCreateAction Object.
+		*	@param className The name of the class of which type the object(Action) has to be instantiated.
+		*	@param instanceName The name of the ActionCreateAction Object.
+		*	@param actionClassName The name of the class i.e of which type the object has to be instantiated inside ActionCreateAction.
+		*	@param actionInstanceName The name of the Action which will be created inside ActionCreateAction.
+		*	@exception Throws exception if the Entity or ActionList doesn't exist.
+		*/
+		void AddActionCreateAction(const std::string& className, const std::string& instanceName, const std::string& actionClassName, const std::string& actionInstanceName) const;
+
+		/** This function gets called when a start DeleteAction element is encountered. Creates ActionDeleteAction Object.
+		*	@param className The name of the class of which type the object(Action) has to be instantiated.
+		*	@param instanceName The name of the ActionDeleteAction object.
+		*	@param actionInstanceName The name of the Action which should be deleted inside the ActionDeleteAction.		
+		*	@exception Throws exception if the Entity or ActionList doesn't exist.
+		*/
+		void AddActionDeleteAction(const std::string& className, const std::string& instanceName, const std::string& actionInstanceName) const;
+
+		/** This function gets called when a start If element is encountered. Creates Action Object.
+		*	@param className The name of the class of which type the object has to be instantiated.
+		*	@param instanceName The name of the Action.
+		*	@exception Throws exception if the Entity or ActionList doesn't exist.
+		*/
+		void CreateActionIf(const std::string& className, const std::string& instanceName, const string& lhsComparisonPathValue, const string& rhsComparisonPathValue);
+
+		/** Assigns the comparisons for the ActionListIf.
+		*/
+		void AssignComparisonsForIf() const;
 
 		/** Creates a new Datum based on the passed parameters.
 		*	@param name The name of the Datum to be created.
@@ -74,7 +130,7 @@ namespace GameEngineLibrary
 		*	@param value The value to be inserted in the Datum.(In the form of string)
 		*	@exception Throws an exception if the primitive type xml element isn't present inside the World, Sector or Entity element.
 		*/
-		void AppendPrimitiveData(const std::string& name, const DatumType datumType, const std::string& value);
+		void AppendPrimitiveData(const std::string& name, const DatumType datumType, const std::string& value) const;
 
 		/** This function gets called when the World's, Sector's or Entity's end xml element is encountered. Points the cached Scope* to its Parent Scope.
 		*/
@@ -102,9 +158,25 @@ namespace GameEngineLibrary
 		*/
 		Entity* mEntity;
 
+		/** Cached ActionList pointer.
+		*/
+		ActionList* mActionList;
+
+		/** Cached ActionIf pointer.
+		*/
+		ActionListIf* mActionListIf;
+
 		/** Cached Scope pointer.
 		*/
 		Scope* mCurrentScope;
+
+		/** Cached path the left hand side value to compare.
+		*/
+		std::string mLhsComparisonPathValue;
+
+		/** Cached path the right hand side value to compare.
+		*/
+		std::string mRhsComparisonPathValue;
 	public:
 		RTTI_DECLARATIONS(SharedDataWSE, SharedData);
 	};

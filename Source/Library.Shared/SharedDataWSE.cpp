@@ -25,7 +25,7 @@ namespace GameEngineLibrary
 	{
 		SharedData* newSharedData = new SharedDataWSE();
 		CloneInternalMembers(newSharedData);
-		return newSharedData;		
+		return newSharedData;
 	}
 
 	void SharedDataWSE::CreateWorld(const string& name)
@@ -50,7 +50,7 @@ namespace GameEngineLibrary
 
 	void SharedDataWSE::CreateSector(const string& name)
 	{
-		if (mWorld == nullptr)
+		if (mWorld == nullptr || mCurrentScope != mWorld)
 		{
 			throw exception("A Sector has to be present inside the World.");
 		}
@@ -58,9 +58,9 @@ namespace GameEngineLibrary
 		mCurrentScope = mSector;
 	}
 
-	void SharedDataWSE::CreateEntity(const std::string& className, const std::string& instanceName)
+	void SharedDataWSE::CreateEntity(const string& className, const string& instanceName)
 	{
-		if (mSector == nullptr)
+		if (mSector == nullptr || mCurrentScope != mSector)
 		{
 			throw exception("An Entity has to be present inside the Sector.");
 		}
@@ -68,23 +68,146 @@ namespace GameEngineLibrary
 		mCurrentScope = mEntity;
 	}
 
-	void SharedDataWSE::AppendPrimitiveData(const string& name, const DatumType datumType, const string& value)
+	void SharedDataWSE::CreateActionList(const string& name)
+	{
+		if (mEntity == nullptr || mCurrentScope != mEntity)
+		{
+			throw exception("ActionList has to be present inside the Entity.");
+		}
+		mActionList = &(mEntity->CreateActionList(name));
+		mCurrentScope = mActionList;
+	}
+
+	void SharedDataWSE::CreateAction(const string& className, const string& instanceName)
+	{
+		if (mCurrentScope != nullptr)
+		{
+			if (mCurrentScope == mActionList)
+			{
+				mCurrentScope = &(mActionList->CreateAction(className, instanceName));
+			}
+			else if (mCurrentScope == mEntity)
+			{
+				mCurrentScope = &(mEntity->CreateAction(className, instanceName));
+			}
+			else
+			{
+				throw exception("An Action has to be present inside an Entity or an ActionList.");
+			}
+		}
+		else
+		{
+			throw exception("An Action has to be present inside an Entity or an ActionList.");
+		}
+	}
+
+	void SharedDataWSE::AddThenAction(const string& className, const string& instanceName) const
+	{
+		assert(mCurrentScope != nullptr && mCurrentScope == mActionListIf);									//Exception test has already been performed in XmlParseHelper
+		mActionListIf->SetThenBlockAction(mActionListIf->CreateAction(className, instanceName));
+	}
+
+	void SharedDataWSE::AddElseAction(const string& className, const string& instanceName) const
+	{
+		assert(mCurrentScope != nullptr && mCurrentScope == mActionListIf);									//Exception test has already been performed in XmlParseHelper
+		mActionListIf->SetElseBlockAction(mActionListIf->CreateAction(className, instanceName));
+	}
+
+	void SharedDataWSE::AddActionCreateAction(const string& className, const string& instanceName, const string& actionClassName, const string& actionInstanceName) const
+	{
+		if (mCurrentScope != nullptr)
+		{
+			if (mCurrentScope == mActionList)
+			{
+				static_cast<ActionCreateAction&>(mActionList->CreateAction(className, instanceName)).SetClassAndInstanceName(actionClassName, actionInstanceName);
+			}
+			else if (mCurrentScope == mEntity)
+			{
+				static_cast<ActionCreateAction&>(mEntity->CreateAction(className, instanceName)).SetClassAndInstanceName(actionClassName, actionInstanceName);
+			}
+			else
+			{
+				throw exception("ActionCreateAction has to be present inside an Entity or an ActionList.");
+			}
+		}
+		else
+		{
+			throw exception("ActionCreateAction has to be present inside an Entity or an ActionList.");
+		}
+	}
+
+	void SharedDataWSE::AddActionDeleteAction(const string& className, const string& instanceName, const string& actionInstanceName) const
+	{
+		if (mCurrentScope != nullptr)
+		{
+			if (mCurrentScope == mActionList)
+			{
+				static_cast<ActionDeleteAction&>(mActionList->CreateAction(className, instanceName)).SetActionToDelete(actionInstanceName);
+			}
+			else if (mCurrentScope == mEntity)
+			{
+				static_cast<ActionDeleteAction&>(mEntity->CreateAction(className, instanceName)).SetActionToDelete(actionInstanceName);
+			}
+			else
+			{
+				throw exception("ActionDeleteAction has to be present inside an Entity or an ActionList.");
+			}
+		}
+		else
+		{
+			throw exception("ActionDeleteAction has to be present inside an Entity or an ActionList.");
+		}
+	}
+
+	void SharedDataWSE::CreateActionIf(const string& className, const string& instanceName, const string& lhsComparisonPathValue, const string& rhsComparisonPathValue)
+	{
+		if (mCurrentScope != nullptr)
+		{
+			if (mCurrentScope == mActionList)
+			{
+				mCurrentScope = &(mActionList->CreateAction(className, instanceName));
+			}
+			else if (mCurrentScope == mEntity)
+			{
+				mCurrentScope = &(mEntity->CreateAction(className, instanceName));
+			}
+			else
+			{
+				throw exception("An If has to be present inside an Entity or an ActionList.");
+			}
+			assert(static_cast<ActionListIf*>(mCurrentScope) != nullptr);
+			mActionListIf = static_cast<ActionListIf*>(mCurrentScope);
+
+			mLhsComparisonPathValue = lhsComparisonPathValue;
+			mRhsComparisonPathValue = rhsComparisonPathValue;
+		}
+		else
+		{
+			throw exception("An If has to be present inside an Entity or an ActionList.");
+		}
+	}
+
+	void SharedDataWSE::AssignComparisonsForIf() const
+	{
+		assert(mActionListIf != nullptr);
+		mActionListIf->SetComparisons(mWorld->SearchDatum(mLhsComparisonPathValue), mWorld->SearchDatum(mRhsComparisonPathValue));
+	}
+
+	void SharedDataWSE::AppendPrimitiveData(const string& name, const DatumType datumType, const string& value) const
 	{
 		if (mCurrentScope == nullptr)
 		{
 			throw exception("Primitives has to be present in a scope.");
 		}
-		Datum& datum = mCurrentScope->Append(name);
+
+		Datum& datum = static_cast<Attributed*>(mCurrentScope)->AppendAuxiliaryAttribute(name);
 		datum.SetType(datumType);
 		datum.PushFromString(value);
 	}
 
 	void SharedDataWSE::GotoParentScope()
 	{
-		if (mCurrentScope == nullptr)
-		{
-			throw exception("Invalid Xml.");
-		}
+		assert(mCurrentScope != nullptr);		
 		mCurrentScope = mCurrentScope->GetParent();
 	}
 

@@ -13,7 +13,7 @@ namespace GameEngineLibrary
 	public:
 		/** An Iterator class for the Vector class.
 		*/
-		class Iterator final
+		class Iterator final :public std::iterator<std::forward_iterator_tag, T>
 		{
 			/** Vector class is marked as a friend class so that the Vector class can access the private members of the Iterator class.
 			*/
@@ -106,7 +106,7 @@ namespace GameEngineLibrary
 		Vector(const Vector& rhs);
 
 		/** Move constructor.
-		*	Moves the temporary object's(right hand side) pointers/primitive data to the left hand side object. Assigns default type to all the members of the class.
+		*	Moves the temporary object's(right hand side) pointers/primitive data to the left hand side object. Assigns default type to all the members of the right hand side object.
 		*	Note: This function is called when we are returning a temporary object to a permanent object from a function. Example: Creating a stack allocated object from a function and returning it.(Gets called on the return statement)
 		*	@param rhs The temporary right hand side object which has to be moved.
 		*/
@@ -120,12 +120,13 @@ namespace GameEngineLibrary
 		Vector& operator=(const Vector& rhs);
 
 		/** Move assignment operator.
-		*	Moves the temporary object's(right hand side) pointers/primitive data to the left hand side object. Assigns default type to all the members of the class.
+		*	Moves the temporary object's(right hand side) pointers/primitive data to the left hand side object. Assigns default type to all the members of the right hand side object.
 		*	Note: This function is called when we are assigning a temporary object to a permanent object. Example: Assigning a stack allocated object from a function which created the object.(Gets called on the assignment statement)
+		*	@param rhs The temporary right hand side object which has to be moved.
 		*/
 		Vector& operator=(Vector&& rhs);
 
-		/** Clears the entire Vector.		
+		/** Clears the entire Vector.
 		*/
 		virtual ~Vector();
 

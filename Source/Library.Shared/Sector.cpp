@@ -10,7 +10,7 @@ namespace GameEngineLibrary
 	RTTI_DEFINITIONS(Sector);
 
 	const string Sector::sEntitiesName = "Entities";
-	const string Sector::sAttributeName = "SectorName";
+	const string Sector::sAttributeName = "Name";
 
 	Sector::Sector(const std::string& name)
 		:mName(name), mEntityDatum(nullptr)
@@ -43,10 +43,10 @@ namespace GameEngineLibrary
 		return *mEntityDatum;
 	}
 
-	Entity& Sector::CreateEntity(const string& entityClassName, const string& instanceName)
+	Entity& Sector::CreateEntity(const string& entityClassName, const string& entityInstanceName)
 	{
 		Entity* entity = Factory<Entity>::Create(entityClassName);
-		entity->SetName(instanceName);
+		entity->SetName(entityInstanceName);
 		AddNestedScopeAttribute(*entity, sEntitiesName);
 		return *entity;
 	}
@@ -70,8 +70,8 @@ namespace GameEngineLibrary
 	void Sector::Update(WorldState& worldState)
 	{
 		worldState.SetCurrentSector(this);
-
 		assert(mEntityDatum != nullptr);
+
 		for (uint32_t i = 0; i < mEntityDatum->Size(); ++i)
 		{
 			assert(static_cast<Entity*>(mEntityDatum->Get<Scope*>(i))->As<Entity>() != nullptr);

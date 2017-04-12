@@ -52,10 +52,10 @@ namespace GameEngineLibrary
 
 		/** Creates a new Entity inside the Sector and returns it.
 		*	@param entityClassName The Entity class to be created
-		*	@param instanceName The name of the Entity to be created.
+		*	@param entityInstanceName The name of the Entity to be created.
 		*	@returns Returns the newly created Entity.
 		*/
-		Entity& CreateEntity(const std::string& entityClassName, const std::string& instanceName);
+		Entity& CreateEntity(const std::string& entityClassName, const std::string& entityInstanceName);
 		
 		/** Returns the reference to the World in which the Sector is present.
 		*	@returns Returns the reference to the world in which the Sector is present.

@@ -225,9 +225,14 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="Bar.cpp" />
     <ClCompile Include="BarChildProduct.cpp" />
     <ClCompile Include="BarProduct.cpp" />
     <ClCompile Include="DatumTest.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="EventTest.cpp">
       <SubType>
       </SubType>
     </ClCompile>
@@ -259,6 +264,8 @@
     </ClCompile>
     <ClCompile Include="SharedDataFoo.cpp" />
     <ClCompile Include="SListTest.cpp" />
+    <ClCompile Include="SubscriberBar.cpp" />
+    <ClCompile Include="SubscriberFoo.cpp" />
     <ClCompile Include="XmlParseHelperWSETest.cpp">
       <SubType>
       </SubType>
@@ -284,6 +291,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AttackAction.h" />
+    <ClInclude Include="Bar.h" />
     <ClInclude Include="HealAction.h" />
     <ClInclude Include="AttributedFoo.h" />
     <ClInclude Include="AttributedFooChild.h" />
@@ -294,6 +302,8 @@
     <ClInclude Include="MonsterEntity.h" />
     <ClInclude Include="Pch.h" />
     <ClInclude Include="SharedDataFoo.h" />
+    <ClInclude Include="SubscriberBar.h" />
+    <ClInclude Include="SubscriberFoo.h" />
     <ClInclude Include="ToStringTemplates.h" />
     <ClInclude Include="XmlParseHelperStudent.h" />
     <ClInclude Include="XmlParseHelperTracer.h" />

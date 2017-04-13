@@ -110,6 +110,18 @@
     <ClCompile Include="HealAction.cpp">
       <Filter>SupportClasses\ActionTestClasses</Filter>
     </ClCompile>
+    <ClCompile Include="EventTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SubscriberFoo.cpp">
+      <Filter>SupportClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="SubscriberBar.cpp">
+      <Filter>SupportClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="Bar.cpp">
+      <Filter>SupportClasses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Pch.h">
@@ -153,6 +165,15 @@
     </ClInclude>
     <ClInclude Include="HealAction.h">
       <Filter>SupportClasses\ActionTestClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="SubscriberFoo.h">
+      <Filter>SupportClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="SubscriberBar.h">
+      <Filter>SupportClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="Bar.h">
+      <Filter>SupportClasses</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

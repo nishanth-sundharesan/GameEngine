@@ -15,4 +15,16 @@ namespace GameEngineLibrary
 	{
 		mXmlParseMaster->RemoveHelper(*this);
 	}
+
+	bool IXmlParseHelper::DoesContainData(const string& data, const int32_t length)
+	{
+		for (int32_t i = 0; i < length; ++i)
+		{
+			if (data[i] != '\t')
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 }

@@ -65,6 +65,13 @@ namespace GameEngineLibrary
 		*/
 		virtual ~IXmlParseHelper();
 	protected:
+		/** Private helper function. Returns true if the passed data contain anything other than the tab spaces (\t), false otherwise.
+		*	@param data The data to be checked if it contains anything other than the tab space.
+		*	@param length The length of the data.
+		*	@returns Returns true if the passed data contain anything other than the tab spaces (\t), false otherwise.
+		*/
+		static bool DoesContainData(const std::string& data, const int32_t length);
+
 		/** The XmlParseMaster to which the inherited XmlParseHelper is registered to.
 		*/
 		XmlParseMaster *mXmlParseMaster;

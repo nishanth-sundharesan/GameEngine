@@ -46,19 +46,19 @@ namespace GameEngineLibrary
 		*	@param name The name of the attribute which has to be checked if it is a Prescribed attribute.
 		*	@return Returns true if an attribute is a Prescribed attribute, false otherwise.
 		*/
-		bool IsPrescribedAttribute(const std::string& name);
+		bool IsPrescribedAttribute(const std::string& name) const;
 
 		/** Returns true if an attribute is an Auxiliary attribute, false otherwise.
 		*	@param name The name of the attribute which has to be checked if it is a Auxiliary attribute.
 		*	@return Returns true if an attribute is an Auxiliary attribute, false otherwise.
 		*/
-		bool IsAuxiliaryAttribute(const std::string& name);
+		bool IsAuxiliaryAttribute(const std::string& name) const;
 
 		/** Returns true if the passed name is an attribute, false otherwise.
 		*	@param name The name of the attribute which has to be checked if it is an attribute.
 		*	@return Returns true if the passed name is an attribute, false otherwise.
 		*/
-		bool IsAttribute(const std::string& name);
+		bool IsAttribute(const std::string& name) const;
 
 		/** Appends an AuxiliaryAttribute with the passed name.
 		*	@param name The name for the AuxiliaryAttribute.
@@ -71,6 +71,11 @@ namespace GameEngineLibrary
 		*	@return Returns the number of the Prescribed attributes.
 		*/
 		std::uint32_t AuxiliaryBegin();
+
+		/** Copies all the Auxiliary attributes from the rhsAttribute to this Attribute.
+		*	@param rhsAttribute The right hand side Attribute from which all the Auxiliary attributes have to be copied.
+		*/
+		void CopyAuxiliaryAttributes(const Attributed& rhsAttribute);
 	protected:
 		/** Adds an internal attribute and adds the passed name to the prescribed attribute list.
 		*	@param name The name for the internal attribute to be added.
@@ -207,7 +212,7 @@ namespace GameEngineLibrary
 		*	@param pointerToData The pointer to the data which will be saved in the current scope.
 		*	@param size The size of the external storage.
 		*/
-		void AddExternalAttribute(const std::string& name, const RTTI** pointerToData, const std::uint32_t size);
+		void AddExternalAttribute(const std::string& name, const RTTI** pointerToData, const std::uint32_t size);		
 	private:
 		/** Appends a Datum with the passed name and set's its type with the passed type.
 		*	@param name The name of the Datum which will be appended.

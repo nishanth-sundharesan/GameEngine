@@ -60,17 +60,17 @@ namespace GameEngineLibrary
 		}
 	}
 
-	bool Attributed::IsPrescribedAttribute(const string& name)
+	bool Attributed::IsPrescribedAttribute(const string& name) const
 	{
 		return !(sPrescribedAttributes[TypeIdInstance()].Find(name) == sPrescribedAttributes[TypeIdInstance()].end());
 	}
 
-	bool Attributed::IsAuxiliaryAttribute(const string& name)
+	bool Attributed::IsAuxiliaryAttribute(const string& name) const
 	{
 		return (IsAttribute(name) && !IsPrescribedAttribute(name));
 	}
 
-	bool Attributed::IsAttribute(const string& name)
+	bool Attributed::IsAttribute(const string& name) const
 	{
 		return (Find(name) != nullptr);
 	}
@@ -87,6 +87,19 @@ namespace GameEngineLibrary
 	uint32_t Attributed::AuxiliaryBegin()
 	{
 		return sPrescribedAttributes[TypeIdInstance()].Size() + 1;								//+ 1 is for the "this" pointer which is added in the constructor
+	}
+
+	void Attributed::CopyAuxiliaryAttributes(const Attributed& rhsAttribute)
+	{
+		const Vector<pair<string, Datum>*>& listAttributes = rhsAttribute.GetAllAttributes();
+		for (pair<string, Datum>* attribute : listAttributes)
+		{
+			if (rhsAttribute.IsAuxiliaryAttribute(attribute->first))
+			{
+				Datum& datum = AppendAuxiliaryAttribute(attribute->first);
+				datum = attribute->second;										//Calling the Datum's assignment operator
+			}
+		}
 	}
 
 	void Attributed::AddInternalAttribute(const string& name, const int32_t value)

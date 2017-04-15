@@ -128,6 +128,9 @@ namespace GameEngineLibrary
 	{
 		worldState.SetCurrentWorld(this);
 
+		//Updating the Event Queue
+		mEventQueue.Update(worldState.GetGameTime());
+
 		assert(mSectorDatum != nullptr);
 		for (uint32_t i = 0; i < mSectorDatum->Size(); ++i)
 		{
@@ -142,6 +145,16 @@ namespace GameEngineLibrary
 		}
 		mActionsToDelete.Clear();
 		worldState.SetCurrentWorld(nullptr);
+	}
+
+	EventQueue& World::GetEventQueue()
+	{
+		return const_cast<EventQueue&>(const_cast<const World*>(this)->GetEventQueue());
+	}
+
+	const EventQueue& World::GetEventQueue() const
+	{
+		return mEventQueue;
 	}
 
 	const char* World::FindNextDataChunk(char* path) const
@@ -166,6 +179,7 @@ namespace GameEngineLibrary
 
 	void World::InitializeSignatures()
 	{
+		Attributed::InitializeSignatures();
 		AddExternalAttribute(sAttributeName, &mName, 1);
 		mSectorDatum = &AddEmptyNestedScopeAttribute(sSectorsName);
 	}

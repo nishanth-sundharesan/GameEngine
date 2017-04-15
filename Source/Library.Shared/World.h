@@ -1,5 +1,6 @@
 #pragma once
 #include "Sector.h"
+#include "EventQueue.h"
 
 namespace GameEngineLibrary
 {
@@ -81,6 +82,16 @@ namespace GameEngineLibrary
 		*/
 		void Update(WorldState& worldState);
 
+		/** Returns the cached EventQueue.
+		*	@returns Returns the cached EventQueue.
+		*/
+		EventQueue& GetEventQueue();
+
+		/** Returns the cached EventQueue.
+		*	@returns Returns the cached EventQueue.
+		*/
+		const EventQueue& GetEventQueue() const;
+
 		/** Defaulted World's destructor.
 		*/
 		~World() = default;
@@ -95,14 +106,6 @@ namespace GameEngineLibrary
 		*/
 		void InitializeSignatures();
 
-		/** The name of the World.
-		*/
-		std::string mName;
-
-		/** Cached datum containing Sectors.
-		*/
-		const Datum* mSectorDatum;
-
 		/** The name aside which the Sectors are added to the scope.
 		*/
 		static const std::string sSectorsName;
@@ -114,6 +117,18 @@ namespace GameEngineLibrary
 		/** The delimiter string for evaluating path.
 		*/
 		static const char* sDelimiterString;
+
+		/** The name of the World.
+		*/
+		std::string mName;
+
+		/** Cached datum containing Sectors.
+		*/
+		const Datum* mSectorDatum;
+
+		/** Event queue for the game engine.
+		*/
+		EventQueue mEventQueue;
 
 		/** List of Action pointers to delete.
 		*/

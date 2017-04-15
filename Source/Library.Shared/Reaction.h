@@ -5,21 +5,29 @@
 
 namespace GameEngineLibrary
 {
+	/** Abstract Reaction base class.
+	*/
 	class Reaction :public EventSubscriber, public ActionList
 	{
 	public:
+		/** Defaulted constructor.
+		*/
 		Reaction() = default;
 
+		/** Marked copy constructor as delete. Cannot copy Reactions.
+		*/
 		Reaction(const Reaction&) = delete;
 
+		/** Marked assignment operator as delete. Cannot copy Reactions.
+		*/
 		Reaction& operator=(const Reaction&) = delete;
 
-		virtual ~Reaction() = default;
-	
+		/** Defaulted virtual destructor.
+		*/
+		virtual ~Reaction() = default;		
+	public:
 		RTTI_DECLARATIONS(Reaction, ActionList);
-	};
-
-	RTTI_DEFINITIONS(Reaction);
+	};	
 }
 
-#define ReactionFactory(ConcreteReaction) ConcreteFactory(GameEngineLibrary::Reaction, ConcreteReaction)
+#define ReactionFactory(ConcreteReaction) ConcreteFactory(GameEngineLibrary::Action, ConcreteReaction)

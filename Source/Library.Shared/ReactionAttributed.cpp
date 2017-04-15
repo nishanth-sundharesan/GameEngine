@@ -5,12 +5,13 @@ using namespace std;
 
 namespace GameEngineLibrary
 {
+	RTTI_DEFINITIONS(Reaction);
 	RTTI_DEFINITIONS(ReactionAttributed);
 
 	const string ReactionAttributed::sSubTypeAttributeName = "SubType";
 
 	ReactionAttributed::ReactionAttributed()
-		:mSubType(0)
+		:mSubType(string())
 	{
 		InitializeSignatures();
 		Event<EventMessage>::Subscribe(*this);
@@ -23,10 +24,23 @@ namespace GameEngineLibrary
 		EventMessage eventMessage = static_cast<const Event<EventMessage>&>(eventPublisher).Message();
 		if (eventMessage.GetSubType() == mSubType)
 		{
-			//TODO confirm this
 			CopyAuxiliaryAttributes(eventMessage);
 			ActionList::Update(eventMessage.GetWorldState());
 		}
+	}
+
+	void ReactionAttributed::SetSubType(const Datum& datum)
+	{
+		if (datum.Type() != DatumType::STRING)
+		{
+			throw exception("Invalid DatumType for the SubType");
+		}
+		mSubType = datum.Get<string>();
+	}
+
+	ReactionAttributed::~ReactionAttributed()
+	{
+		Event<EventMessage>::UnSubscribe(*this);
 	}
 
 	void ReactionAttributed::InitializeSignatures()

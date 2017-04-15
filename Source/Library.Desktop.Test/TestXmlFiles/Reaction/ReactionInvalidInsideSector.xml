@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<World name="FIEA">
+	<Sector name="Prog2">		
+			<String name="FirstString" value="Hello"/>
+			<Reaction classname="ReactionAttributed" instancename="MonsterReaction" subtype="FIEA.Prog2.Monster.FirstString">
+				<Action classname="AttackAction" instancename="Attack"/>
+				<Action classname="HealAction" instancename="Heal"/>
+			</Reaction>
+			<ActionEvent classname="ActionEvent" instancename="FirstEvent" subtype="FIEA.Prog2.Monster.FirstString" delay="10"/>
+			<DeleteAction classname="ActionDeleteAction" instancename="FirstDeleteAction" actionInstanceName="FirstEvent"/>		
+	</Sector>
+</World>

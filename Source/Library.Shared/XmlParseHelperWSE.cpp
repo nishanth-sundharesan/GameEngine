@@ -12,6 +12,8 @@ namespace GameEngineLibrary
 	const string XmlParseHelperWSE::mXmlElementNameSector = "sector";
 	const string XmlParseHelperWSE::mXmlElementNameEntity = "entity";
 	const string XmlParseHelperWSE::mXmlElementNameAction = "action";
+	const string XmlParseHelperWSE::mXmlElementNameReaction = "reaction";
+	const string XmlParseHelperWSE::mXmlElementNameActionEvent = "actionevent";
 	const string XmlParseHelperWSE::mXmlElementNameCreateAction = "createaction";
 	const string XmlParseHelperWSE::mXmlElementNameDeleteAction = "deleteaction";
 	const string XmlParseHelperWSE::mXmlElementNameActionList = "actionlist";
@@ -32,6 +34,8 @@ namespace GameEngineLibrary
 	const string XmlParseHelperWSE::mAttributeInstanceName = "instancename";
 	const string XmlParseHelperWSE::mAttributeActionClassName = "actionclassname";
 	const string XmlParseHelperWSE::mAttributeActionInstanceName = "actioninstancename";
+	const string XmlParseHelperWSE::mAttributeSubTypeName = "subtype";
+	const string XmlParseHelperWSE::mAttributeDelayName = "delay";
 
 	Hashmap<string, std::function<XmlParseHelperWSE::HandlerParameters>> XmlParseHelperWSE::mHashmapWSEXmlHandlers =
 	{
@@ -39,6 +43,8 @@ namespace GameEngineLibrary
 		{ make_pair(mXmlElementNameSector, SectorElementHandler) },
 		{ make_pair(mXmlElementNameEntity, EntityElementHandler) },
 		{ make_pair(mXmlElementNameAction, ActionElementHandler) },
+		{ make_pair(mXmlElementNameReaction, ReactionElementHandler) },
+		{ make_pair(mXmlElementNameActionEvent, ActionEventElementHandler) },
 		{ make_pair(mXmlElementNameActionList, ActionListElementHandler) }
 	};
 
@@ -178,7 +184,25 @@ namespace GameEngineLibrary
 		sharedDataWSE.CreateAction(attributes[mAttributeClassName], attributes[mAttributeInstanceName]);
 	}
 
-	void XmlParseHelperWSE::ActionListElementHandler(SharedDataWSE & sharedDataWSE, const Hashmap<std::string, std::string>& attributes)
+	void XmlParseHelperWSE::ReactionElementHandler(SharedDataWSE& sharedDataWSE, const Hashmap<string, string>& attributes)
+	{
+		if (!attributes.ContainsKey(mAttributeClassName) || !attributes.ContainsKey(mAttributeInstanceName) || !attributes.ContainsKey(mAttributeSubTypeName))
+		{
+			throw exception("The ClassName attribute or the InstanceName attribute or the SubType attribute is not found.");
+		}
+		sharedDataWSE.CreateReaction(attributes[mAttributeClassName], attributes[mAttributeInstanceName], attributes[mAttributeSubTypeName]);
+	}
+
+	void XmlParseHelperWSE::ActionEventElementHandler(SharedDataWSE& sharedDataWSE, const Hashmap<string, string>& attributes)
+	{
+		if (!attributes.ContainsKey(mAttributeClassName) || !attributes.ContainsKey(mAttributeInstanceName) || !attributes.ContainsKey(mAttributeSubTypeName) || !attributes.ContainsKey(mAttributeDelayName))
+		{
+			throw exception("The ClassName attribute or the InstanceName attribute or the SubType attribute or the Delay attribute is not found.");
+		}
+		sharedDataWSE.CreateActionEvent(attributes[mAttributeClassName], attributes[mAttributeInstanceName], attributes[mAttributeSubTypeName], attributes[mAttributeDelayName]);
+	}
+
+	void XmlParseHelperWSE::ActionListElementHandler(SharedDataWSE& sharedDataWSE, const Hashmap<string, string>& attributes)
 	{
 		if (!attributes.ContainsKey(mAttributeName))
 		{
@@ -188,7 +212,7 @@ namespace GameEngineLibrary
 	}
 
 	void XmlParseHelperWSE::ActionCreateActionElementHandler(SharedDataWSE& sharedDataWSE, const Hashmap<string, string>& attributes)
-	{		
+	{
 		if (!attributes.ContainsKey(mAttributeClassName) || !attributes.ContainsKey(mAttributeInstanceName) || !attributes.ContainsKey(mAttributeActionClassName) || !attributes.ContainsKey(mAttributeActionInstanceName))
 		{
 			throw exception("The ClassName or InstanceName or ActionClassName or ActionInstanceName attribute is not found.");

@@ -96,6 +96,20 @@ namespace GameEngineLibrary
 		*/
 		static void ActionElementHandler(SharedDataWSE& sharedDataWSE, const Hashmap<std::string, std::string>& attributes);
 
+		/** This handler gets called when a start Reaction Xml element is found.
+		*	@param sharedDataWSE Reference to the shared data associated with this helper.
+		*	@param attributes Hashmap of the key-value pairs of attributes.
+		*	@exception Throws exception if the Action element does not contain the className attribute or instanceName attribute or subType attribute.
+		*/
+		static void ReactionElementHandler(SharedDataWSE& sharedDataWSE, const Hashmap<std::string, std::string>& attributes);
+
+		/** This handler gets called when a start ActionEvent Xml element is found.
+		*	@param sharedDataWSE Reference to the shared data associated with this helper.
+		*	@param attributes Hashmap of the key-value pairs of attributes.
+		*	@exception Throws exception if the Action element does not contain the className attribute or instanceName attribute or subType attribute.
+		*/
+		static void ActionEventElementHandler(SharedDataWSE& sharedDataWSE, const Hashmap<std::string, std::string>& attributes);
+
 		/** This handler gets called when a start ActionList Xml element is found.
 		*	@param sharedDataWSE Reference to the shared data associated with this helper.
 		*	@param attributes Hashmap of the key-value pairs of attributes.
@@ -132,6 +146,14 @@ namespace GameEngineLibrary
 		/** The name of the Action xml element.
 		*/
 		static const std::string mXmlElementNameAction;
+
+		/** The name of the ActionEvent xml element.
+		*/
+		static const std::string mXmlElementNameActionEvent;
+
+		/** The name of the Reaction xml element.
+		*/
+		static const std::string mXmlElementNameReaction;
 
 		/** The name of the CreateAction xml element.
 		*/
@@ -188,6 +210,14 @@ namespace GameEngineLibrary
 		/** ActionInstanceName attribute name.
 		*/
 		static const std::string mAttributeActionInstanceName;
+
+		/** SubType attribute name.
+		*/
+		static const std::string mAttributeSubTypeName;
+
+		/** Delay attribute name.
+		*/
+		static const std::string mAttributeDelayName;
 
 		/** Static Hashmap containing Handlers for each Xml element.
 		*/

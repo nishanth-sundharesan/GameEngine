@@ -1,5 +1,7 @@
 #include "Pch.h"
 #include "SharedDataWSE.h"
+#include "ReactionAttributed.h"
+#include "ActionEvent.h"
 
 namespace GameEngineLibrary
 {
@@ -99,6 +101,23 @@ namespace GameEngineLibrary
 		{
 			throw exception("An Action has to be present inside an Entity or an ActionList.");
 		}
+	}
+
+	void SharedDataWSE::CreateReaction(const string& className, const string& instanceName, const string& subType)
+	{
+		if (mEntity == nullptr || mCurrentScope != mEntity)
+		{
+			throw exception("Reaction has to be present inside the Entity.");
+		}
+		mActionList = static_cast<ActionList*>(&mEntity->CreateAction(className, instanceName));
+		static_cast<ReactionAttributed*>(mActionList)->SetSubType(mWorld->SearchDatum(subType));
+		mCurrentScope = mActionList;
+	}
+
+	void SharedDataWSE::CreateActionEvent(const string& className, const string& instanceName, const string& subType, const string& delay)
+	{
+		CreateAction(className, instanceName);
+		static_cast<ActionEvent*>(mCurrentScope)->SetSubTypeAndDelay(mWorld->SearchDatum(subType), delay);
 	}
 
 	void SharedDataWSE::AddThenAction(const string& className, const string& instanceName) const

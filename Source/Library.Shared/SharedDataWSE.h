@@ -82,6 +82,22 @@ namespace GameEngineLibrary
 		*/
 		void CreateAction(const std::string& className, const std::string& instanceName);
 
+		/** This function gets called when a start Reaction element is encountered. Creates Reaction Object.
+		*	@param className The name of the class of which type the object has to be instantiated.
+		*	@param instanceName The name of the Reaction.
+		*	@param subType The subType filter for the reaction.
+		*	@exception Throws exception if the Entity doesn't exist.
+		*/
+		void CreateReaction(const std::string& className, const std::string& instanceName, const std::string& subType);
+
+		/** This function gets called when a start ActionEvent element is encountered. Creates ActionEvent Object.
+		*	@param className The name of the class of which type the object has to be instantiated.
+		*	@param instanceName The name of the ActionEvent.
+		*	@param subType The subType filter for the EventMessage.
+		*	@exception Throws exception if the Entity or Action List doesn't exist.
+		*/
+		void CreateActionEvent(const std::string& className, const std::string& instanceName, const std::string& subType, const std::string& delay);
+
 		/** This function gets called when a start Then element is encountered. Creates ThenAction Object.
 		*	@param className The name of the class of which type the object has to be instantiated.
 		*	@param instanceName The name of the Action.

@@ -22,7 +22,7 @@ namespace UnitTestSupportClasses
 		worldState.SetCurrentAction(nullptr);
 	}
 
-	bool HealAction::IsHealCalled()
+	bool HealAction::IsHealCalled() const
 	{
 		return mIsHealCalled;
 	}

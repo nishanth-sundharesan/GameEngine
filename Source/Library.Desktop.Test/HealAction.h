@@ -10,7 +10,7 @@ namespace UnitTestSupportClasses
 
 		virtual void Update(GameEngineLibrary::WorldState& worldState) override;
 
-		bool IsHealCalled();
+		bool IsHealCalled() const;
 
 		virtual ~HealAction() = default;
 

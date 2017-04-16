@@ -65,7 +65,7 @@ namespace GameEngineLibrary
 
 		/** static const string containing the name of the "name" attribute of the XmlElement.
 		*/
-		static const std::string mXmlElementAttributeKeyName;
+		static const std::string mAttributeName;
 	public:
 		RTTI_DECLARATIONS(XmlParseHelperTable, IXmlParseHelper);
 	};

@@ -9,7 +9,7 @@ namespace GameEngineLibrary
 	RTTI_DEFINITIONS(XmlParseHelperTable);
 
 	const string XmlParseHelperTable::mXmlElementScopeName = "scope";
-	const string XmlParseHelperTable::mXmlElementAttributeKeyName = "name";
+	const string XmlParseHelperTable::mAttributeName = "name";
 
 	XmlParseHelperTable::XmlParseHelperTable(XmlParseMaster& xmlParseMaster)
 		:IXmlParseHelper(xmlParseMaster)
@@ -27,12 +27,12 @@ namespace GameEngineLibrary
 		{
 			return false;
 		}
-		if (!attributes.ContainsKey(mXmlElementAttributeKeyName))
+		if (!attributes.ContainsKey(mAttributeName))
 		{
 			throw exception("The Attribute 'name' is not present in the Scope XML element.");
 		}
 
-		sharedDataTable->AppendNewScope(attributes[mXmlElementAttributeKeyName]);
+		sharedDataTable->AppendNewScope(attributes[mAttributeName]);
 		return true;
 	}
 

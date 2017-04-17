@@ -3,39 +3,62 @@
 
 namespace GameEngineLibrary
 {
+	/** Forward declared World class.
+	*/
 	class World;
 
+	/** Forward declared WorldState class.
+	*/
 	class WorldState;
 
+	/** EventMessage class which acts as a payload between ActionEvents and ReactionAttributed.
+	*/
 	class EventMessage :public Attributed
 	{
-	public:		
-		EventMessage(std::int32_t subType, World& world, WorldState& worldState);
+	public:
+		/** Parameterized constructor. Caches the subType and game engine's WorldState object.
+		*	@param subType The subType filter of the event.
+		*	@param worldState The WorldState object of the game engine.
+		*/
+		EventMessage(const std::string& subType, WorldState& worldState);
 
+		/** Defaulted copy constructor.
+		*/
 		EventMessage(const EventMessage&) = default;
 
+		/** Defaulted assignment operator.
+		*/
 		EventMessage& operator=(const EventMessage&) = default;
 
-		std::int32_t GetSubType() const;
+		/** Returns the subType of the EventMessage.
+		*	@returns Returns the subType of the EventMessage.
+		*/
+		const std::string& GetSubType() const;
 
-		void SetSubType(const std::int32_t& subType);
-
-		void SetWorld(World& world);
-
-		World& GetWorld();
-
-		const World& GetWorld() const;
-
+		/** Returns the cached WorldState object.
+		*	@returns Returns the cached WorldState object.
+		*/
 		WorldState& GetWorldState();
 
+		/** Returns the cached WorldState object.
+		*	@returns Returns the cached WorldState object.
+		*/
 		const WorldState& GetWorldState() const;
 
+		/** Defaulted virtual destructor.
+		*/
 		virtual ~EventMessage() = default;
+	protected:
+		/** Initializes the signatures(member variables) of the Entity.
+		*/
+		virtual void InitializeSignatures();
 	private:
-		std::int32_t mSubType;
+		/** Cached subType of the event.
+		*/
+		std::string mSubType;
 
-		World* mWorld;
-
+		/** Cached WorldState object.
+		*/
 		WorldState* mWorldState;
 	};
 }

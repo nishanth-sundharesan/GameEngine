@@ -22,7 +22,7 @@ namespace UnitTestSupportClasses
 		worldState.SetCurrentAction(nullptr);
 	}
 
-	bool AttackAction::IsAttackCalled()
+	bool AttackAction::IsAttackCalled() const
 	{
 		return mIsAttackCalled;
 	}

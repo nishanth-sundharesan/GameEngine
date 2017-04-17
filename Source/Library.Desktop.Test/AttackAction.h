@@ -10,7 +10,7 @@ namespace UnitTestSupportClasses
 
 		virtual void Update(GameEngineLibrary::WorldState& worldState) override;
 
-		bool IsAttackCalled();
+		bool IsAttackCalled() const;
 
 		virtual ~AttackAction() = default;
 

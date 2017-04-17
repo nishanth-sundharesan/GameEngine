@@ -259,6 +259,11 @@ namespace GameEngineLibrary
 		return mParentScope;
 	}
 
+	uint32_t Scope::Size() const
+	{
+		return mOrderVector.Size();
+	}
+
 	Datum& Scope::operator[](const string& name)
 	{
 		return Append(name);
@@ -276,6 +281,7 @@ namespace GameEngineLibrary
 
 	const Datum& Scope::operator[](const uint32_t index) const
 	{
+		// TODO remove the exception check. Vector already does it.
 		if (index >= mOrderVector.Size())
 		{
 			throw out_of_range("const Datum& Scope::operator[](const std::uint32_t index) const: The specified index is out of range.");
@@ -376,6 +382,11 @@ namespace GameEngineLibrary
 		}
 		Scope* rhsScope = rhs->As<Scope>();
 		return rhsScope == nullptr ? false : *this == *rhsScope;
+	}
+
+	const Vector<pair<string, Datum>*>& Scope::GetAllAttributes() const
+	{
+		return mOrderVector;
 	}
 
 	void Scope::Orphan(Scope* childScope)

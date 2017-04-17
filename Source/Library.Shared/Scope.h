@@ -126,6 +126,11 @@ namespace GameEngineLibrary
 		*/
 		const Scope* GetParent() const;
 
+		/** Returns the size of the scope.
+		*	@params Returns the size of the scope.
+		*/
+		uint32_t Size() const;
+
 		/** Returns a reference to the Datum associated with the "name".
 		*	If a Datum was not present with the passed name, then a new record in created and a reference for the newly created Datum is returned.
 		*	@param name The name of the record whose datum reference has to be returned.
@@ -172,6 +177,12 @@ namespace GameEngineLibrary
 		*/
 		std::string FindName(const Scope* scope) const;
 
+		/** Orphans the passed "childScope" pointer from the current scope. i.e removes all it's links to the current scope.
+		*	@param childScope The childScope which has to be Orphaned.
+		*	@exception Throws an exception if the passed "childScope" is a root scope or if the "childScope" was not found.
+		*/
+		void Orphan(Scope* childScope);
+
 		/** Clears the entire scope and the child scopes if present.
 		*/
 		void Clear();
@@ -191,6 +202,8 @@ namespace GameEngineLibrary
 		/** A scope pointer pointing to the parent scope.
 		*/
 		Scope* mParentScope;
+
+		const Vector<PairType*>& GetAllAttributes() const;
 
 	private:
 		/** Appends the passed scope to the current scope.
@@ -212,13 +225,7 @@ namespace GameEngineLibrary
 		/** Assigns the std::string representation of the DatumType into the std::string array.
 		*/
 		void AssignEnumToString();
-
-		/** Orphans the passed "childScope" pointer from the current scope. i.e removes all it's links to the current scope.
-		*	@param childScope The childScope which has to be Orphaned.
-		*	@exception Throws an exception if the passed "childScope" is a root scope or if the "childScope" was not found.
-		*/
-		void Orphan(Scope* childScope);
-
+		
 		/** Performs a deep copy of the passed "rhsScope". This function is called recursively.
 		*	Note: This function is called from the Copy constructor and the Assignment operator.
 		*	@param rhsScope The right hand side which has to be deep copied.

@@ -82,6 +82,7 @@ namespace GameEngineLibrary
 
 	void Sector::InitializeSignatures()
 	{
+		Attributed::InitializeSignatures();
 		AddExternalAttribute(sAttributeName, &mName, 1);
 		mEntityDatum = &AddEmptyNestedScopeAttribute(sEntitiesName);
 	}

@@ -77,6 +77,10 @@ namespace GameEngineLibrary
 		*/
 		void CopyAuxiliaryAttributes(const Attributed& rhsAttribute);
 	protected:
+		/** Adds "this" to the prescribed attribute list.
+		*/
+		void InitializeSignatures();
+
 		/** Adds an internal attribute and adds the passed name to the prescribed attribute list.
 		*	@param name The name for the internal attribute to be added.
 		*	@param value The value of the internal attribute to be added.

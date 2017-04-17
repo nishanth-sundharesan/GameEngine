@@ -14,7 +14,7 @@ namespace GameEngineLibrary
 	Attributed::Attributed()
 	{
 		++sAttributedCount;
-		AddInternalAttribute("this", this);
+		InitializeSignatures();
 	}
 
 	Attributed::Attributed(const Attributed& rhs)
@@ -61,7 +61,7 @@ namespace GameEngineLibrary
 	}
 
 	bool Attributed::IsPrescribedAttribute(const string& name) const
-	{
+	{		
 		return !(sPrescribedAttributes[TypeIdInstance()].Find(name) == sPrescribedAttributes[TypeIdInstance()].end());
 	}
 
@@ -97,9 +97,14 @@ namespace GameEngineLibrary
 			if (rhsAttribute.IsAuxiliaryAttribute(attribute->first))
 			{
 				Datum& datum = AppendAuxiliaryAttribute(attribute->first);
-				datum = attribute->second;										//Calling the Datum's assignment operator
+				datum = attribute->second;														//Calling the Datum's assignment operator
 			}
 		}
+	}
+
+	void Attributed::InitializeSignatures()
+	{
+		AddInternalAttribute("this", this);
 	}
 
 	void Attributed::AddInternalAttribute(const string& name, const int32_t value)

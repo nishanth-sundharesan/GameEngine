@@ -14,7 +14,7 @@ namespace LibraryDesktopTest
 	TEST_CLASS(XmlParseMasterTest)
 	{
 	public:
-		const string xmlFileEmptyTable = "..\\..\\..\\TestXmlFiles\\TestStudent.xml";
+		const string xmlFileEmptyTable = "..\\..\\..\\TestXmlFiles\\XmlParseMaster\\TestStudent.xml";
 
 		TEST_METHOD_INITIALIZE(Initialize)
 		{

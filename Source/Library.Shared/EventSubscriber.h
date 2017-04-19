@@ -24,7 +24,7 @@ namespace GameEngineLibrary
 		EventSubscriber& operator=(const EventSubscriber&) = default;
 
 		/** Pure virtual function Notify. Derived classes must override this function to get notifications.
-		*	@param eventPublisher The event publisher which contains the message.
+		*	@param eventPublisher The event publisher which contains the event message.
 		*/
 		virtual void Notify(const EventPublisher& eventPublisher) = 0;
 

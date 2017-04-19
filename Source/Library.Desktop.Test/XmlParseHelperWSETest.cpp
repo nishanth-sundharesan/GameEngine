@@ -514,7 +514,7 @@ namespace LibraryDesktopTest
 			delete sharedDataWSE;
 		}
 
-		TEST_METHOD(XmlParseHelperRTTITest)
+		TEST_METHOD(XmlParseHelperWSERTTITest)
 		{
 			SharedDataWSE sharedDataWSE;
 			XmlParseMaster xmlParseMaster(sharedDataWSE);

@@ -11,6 +11,7 @@ namespace GameEngineLibrary
 	const string Action::sAttributeName = "Name";
 
 	Action::Action()
+		:mName(string())
 	{
 		InitializeSignatures();
 	}
@@ -32,6 +33,7 @@ namespace GameEngineLibrary
 
 	void Action::InitializeSignatures()
 	{
+		Attributed::InitializeSignatures();
 		AddExternalAttribute(sAttributeName, &mName, 1);
 	}
 }

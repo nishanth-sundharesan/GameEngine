@@ -2,7 +2,7 @@
 <World name="FIEA">
 	<Sector name="Prog2">
 		<Entity classname="MonsterEntity" instancename="Monster">
-			<CreateAction name="FirstCreateAction" classname="AttackAction" instancename="Attack"/>		
+			<CreateAction classname="ActionCreateAction" instancename="FirstCreateAction" actionClassName="AttackAction" actionInstanceName="Attack"/>		
 		</Entity>
 	</Sector>
 </World>

@@ -218,6 +218,10 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="AsyncEvent.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="AttackAction.cpp" />
     <ClCompile Include="AttributedFoo.cpp" />
     <ClCompile Include="AttributedFooChild.cpp" />
@@ -257,6 +261,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="ReactionTest.cpp">
+      <SubType>
+      </SubType>
     </ClCompile>
     <ClCompile Include="ScopeTest.cpp">
       <SubType>
@@ -328,7 +336,9 @@
     <Xml Include="TestXmlFiles\Action\TestActionArrays.xml" />
     <Xml Include="TestXmlFiles\Action\TestActionCreateAction.xml" />
     <Xml Include="TestXmlFiles\Action\TestActionCreateActionInActionList.xml" />
-    <Xml Include="TestXmlFiles\Action\TestActionDeleteAction.xml" />
+    <Xml Include="TestXmlFiles\Action\TestActionDeleteAction.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="TestXmlFiles\Action\TestActionDeleteActionInActionList.xml" />
     <Xml Include="TestXmlFiles\Action\TestActionList.xml" />
     <Xml Include="TestXmlFiles\Action\TestActionListArrays.xml">
@@ -355,6 +365,18 @@
     <Xml Include="TestXmlFiles\IfAction\TestInvalidIfWithNoAttributesTwo.xml" />
     <Xml Include="TestXmlFiles\IfAction\TestInvalidThenAction.xml" />
     <Xml Include="TestXmlFiles\IfAction\TestInvalidThenOutSideIf.xml" />
+    <Xml Include="TestXmlFiles\Reaction\ActionEventInvalidSubType.xml" />
+    <Xml Include="TestXmlFiles\Reaction\ActionEventInvalidWithNoDelay.xml" />
+    <Xml Include="TestXmlFiles\Reaction\ReactionBasicWithDelay.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="TestXmlFiles\Reaction\ReactionBasicWithNoDelay.xml" />
+    <Xml Include="TestXmlFiles\Reaction\ReactionInvalidInsideSector.xml" />
+    <Xml Include="TestXmlFiles\Reaction\ReactionInvalidSubType.xml" />
+    <Xml Include="TestXmlFiles\Reaction\ReactionInvalidWithoutAttribute.xml" />
+    <Xml Include="TestXmlFiles\Reaction\ReactionNotMatchingSubType.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="TestXmlFiles\WorldSectorEntity\TestEmptyWSE.xml" />
     <Xml Include="TestXmlFiles\WorldSectorEntity\TestEmptyWSEWithPrimitives.xml" />
     <Xml Include="TestXmlFiles\WorldSectorEntity\TestEmptyWSEWithPrimitivesArray.xml" />

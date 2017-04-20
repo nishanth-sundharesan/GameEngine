@@ -33,6 +33,9 @@
     <Filter Include="Xml Supporting Files\IfAction">
       <UniqueIdentifier>{86ada34c-79a3-4d82-8e58-0a0595392c2b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Xml Supporting Files\Reaction">
+      <UniqueIdentifier>{c5e96076-9f8c-478b-a47f-614699f564b3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SListTest.cpp">
@@ -121,6 +124,12 @@
     </ClCompile>
     <ClCompile Include="Bar.cpp">
       <Filter>SupportClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="ReactionTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AsyncEvent.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -365,6 +374,30 @@
     </Xml>
     <Xml Include="TestXmlFiles\IfAction\TestInvalidIfThenExecuteWithData.xml">
       <Filter>Xml Supporting Files\IfAction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Reaction\ReactionBasicWithNoDelay.xml">
+      <Filter>Xml Supporting Files\Reaction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Reaction\ReactionBasicWithDelay.xml">
+      <Filter>Xml Supporting Files\Reaction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Reaction\ActionEventInvalidWithNoDelay.xml">
+      <Filter>Xml Supporting Files\Reaction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Reaction\ReactionInvalidInsideSector.xml">
+      <Filter>Xml Supporting Files\Reaction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Reaction\ReactionInvalidWithoutAttribute.xml">
+      <Filter>Xml Supporting Files\Reaction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Reaction\ReactionNotMatchingSubType.xml">
+      <Filter>Xml Supporting Files\Reaction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Reaction\ActionEventInvalidSubType.xml">
+      <Filter>Xml Supporting Files\Reaction</Filter>
+    </Xml>
+    <Xml Include="TestXmlFiles\Reaction\ReactionInvalidSubType.xml">
+      <Filter>Xml Supporting Files\Reaction</Filter>
     </Xml>
   </ItemGroup>
 </Project>

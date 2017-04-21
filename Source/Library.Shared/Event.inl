@@ -46,6 +46,7 @@ namespace GameEngineLibrary
 	template<class T>
 	void Event<T>::ReserveSubscribers(uint32_t size)
 	{
+		lock_guard<mutex> lock(mMutex);
 		sListEventSubscribers.Reserve(size);
 	}
 

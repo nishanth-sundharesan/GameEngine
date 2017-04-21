@@ -72,6 +72,7 @@ namespace GameEngineLibrary
 		bool IsExpired(const std::chrono::high_resolution_clock::time_point& currentTime) const;
 
 		/** Notifies all the subscribers who have subscribed to the event.
+		*	Note: A separate thread is spun up for each notification call to the subscriber.
 		*/
 		void Deliver();
 
@@ -99,6 +100,10 @@ namespace GameEngineLibrary
 		/** A boolean indicating if the event should be deleted after it is published.
 		*/
 		bool mIsDeleteAfterPublishing;
+
+		/** A vector to hold the exceptions thrown by the child threads.
+		*/
+		std::vector<std::exception_ptr> mExceptionList;
 	public:
 		RTTI_DECLARATIONS(EventPublisher, RTTI);
 	};

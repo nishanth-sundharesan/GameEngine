@@ -1,5 +1,6 @@
 #include "Pch.h"
 #include "EventPublisher.h"
+#include <future>
 
 using namespace std::chrono;
 
@@ -71,9 +72,30 @@ namespace GameEngineLibrary
 
 	void EventPublisher::Deliver()
 	{
-		for (EventSubscriber* eventSubscriber : *mEventSubscribers)
+		Vector<EventSubscriber*> tempEventSubscribers = *mEventSubscribers;
+
+		vector<future<void>> futureList;
+		for (EventSubscriber* eventSubscriber : tempEventSubscribers)
 		{
-			eventSubscriber->Notify(*this);
+			futureList.emplace_back(async(launch::async, [eventSubscriber, this]() {
+				eventSubscriber->Notify(*this);
+			}));
+		}
+
+		for (auto& futureInstance : futureList)
+		{
+			try
+			{
+				futureInstance.get();
+			}
+			catch (...)
+			{
+				mExceptionList.push_back(current_exception());
+			}
+		}
+		if (!mExceptionList.empty())
+		{
+			throw mExceptionList;
 		}
 	}
 

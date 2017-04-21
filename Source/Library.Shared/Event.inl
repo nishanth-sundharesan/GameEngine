@@ -12,6 +12,9 @@ namespace GameEngineLibrary
 	Vector<EventSubscriber*> Event<T>::sListEventSubscribers;
 
 	template<class T>
+	mutex Event<T>::mMutex;
+
+	template<class T>
 	Event<T>::Event(const T& message, const bool isDeleteAfterPublish)
 		:EventPublisher(Event<T>::sListEventSubscribers, isDeleteAfterPublish), mMessage(message)
 	{
@@ -41,20 +44,29 @@ namespace GameEngineLibrary
 	}
 
 	template<class T>
+	void Event<T>::ReserveSubscribers(uint32_t size)
+	{
+		sListEventSubscribers.Reserve(size);
+	}
+
+	template<class T>
 	void Event<T>::Subscribe(EventSubscriber& eventSubscriber)
 	{
+		lock_guard<mutex> lock(mMutex);
 		sListEventSubscribers.PushBack(&eventSubscriber);
 	}
 
 	template<class T>
 	bool Event<T>::UnSubscribe(EventSubscriber& eventSubscriber)
 	{
+		lock_guard<mutex> lock(mMutex);
 		return sListEventSubscribers.Remove(&eventSubscriber);
 	}
 
 	template<class T>
 	void Event<T>::UnSubscribeAll()
 	{
-		sListEventSubscribers.Clear();
+		lock_guard<mutex> lock(mMutex);
+		sListEventSubscribers.Clear();		
 	}
 }

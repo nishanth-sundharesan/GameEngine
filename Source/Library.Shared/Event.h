@@ -1,5 +1,6 @@
 #pragma once
 #include "EventPublisher.h"
+#include <future>
 
 namespace GameEngineLibrary
 {
@@ -42,6 +43,11 @@ namespace GameEngineLibrary
 		*/
 		const T& Message() const;
 
+		/** Reserves the memory for the subscribers list to the specified capacity.
+		*	@param capacity The new capacity of the Subscribers list. This should be greater than the current capacity.
+		*/
+		static void ReserveSubscribers(std::uint32_t size);
+
 		/** Adds the passed subscriber to the Event Subscribers list.
 		*	@param eventSubscriber The event subscriber which has subscribed to get notifications of the event.
 		*/
@@ -56,6 +62,10 @@ namespace GameEngineLibrary
 		*/
 		static void UnSubscribeAll();
 	private:
+		/** Mutex to lock the vector list of EventSubscribers.
+		*/
+		static mutex mMutex;
+
 		/** The actual message of the event.
 		*/
 		T mMessage;

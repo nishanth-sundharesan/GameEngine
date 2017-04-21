@@ -1,9 +1,10 @@
 #pragma once
 #include "EventPublisher.h"
 #include "GameTime.h"
+#include <future>
 
 namespace GameEngineLibrary
-{
+{	
 	/** EventQueue class which is responsible for queuing and dispatching the events.
 	*/
 	class EventQueue
@@ -13,27 +14,13 @@ namespace GameEngineLibrary
 		*/
 		EventQueue() = default;
 
-		/** Defaulted copy constructor.
+		/** Deleted copy constructor. Cannot copy EventQueue.
 		*/
-		EventQueue(const EventQueue&) = default;
+		EventQueue(const EventQueue&) = delete;
 
-		/** Defaulted assignment operator.
+		/** Deleted assignment operator. Cannot copy EventQueue.
 		*/
-		EventQueue& operator=(const EventQueue&) = default;
-
-		/** Move constructor.
-		*	Moves the temporary object's(right hand side) pointers/primitive data to the left hand side object. Assigns default type to all the members of the right hand side object.
-		*	Note: This function is called when we are returning a temporary object to a permanent object from a function. Example: Creating a stack allocated object from a function and returning it.(Gets called on the return statement)
-		*	@param rhs The temporary right hand side object which has to be moved.
-		*/
-		EventQueue(EventQueue&& rhs);
-
-		/** Move assignment operator.
-		*	Moves the temporary object's(right hand side) pointers/primitive data to the left hand side object. Assigns default type to all the members of the right hand side object.
-		*	Note: This function is called when we are assigning a temporary object to a permanent object. Example: Assigning a stack allocated object from a function which created the object.(Gets called on the assignment statement)
-		*	@param rhs The temporary right hand side object which has to be moved.
-		*/
-		EventQueue& operator=(EventQueue&& rhs);
+		EventQueue& operator=(const EventQueue&) = delete;		
 
 		/** Enqueues the passed event.
 		*	@param eventPublisher The event that has to be enqueued.
@@ -48,6 +35,7 @@ namespace GameEngineLibrary
 		void Send(EventPublisher& eventPublisher);
 
 		/** Loops through the enqueued events and dispatches the expired events. It also deletes the events if it is marked for delete after publishing.
+		*	Note: The dispatched events are all individual threads.
 		*	@param gameTime The game time of the game.
 		*/
 		void Update(const GameTime& gameTime);
@@ -69,9 +57,17 @@ namespace GameEngineLibrary
 		/** Defaulted virtual destructor.
 		*/
 		virtual ~EventQueue() = default;
-	private:		
+	private:
+		/** Mutex to lock the Vector list of EventPublishers.
+		*/
+		mutable std::mutex mMutex;
+
 		/** List of enqueued events.
 		*/
-		Vector<EventPublisher*> mListEventPublishers;
+		vector<EventPublisher*> mListEventPublishers;
+
+		/** List of exceptions occurred in this child thread.
+		*/
+		vector<std::exception_ptr> mListExceptions;
 	};
 }

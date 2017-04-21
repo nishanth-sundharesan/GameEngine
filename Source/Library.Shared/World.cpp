@@ -114,6 +114,7 @@ namespace GameEngineLibrary
 
 	void World::AddActionToDelete(Action& actionToDelete)
 	{
+		lock_guard<mutex> lock(mMutex);
 		mActionsToDelete.PushBack(&actionToDelete);
 	}
 

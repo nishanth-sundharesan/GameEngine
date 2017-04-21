@@ -1,6 +1,7 @@
 #pragma once
 #include "Sector.h"
 #include "EventQueue.h"
+#include <future>
 
 namespace GameEngineLibrary
 {
@@ -133,6 +134,10 @@ namespace GameEngineLibrary
 		/** List of Action pointers to delete.
 		*/
 		Vector<Action*> mActionsToDelete;
+
+		/** A mutex to lock the mActionsToDelete list while adding actions to it.
+		*/
+		std::mutex mMutex;
 	public:
 		RTTI_DECLARATIONS(World, Attributed);
 	};

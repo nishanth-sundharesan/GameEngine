@@ -324,74 +324,7 @@ namespace LibraryDesktopTest
 			gameTime.SetCurrentTime(gameTime.CurrentTime() + milliseconds(300));
 			eventQueue.Update(gameTime);
 			Assert::IsTrue(subscriberFoo.WasNotified());
-		}
-
-		/*TEST_METHOD(EventQueueMoveCopyTest)
-		{
-			GameTime gameTime;
-			EventQueue eventQueue;
-			SubscriberFoo subscriberFoo;
-			SubscriberBar subscriberBar;
-
-			Foo foo;
-			Event<Foo>* eventFoo = new Event<Foo>(foo, true);
-			eventFoo->Subscribe(subscriberFoo);
-
-			Bar bar;
-			Event<Bar>* eventBar = new Event<Bar>(bar, true);
-			eventBar->Subscribe(subscriberBar);
-
-			Assert::IsFalse(subscriberFoo.WasNotified());
-			Assert::IsFalse(subscriberBar.WasNotified());
-
-			eventQueue.Enqueue(*eventFoo, gameTime, 500U);
-			eventQueue.Enqueue(*eventBar, gameTime, 200U);
-			gameTime.SetCurrentTime(gameTime.CurrentTime() + milliseconds(201));
-			eventQueue.Update(gameTime);
-
-			Assert::IsFalse(subscriberFoo.WasNotified());
-			Assert::IsTrue(subscriberBar.WasNotified());
-
-			EventQueue eventQueueMoved = move(eventQueue);
-
-			gameTime.SetCurrentTime(gameTime.CurrentTime() + milliseconds(300));
-			eventQueueMoved.Update(gameTime);
-			Assert::IsTrue(subscriberFoo.WasNotified());
-		}*/
-
-		/*TEST_METHOD(EventQueueMoveAssignmentTest)
-		{
-			GameTime gameTime;
-			EventQueue eventQueue;
-			SubscriberFoo subscriberFoo;
-			SubscriberBar subscriberBar;
-
-			Foo foo;
-			Event<Foo>* eventFoo = new Event<Foo>(foo, true);
-			eventFoo->Subscribe(subscriberFoo);
-
-			Bar bar;
-			Event<Bar>* eventBar = new Event<Bar>(bar, true);
-			eventBar->Subscribe(subscriberBar);
-
-			Assert::IsFalse(subscriberFoo.WasNotified());
-			Assert::IsFalse(subscriberBar.WasNotified());
-
-			eventQueue.Enqueue(*eventFoo, gameTime, 500U);
-			eventQueue.Enqueue(*eventBar, gameTime, 200U);
-			gameTime.SetCurrentTime(gameTime.CurrentTime() + milliseconds(201));
-			eventQueue.Update(gameTime);
-
-			Assert::IsFalse(subscriberFoo.WasNotified());
-			Assert::IsTrue(subscriberBar.WasNotified());
-
-			EventQueue eventQueueMoved;
-			eventQueueMoved = move(eventQueue);
-
-			gameTime.SetCurrentTime(gameTime.CurrentTime() + milliseconds(300));
-			eventQueueMoved.Update(gameTime);
-			Assert::IsTrue(subscriberFoo.WasNotified());
-		}*/
+		}		
 
 		TEST_METHOD(EventPublisherTimeEnqueuedAndDelayTest)
 		{

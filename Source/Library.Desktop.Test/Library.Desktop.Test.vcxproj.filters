@@ -36,6 +36,9 @@
     <Filter Include="Xml Supporting Files\Reaction">
       <UniqueIdentifier>{c5e96076-9f8c-478b-a47f-614699f564b3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SupportClasses\AsyncEventTestClasses">
+      <UniqueIdentifier>{c515d075-5b6c-4f43-85a1-35fcdccb48c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SListTest.cpp">
@@ -128,7 +131,10 @@
     <ClCompile Include="ReactionTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AsyncEvent.cpp">
+    <ClCompile Include="AsyncEventSubscriber.cpp">
+      <Filter>SupportClasses\AsyncEventTestClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="AsyncEventTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -183,6 +189,9 @@
     </ClInclude>
     <ClInclude Include="Bar.h">
       <Filter>SupportClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="AsyncEventSubscriber.h">
+      <Filter>SupportClasses\AsyncEventTestClasses</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

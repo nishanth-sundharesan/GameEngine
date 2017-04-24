@@ -218,10 +218,11 @@
       <SubType>
       </SubType>
     </ClCompile>
-    <ClCompile Include="AsyncEvent.cpp">
+    <ClCompile Include="AsyncEventTest.cpp">
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="AsyncEventSubscriber.cpp" />
     <ClCompile Include="AttackAction.cpp" />
     <ClCompile Include="AttributedFoo.cpp" />
     <ClCompile Include="AttributedFooChild.cpp" />
@@ -298,6 +299,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AsyncEventSubscriber.h" />
     <ClInclude Include="AttackAction.h" />
     <ClInclude Include="Bar.h" />
     <ClInclude Include="HealAction.h" />

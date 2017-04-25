@@ -13,7 +13,7 @@ namespace UnitTestSupportClasses
 
 		SubscriberFoo& operator=(const SubscriberFoo&) = default;
 
-		virtual void Notify(const  GameEngineLibrary::EventPublisher& eventPublisher) override;
+		virtual void Notify(const GameEngineLibrary::EventPublisher& eventPublisher) override;
 
 		bool WasNotified() const;
 

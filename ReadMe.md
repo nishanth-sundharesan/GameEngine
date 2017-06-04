@@ -32,4 +32,4 @@ A data driven game engine written in C++ 11. It supports XML as a scripting lang
 - EventQueue: Responsible for queuing and updating Event Publishers. EventPublisher publishes specific type of events (Example: Foo type of events). EventQueue contains a list of EventPublishers (Example: Foo type of EventPublisher, Bar type of EventPublisher etc) and tells each EventPublisher to dispatch their events.
 - WorldState: Contains the state of the game at any point of time.
 
-The entire code is #### unit tested and documented in #### doxygen format.
+The entire code is **unit tested** and **documented** in **doxygen format**.

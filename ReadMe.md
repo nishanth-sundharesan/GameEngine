@@ -7,8 +7,8 @@ A data driven game engine written in **C++ 11**. It supports XML as a scripting 
 -	Hashmap
 
 ### Modules
-- **RTTI:** Base class for all foundation classes in the engine. It helps in run time type identification of an object.
-- **Datum:** A runtime dynamic data-type storage class. It currently supports the data types - int, float, string, vec4, mat4x4, Scope (Table) and any RTTI class.
+- **RTTI:** Base class for all foundation classes in the engine. It helps in run-time type identification of an object.
+- **Datum:** A run-time dynamic data-type storage class. It currently supports the data types - int, float, string, vec4, mat4x4, Scope (Table) and any RTTI class.
 - **Scope:** Helps in creating a hierarchical data structure of key-value pairs at runtime.
 - **Factory:** A templated factory class which can instantiate objects by specifying the name of the class.
 - **World:** Acts as a container for the entire game. It would hold Sectors.
@@ -32,4 +32,4 @@ A data driven game engine written in **C++ 11**. It supports XML as a scripting 
 - **EventQueue:** Responsible for queuing and updating Event Publishers. EventPublisher publishes specific type of events (Example: Foo type of events). EventQueue contains a list of EventPublishers (Example: Foo type of EventPublisher, Bar type of EventPublisher etc) and tells each EventPublisher to dispatch their events.
 - **WorldState:** Contains the state of the game at any point of time.
 
-The entire code is **unit tested** and **documented** in **doxygen format**.
+The entire code is **unit tested** and **documented** in **doxygen** format.
